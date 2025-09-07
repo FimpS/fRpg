@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/fRpgCrawler.dir/lib/dynList.c.o CMakeFiles/fRpgCrawler.dir/src/entity.c.o CMakeFiles/fRpgCrawler.dir/src/gfx.c.o CMakeFiles/fRpgCrawler.dir/src/main.c.o CMakeFiles/fRpgCrawler.dir/src/map.c.o CMakeFiles/fRpgCrawler.dir/src/state.c.o -o fRpgCrawler  /usr/local/lib/libraylib.a -lm -ldl -lpthread -L/usr/local/lib -lraylib
