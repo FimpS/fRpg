@@ -5,7 +5,7 @@
 #include "raylib.h"
 #include "types.h"
 
-Vector2 vector2(f32 x, f32 y) { return (Vector2) {x, y}; }
+static inline Vector2 vector2(f32 x, f32 y) { return (Vector2) {x, y}; }
 
 
 #endif

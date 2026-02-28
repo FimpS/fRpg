@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/samuel/c/game/fRpgCrawler/lib/dynList.c" "CMakeFiles/fRpgCrawler.dir/lib/dynList.c.o" "gcc" "CMakeFiles/fRpgCrawler.dir/lib/dynList.c.o.d"
+  "/home/samuel/c/game/fRpgCrawler/src/editor.c" "CMakeFiles/fRpgCrawler.dir/src/editor.c.o" "gcc" "CMakeFiles/fRpgCrawler.dir/src/editor.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/entity.c" "CMakeFiles/fRpgCrawler.dir/src/entity.c.o" "gcc" "CMakeFiles/fRpgCrawler.dir/src/entity.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/gfx.c" "CMakeFiles/fRpgCrawler.dir/src/gfx.c.o" "gcc" "CMakeFiles/fRpgCrawler.dir/src/gfx.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/main.c" "CMakeFiles/fRpgCrawler.dir/src/main.c.o" "gcc" "CMakeFiles/fRpgCrawler.dir/src/main.c.o.d"

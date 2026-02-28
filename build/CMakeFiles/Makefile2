@@ -81,12 +81,12 @@ clean: CMakeFiles/fRpgCrawler.dir/clean
 CMakeFiles/fRpgCrawler.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Built target fRpgCrawler"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8 "Built target fRpgCrawler"
 .PHONY : CMakeFiles/fRpgCrawler.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/fRpgCrawler.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/samuel/c/game/fRpgCrawler/build/CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/samuel/c/game/fRpgCrawler/build/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/fRpgCrawler.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/samuel/c/game/fRpgCrawler/build/CMakeFiles 0
 .PHONY : CMakeFiles/fRpgCrawler.dir/rule

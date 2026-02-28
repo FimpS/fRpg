@@ -1,12 +1,20 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "../lib/types.h"
 #include "../include/entity.h"
 #include "../include/state.h"
 #include "../include/global.h"
+#include "../include/editor.h"
+#include "../include/gfx.h"
 #include "../lib/hashmap.h"
 #include "raylib.h"
 
+#define EDITOR 1
+
+
+#if !EDITOR
 int main(void) {
 
 	HashMap* map = hmap_new(32);
@@ -55,4 +63,41 @@ int main(void) {
 	CloseWindow();
 	return 0;
 }
+#endif
+
+#if EDITOR
+
+i32 main()
+{
+	srand(time(NULL));
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    InitWindow(1280, 1280, "2D - TileMapEditor");
+    SetTargetFPS(60);
+
+	printf("KEYBINDS\n\n\n");
+	printf("F1: Color Map\n");
+	printf("F2: Tile Mode\n");
+	printf("F3: Entity Mode\n");
+	printf("P: Save\n");
+	printf("M1 + C: Copy\n");
+	printf("M1 + V: Delete Entity\n");
+	printf("Tab: Move Camera\n");
+	printf("\n\n\n");
+
+	Editor* editor = editor_new();	
+	//dynList_push(editor->map->entities, entity_new(ENTITY_PLACEHOLDER, vector2(1.0, 1.0)));
+	//dynList_push(editor->map->entities, entity_new(ENTITY_PLACEHOLDER2, vector2(4.0, 4.0)));
+
+    while (!WindowShouldClose()) 
+	{
+		BeginDrawing();
+		editor_tick(editor);
+		editor_render(editor);
+		EndDrawing();
+	}
+	CloseWindow();
+	return 0;
+}
+
+#endif
 

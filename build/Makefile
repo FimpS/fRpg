@@ -153,6 +153,30 @@ lib/dynList.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/lib/dynList.c.s
 .PHONY : lib/dynList.c.s
 
+src/editor.o: src/editor.c.o
+.PHONY : src/editor.o
+
+# target to build an object file
+src/editor.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/editor.c.o
+.PHONY : src/editor.c.o
+
+src/editor.i: src/editor.c.i
+.PHONY : src/editor.i
+
+# target to preprocess a source file
+src/editor.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/editor.c.i
+.PHONY : src/editor.c.i
+
+src/editor.s: src/editor.c.s
+.PHONY : src/editor.s
+
+# target to generate assembly for a file
+src/editor.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/editor.c.s
+.PHONY : src/editor.c.s
+
 src/entity.o: src/entity.c.o
 .PHONY : src/entity.o
 
@@ -285,6 +309,9 @@ help:
 	@echo "... lib/dynList.o"
 	@echo "... lib/dynList.i"
 	@echo "... lib/dynList.s"
+	@echo "... src/editor.o"
+	@echo "... src/editor.i"
+	@echo "... src/editor.s"
 	@echo "... src/entity.o"
 	@echo "... src/entity.i"
 	@echo "... src/entity.s"

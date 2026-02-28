@@ -20,24 +20,8 @@ CMakeFiles/fRpgCrawler.dir/src/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
- /home/samuel/c/game/fRpgCrawler/src/../lib/types.h \
- /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \
- /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/entity.h \
- /usr/local/include/raylib.h \
- /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../lib/types.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/state.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/dynList.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/types.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/state.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
- /home/samuel/c/game/fRpgCrawler/lib/types.h \
- /home/samuel/c/game/fRpgCrawler/src/../lib/hashmap.h \
- /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+ /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
+ /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
@@ -45,7 +29,8 @@ CMakeFiles/fRpgCrawler.dir/src/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/timer_t.h /usr/include/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-intn.h /usr/include/endian.h \
  /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/endianness.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
@@ -61,8 +46,41 @@ CMakeFiles/fRpgCrawler.dir/src/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/string.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/time.h \
+ /usr/include/x86_64-linux-gnu/bits/time.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /usr/include/strings.h \
+ /home/samuel/c/game/fRpgCrawler/src/../lib/types.h \
+ /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/entity.h \
+ /usr/local/include/raylib.h \
+ /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/types.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/state.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/types.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/state.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
+ /home/samuel/c/game/fRpgCrawler/lib/types.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/editor.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/map.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/v2.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/types.h \
+ /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+ /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+ /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/entity.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/gfx.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/gfx.h \
+ /home/samuel/c/game/fRpgCrawler/src/../lib/hashmap.h \
+ /usr/include/string.h /usr/include/strings.h \
  /home/samuel/c/game/fRpgCrawler/src/../lib/types.h

@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/fRpgCrawler.dir/lib/dynList.c.o"
   "CMakeFiles/fRpgCrawler.dir/lib/dynList.c.o.d"
+  "CMakeFiles/fRpgCrawler.dir/src/editor.c.o"
+  "CMakeFiles/fRpgCrawler.dir/src/editor.c.o.d"
   "CMakeFiles/fRpgCrawler.dir/src/entity.c.o"
   "CMakeFiles/fRpgCrawler.dir/src/entity.c.o.d"
   "CMakeFiles/fRpgCrawler.dir/src/gfx.c.o"
