@@ -1,13 +1,21 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+
+#include "raylib.h"
+#include "raymath.h"
 
 #include "../include/map.h"
 #include "../include/global.h"
 
+#define MAX_SCROLL_UP 128
+#define MAX_SCROLL_DOWN 28
+
+
 Vector2 map_get_mouse_cords(Map* map)
 {
-	return vector2(((f32)GetMouseX() / TILE_LEN + map->camera->offset.x), ((f32)GetMouseY() / TILE_LEN + map->camera->offset.y));
+	return vector2(((f32)GetMouseX() / map->camera->tile_len + map->camera->offset.x), ((f32)GetMouseY() / map->camera->tile_len + map->camera->offset.y));
 }
 
 MapCamera* cam_new()
@@ -18,6 +26,7 @@ MapCamera* cam_new()
 		.visible_tiles = (V2) {0, 0},
 		.offset = (Vector2) {0, 0},
 		.tile_offset = (Vector2) {0, 0},
+		.tile_len = 40,
 		.zoom = 0.0,
 	};
 }
@@ -25,18 +34,30 @@ MapCamera* cam_new()
 void cam_tick(Map* map, Vector2 source)
 {
 	MapCamera* cam = map->camera;
+
+	cam->tile_len += GetMouseWheelMove() * 4;
+	if(cam->tile_len >= MAX_SCROLL_UP) { cam->tile_len = MAX_SCROLL_UP; }
+	else if(cam->tile_len <= MAX_SCROLL_DOWN) { cam->tile_len = MAX_SCROLL_DOWN; }
+
+
 	Vector2 mouse_pos = GetMousePosition();
 	cam->pos = vector2(source.x, source.y);
-	cam->visible_tiles = v2_new(GetScreenWidth() / TILE_LEN, GetScreenHeight() / TILE_LEN);
+	cam->visible_tiles = v2_new(
+			(i32) ceilf(GetScreenWidth() / cam->tile_len) + 1,
+			(i32) ceilf(GetScreenHeight() / cam->tile_len) + 1);
 
-	cam->offset = vector2(cam->pos.x - (f32)cam->visible_tiles.x / 2.0, cam->pos.y - (f32)cam->visible_tiles.y / 2.0);
 
-	if(cam->offset.x < 0.0) cam->offset.x = 0.0;
-	if(cam->offset.y < 0.0) cam->offset.y = 0.0;
-	if(cam->offset.x > map->dim.x - cam->visible_tiles.x) cam->offset.x = map->dim.x - cam->visible_tiles.x;
-	if(cam->offset.y > map->dim.y - cam->visible_tiles.y) cam->offset.y = map->dim.y - cam->visible_tiles.y;
+	f32 half_w = cam->visible_tiles.x * 0.5;
+	f32 half_h = cam->visible_tiles.y * 0.5;
 
-	cam->tile_offset = vector2((cam->offset.x - ((i32) cam->offset.x)) * TILE_LEN, (cam->offset.y - ((i32) cam->offset.y)) * TILE_LEN);
+	if (cam->pos.x < half_w) cam->pos.x = half_w;
+	if (cam->pos.y < half_h) cam->pos.y = half_h;
+	if (cam->pos.x > map->dim.x - half_w) cam->pos.x = map->dim.x - half_w;
+	if (cam->pos.y > map->dim.y - half_h) cam->pos.y = map->dim.y - half_h;
+
+	cam->offset = (Vector2) { cam->pos.x - half_w, cam->pos.y - half_h };
+
+	cam->tile_offset = (Vector2) { (cam->offset.x - ((i32) cam->offset.x)) * cam->tile_len, (cam->offset.y - ((i32) cam->offset.y)) * cam->tile_len };
 }
 
 // Now we have reason to save map so loading in map_new is not bad option...

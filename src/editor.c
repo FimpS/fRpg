@@ -7,6 +7,8 @@
 #include "raylib.h"
 #include "raymath.h"
 
+#define ENTITY_TYPE_LIST_LEN ENTITY_LAST
+
 #define P_ERROR(...) printf("ERROR: %s", __VA_ARGS__);
 
 
@@ -103,6 +105,11 @@ void editor_reset_map(Editor* editor)
 	{
 		map->content[i] = tile_sheet[i];
 	}
+
+	for(i32 i = 0; i < ENTITY_TYPE_LIST_LEN; i++)
+	{
+		dynList_push(map->entities, entity_new_editor(i, (Vector2) {4.0 + i * 4.0, 20.0} ));	
+	}
 }
 
 Editor* editor_new()
@@ -149,9 +156,9 @@ void editor_select_tile(Editor* editor)
 {
 	//if(IsMouseButtonReleased(0))
 	MapCamera* cam = editor->map->camera;
-	if(IsMouseButtonDown(0))
+	if(IsMouseButtonDown(0) && !IsKeyDown(KEY_D) && !IsKeyDown(KEY_C))
 	{
-		V2 mp = v2_new(((f32)GetMouseX() / TILE_LEN + cam->offset.x), ((f32)GetMouseY() / TILE_LEN + cam->offset.y));
+		V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
 		Tile selected = map_get_tile(editor->map, mp);
 		map_set_tile(editor->map, mp, editor->brush);
 		//printf("INFO: Solid: %d Type: %d Anim: %d\n", editor->brush.solid, editor->brush.type, editor->brush.animated);
@@ -162,9 +169,9 @@ void editor_select_tile(Editor* editor)
 void editor_push_selected_entity(Editor* editor)
 {
 	MapCamera* cam = editor->map->camera;
-	if(IsMouseButtonPressed(0) && !IsKeyDown(KEY_C) && !IsKeyDown(KEY_V))
+	if(IsMouseButtonPressed(0) && !IsKeyDown(KEY_C) && !IsKeyDown(KEY_D))
 	{
-		V2 mp = v2_new(((f32)GetMouseX() / TILE_LEN + cam->offset.x), ((f32)GetMouseY() / TILE_LEN + cam->offset.y));
+		V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
 		Tile selected = map_get_tile(editor->map, mp);
 		dynList_push(editor->map->entities, entity_new_editor(editor->selected_entity, vector2(mp.x, mp.y)));
 		//editor_entity_add
@@ -204,17 +211,28 @@ void editor_copy_tile(Editor* editor)
 	MapCamera* cam = editor->map->camera;
 	if(IsMouseButtonDown(0) && IsKeyDown(KEY_C))
 	{
-		V2 mp = v2_new(((f32)GetMouseX() / TILE_LEN + cam->offset.x), ((f32)GetMouseY() / TILE_LEN + cam->offset.y));
+		V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
 		Tile selected = map_get_tile(editor->map, mp);
 		editor->brush = selected;
 		// editor_set_brush(editor);
 	}
 }
 
+void editor_delete_tile(Editor* editor)
+{
+	MapCamera* cam = editor->map->camera;
+	if(IsMouseButtonDown(0) && IsKeyDown(KEY_D))
+	{
+		V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
+		Tile selected = map_get_tile(editor->map, mp);
+		map_set_tile(editor->map, mp, tile_sheet[0] );
+	}
+}
+
 void editor_delete_entity(Editor* editor)
 {
 	MapCamera* cam = editor->map->camera;
-	if(IsMouseButtonPressed(0) && IsKeyDown(KEY_V))
+	if(IsMouseButtonPressed(0) && IsKeyDown(KEY_D))
 	{
 		Vector2 mp = map_get_mouse_cords(editor->map);
 		for(i32 i = 0; i < dynList_len(editor->map->entities); i++)
@@ -234,7 +252,7 @@ void editor_copy_entity(Editor* editor)
 	MapCamera* cam = editor->map->camera;
 	if(IsMouseButtonPressed(0) && IsKeyDown(KEY_C))
 	{
-		//V2 mp = v2_new(((f32)GetMouseX() / TILE_LEN + cam->offset.x), ((f32)GetMouseY() / TILE_LEN + cam->offset.y));
+		//V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
 		Vector2 mp = map_get_mouse_cords(editor->map);
 		for(i32 i = 0; i < dynList_len(editor->map->entities); i++)
 		{
@@ -251,24 +269,44 @@ void editor_copy_entity(Editor* editor)
 
 void editor_move_camera(Editor* editor)
 {
-	if(IsKeyDown(KEY_TAB))
+	if(IsKeyDown(KEY_SPACE))
 	{
 		MapCamera* cam = editor->map->camera;
-		Vector2 mp = Vector2Subtract(Vector2Scale(GetMousePosition(), (f32) 1 / TILE_LEN), cam->offset);
-		Vector2 mp_raw = Vector2Scale(GetMousePosition(), (f32) 1 / TILE_LEN);
-		Vector2 mid = Vector2Scale(vector2(GetScreenWidth() / TILE_LEN, GetScreenHeight() / TILE_LEN), 0.5);
+		Vector2 mp = Vector2Subtract(Vector2Scale(GetMousePosition(), (f32) 1 / editor->map->camera->tile_len), cam->offset);
+		Vector2 mp_raw = Vector2Scale(GetMousePosition(), (f32) 1 / editor->map->camera->tile_len);
+		Vector2 mid = Vector2Scale(vector2(GetScreenWidth() / editor->map->camera->tile_len, GetScreenHeight() / editor->map->camera->tile_len), 0.5);
 
 		Vector2 sub = Vector2Subtract(mp_raw, mid);
 		const f32 theta = atan2(sub.y, sub.x);
-		const f32 speed = 0.025 * Vector2Distance(mp_raw, mid);
-#if 0
-		if( (mp.x >= cam->visible_tiles.x - cam->offset.x - 4)
-				|| (mp.x <= - cam->offset.x + 4)
-				|| (mp.y >= cam->visible_tiles.y - cam->offset.y - 4)
-				|| (mp.y <= - cam->offset.y + 4))
-#endif
+		const f32 dist = Vector2Distance(mp_raw, mid);
+		const f32 speed = 0.35; //0.00015 * (dist * dist * dist);
+
+		cam->pos = Vector2Add(cam->pos, vector2(speed * cos(theta), speed * sin(theta)));
+	}
+}
+
+const u8* key_tutorial_text[] = 
+{
+	"F1: Color map",
+	"F2: Tile mode",
+	"F3: Entity mode",
+	"P: Save Map",
+	"M1 + C: Copy Tile/Entity",
+	"M1 + D: Delete Tile/Entity",
+	"Scroll: Zoom in/out",
+};
+
+void editor_print_tutorial()
+{
+	const u8 font_size = 25;
+	const u32 x = 25;
+	const u32 y = 25;
+	const u32 y_offset = 30;
+	if(IsKeyDown(KEY_TAB))
+	{
+		for(i32 i = 0; i < sizeof(key_tutorial_text) / sizeof(key_tutorial_text[0]); i++)
 		{
-			editor->pos = Vector2Add(editor->pos, vector2(speed * cos(theta), speed * sin(theta)));
+			DrawText(key_tutorial_text[i], x, y + y_offset * i, font_size, YELLOW);
 		}
 	}
 }
@@ -280,11 +318,13 @@ void editor_tick(Editor* editor)
 	switch(editor->state)
 	{
 		case EDITORSTATE_MAINCANVAS:
-			cam_tick(editor->map, editor->pos);
-			if(IsKeyDown(KEY_W)) editor->pos.y -= 0.15;
-			if(IsKeyDown(KEY_S)) editor->pos.y += 0.15;
-			if(IsKeyDown(KEY_A)) editor->pos.x -= 0.15;
-			if(IsKeyDown(KEY_D)) editor->pos.x += 0.15;
+			cam_tick(editor->map, cam->pos);
+#if 0
+			if(IsKeyDown(KEY_W)) cam->pos.y -= 0.15;
+			if(IsKeyDown(KEY_S)) cam->pos.y += 0.15;
+			if(IsKeyDown(KEY_A)) cam->pos.x -= 0.15;
+			if(IsKeyDown(KEY_D)) cam->pos.x += 0.15;
+#endif 
 			editor_switch_state(editor);
 			editor_move_camera(editor);
 			editor_save(editor);
@@ -292,6 +332,7 @@ void editor_tick(Editor* editor)
 			{
 				case BRUSHSTATE_TILE:
 					editor_copy_tile(editor);
+					editor_delete_tile(editor);
 					editor_select_tile(editor);
 					break;
 				case BRUSHSTATE_ENTITY:
@@ -306,7 +347,15 @@ void editor_tick(Editor* editor)
 			cam_tick(editor->map, editor->pos);
 			editor_switch_state(editor);
 			editor_move_camera(editor);
-			editor_copy_tile(editor);
+			switch(editor->bstate)
+			{
+				case BRUSHSTATE_TILE:
+					editor_copy_tile(editor);
+					break;
+				case BRUSHSTATE_ENTITY:
+					editor_copy_entity(editor);
+					break;
+			}
 			break;
 	}
 }
@@ -316,11 +365,11 @@ void editor_entity_render(Entity* self, Editor* editor)
 	MapCamera* camera = editor->map->camera;
 	if(self->type == 0)
 	{
-		DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, (Rectangle) {(self->pos.x - camera->offset.x) * TILE_LEN, (self->pos.y - camera->offset.y) * TILE_LEN, self->dim.x * TILE_LEN, self->dim.y * TILE_LEN}, (Vector2) {0}, 0.0, RED);
+		DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, (Rectangle) {(self->pos.x - camera->offset.x) * editor->map->camera->tile_len, (self->pos.y - camera->offset.y) * editor->map->camera->tile_len, self->dim.x * editor->map->camera->tile_len, self->dim.y * editor->map->camera->tile_len}, (Vector2) {0}, 0.0, RED);
 	}
 	else
 	{
-		DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, (Rectangle) {(self->pos.x - camera->offset.x) * TILE_LEN, (self->pos.y - camera->offset.y) * TILE_LEN, self->dim.x * TILE_LEN, self->dim.y * TILE_LEN}, (Vector2) {0}, 0.0, GREEN);
+		DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, (Rectangle) {(self->pos.x - camera->offset.x) * editor->map->camera->tile_len, (self->pos.y - camera->offset.y) * editor->map->camera->tile_len, self->dim.x * editor->map->camera->tile_len, self->dim.y * editor->map->camera->tile_len}, (Vector2) {0}, 0.0, GREEN);
 	}
 }
 
@@ -347,34 +396,55 @@ void editor_render(Editor* editor)
 {
 	V2 length = v2_new(editor->map->camera->visible_tiles.x, editor->map->camera->visible_tiles.y);
 	MapCamera* cam = editor->map->camera;
-	V2 mp = v2_new(((f32)GetMouseX() / TILE_LEN + editor->map->camera->offset.x), ((f32)GetMouseY() / TILE_LEN + editor->map->camera->offset.y));
-	for(i32 x = -1; x < length.x + 1; x ++)
+	V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + editor->map->camera->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + editor->map->camera->offset.y));
+	i32 start_x = (i32)floorf(cam->offset.x);
+	i32 start_y = (i32)floorf(cam->offset.y);
+
+	for (i32 x = 0; x <= cam->visible_tiles.x + 0; x++)
 	{
-		for(i32 y = -1; y < length.y + 1; y ++)
+		for (i32 y = 0; y <= cam->visible_tiles.y + 0; y++)
 		{
-			Tile tile = map_get_tile(editor->map, v2_new((i32)(x + cam->offset.x), (i32) (y + cam->offset.y)));
+			i32 tx = start_x + x;
+			i32 ty = start_y + y;
+
+			if (tx < 0 || ty < 0 || tx >= editor->map->dim.x || ty >= editor->map->dim.y)
+			{
+				continue;
+			}
+			Tile tile = map_get_tile(editor->map,
+					v2_new(start_x + x, start_y + y));
+
+			Rectangle rec_dst = {
+				x * cam->tile_len - cam->tile_offset.x,
+				y * cam->tile_len - cam->tile_offset.y,
+				cam->tile_len,
+				cam->tile_len
+			};
 			Rectangle rec_tex = tilemap_textures[tile.type];
-			Rectangle rec_dst = {x * TILE_LEN - cam->tile_offset.x, y * TILE_LEN - cam->tile_offset.y, TILE_LEN, TILE_LEN};
 			Texture2D tex = editor->gfx->texs[TEXTURE_TILEMAP];
-			DrawTexturePro(tex, rec_tex, rec_dst, (Vector2) {0}, 0.0, WHITE);
+
+			DrawTexturePro(tex, rec_tex, rec_dst, (Vector2){0}, 0.0f, WHITE);
 		}
 	}
+
+
 	switch(editor->bstate)
 	{
 		case BRUSHSTATE_TILE:	
-			DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp.x - editor->map->camera->offset.x) * TILE_LEN, (mp.y - editor->map->camera->offset.y) * TILE_LEN, TILE_LEN, TILE_LEN}, (Vector2) {0}, 0.0, WHITE);
+			DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, editor->map->camera->tile_len}, (Vector2) {0}, 0.0, WHITE);
 			break;
 		case BRUSHSTATE_ENTITY:
 			//editor->showing_entity->pos = Vector2Subtract(map_get_mouse_cords(editor->map), Vector2Scale(editor->showing_entity->dim, 0.5));
 			editor->showing_entity->pos = (Vector2) {mp.x, mp.y};//(map_get_mouse_cords(editor->map));
 			editor_entity_render(editor->showing_entity, editor);
-			//DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp.x - editor->map->camera->offset.x) * TILE_LEN, (mp.y - editor->map->camera->offset.y) * TILE_LEN, TILE_LEN, TILE_LEN}, (Vector2) {0}, 0.0, WHITE);
+			//DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN}, (Vector2) {0}, 0.0, WHITE);
 			break;
 
 	}
-	//DrawRectangle((editor->pos.x - editor->map->camera->offset.x) * TILE_LEN, (editor->pos.y - editor->map->camera->offset.y) * TILE_LEN, TILE_LEN, TILE_LEN, DARKBLUE);
+	//DrawRectangle((cam->pos.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (cam->pos.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);
 	if(editor->bstate == BRUSHSTATE_ENTITY) editor_entities_render(editor);
-	//DrawRectangle((mp.x - editor->map->camera->offset.x) * TILE_LEN, (mp.y - editor->map->camera->offset.y) * TILE_LEN, TILE_LEN, TILE_LEN, DARKBLUE);
+	editor_print_tutorial();
+	//DrawRectangle((mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);
 }
 
 

@@ -11,6 +11,7 @@ typedef enum EntityType
 {
 	ENTITY_PLACEHOLDER,
 	ENTITY_PLACEHOLDER2,
+	ENTITY_LAST,
 } EntityType;
 
 typedef enum EntityStateType

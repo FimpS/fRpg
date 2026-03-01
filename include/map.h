@@ -23,6 +23,7 @@ typedef struct MapCamera
 	V2 visible_tiles;
 	Vector2 offset;
 	Vector2 tile_offset;
+	u32 tile_len;
 	f32 zoom;
 } MapCamera;
 
