@@ -10,7 +10,7 @@
 #include "../include/global.h"
 
 #define MAX_SCROLL_UP 128
-#define MAX_SCROLL_DOWN 28
+#define MAX_SCROLL_DOWN 20
 
 
 Vector2 map_get_mouse_cords(Map* map)

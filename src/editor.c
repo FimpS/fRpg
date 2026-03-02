@@ -130,6 +130,7 @@ Editor* editor_new()
 	Editor* editor = malloc(sizeof(Editor));
 
 	editor->temp_texts = dynList_new();
+	editor->selected_hotbar = 0;
 
 	editor->state = EDITORSTATE_MAINCANVAS;
 	editor->pos = vector2(4.0, 4.0);
@@ -325,18 +326,20 @@ const u8* key_tutorial_text[] =
 	"F1: Color map",
 	"F2: Tile view",
 	"F3: Entity view",
-	"P: Save Map",
+	"+ : Increase brush size",
+	"- : Decrease brush size",
 	"M1 + C: Copy Tile/Entity",
 	"M1 + D: Delete Tile/Entity",
 	"Scroll: Zoom in/out",
+	"P: Save Map",
 };
 
 void editor_print_tutorial()
 {
-	const u8 font_size = 25;
+	const u8 font_size = 30;
 	const u32 x = 25;
 	const u32 y = 25;
-	const u32 y_offset = 30;
+	const u32 y_offset = 35;
 	if(IsKeyDown(KEY_TAB))
 	{
 		for(i32 i = 0; i < sizeof(key_tutorial_text) / sizeof(key_tutorial_text[0]); i++)
@@ -430,9 +433,50 @@ void editor_entities_render(Editor* editor)
 	}
 }
 
+void editor_render_inventory(Editor* editor)
+{
+	Gfx* gfx = editor->gfx;
+
+	i32 select = GetKeyPressed();
+	if(select >= KEY_ONE && select <= KEY_NINE)
+	{
+		editor->selected_hotbar = select - KEY_ONE;
+	}
+
+	const Rectangle hotbar_src= {
+		.x = 0,
+		.y = 48,
+		.width = 180,
+		.height = 22,
+	};
+	const i32 width_offset = (i32)((f32)(64 * 4.5));
+	const Rectangle hotbar_dst = {
+		.x = GetScreenWidth() / 2 - width_offset,
+		.y = GetScreenHeight() - GetScreenHeight() / 8,
+		.width = 64 * 9,
+		.height = 64,
+	};
+	DrawTexturePro(gfx->texs[TEXTURE_EDITOR_UI], hotbar_src, hotbar_dst, (Vector2) {0}, 0.0, WHITE);
+
+	const Rectangle src = {
+		.x = 0,
+		.y = 0,
+		.width = 16,
+		.height = 16,
+	};
+	const Rectangle dst = {
+		.x = GetScreenWidth() / 2 - width_offset + editor->selected_hotbar * 64 + 4,
+		.y = GetScreenHeight() - GetScreenHeight() / 8 + 4,
+		.width = 56,
+		.height = 50,
+	};
+	DrawTexturePro(gfx->texs[TEXTURE_EDITOR_UI], src, dst, (Vector2) {0}, 0.0, WHITE);
+}
+
 void editor_render_ui(Editor* editor)
 {
 	temporary_text_render(editor->temp_texts);
+	editor_render_inventory(editor);
 }
 
 void editor_render(Editor* editor)

@@ -48,6 +48,8 @@ typedef struct Editor
 	u32 brush_dim;
 	Tile brush;
 	EntityType selected_entity;
+
+	i32 selected_hotbar;
 } Editor;
 
 bool AAB(Entity* e, Vector2 p);

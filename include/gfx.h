@@ -5,7 +5,7 @@
 #include "../lib/types.h"
 #include "../lib/dynList.h"
 
-#define TEXTURE_COUNT 1
+#define TEXTURE_COUNT 2
 #define MAX_SCREEN_STRING_LEN 48
 
 typedef struct TemporaryText
@@ -21,6 +21,7 @@ typedef struct TemporaryText
 typedef enum TextureIndex
 {
 	TEXTURE_TILEMAP,
+	TEXTURE_EDITOR_UI,
 } TextureIndex;
 
 typedef struct Gfx

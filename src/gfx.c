@@ -48,15 +48,18 @@ void temporary_text_render(DynList* ts)
 	}
 }
 
+static const u8* texture_filenames[] = 
+{
+	"../assets/TileMap.png",
+	"../assets/EditorUI.png",
+};
+
 void gfx_load_textures(Texture2D* texs)
 {
-	const char* filenames[] = 
+	const u32 len = sizeof(texture_filenames) / sizeof(texture_filenames[0]);
+	for(int i = 0; i < len; i++)
 	{
-		"../assets/TileMap.png",
-	};
-	for(int i = 0; i < TEXTURE_COUNT; i++)
-	{
-		texs[i] = LoadTexture(filenames[i]);	
+		texs[i] = LoadTexture(texture_filenames[i]);	
 	}
 }
 
