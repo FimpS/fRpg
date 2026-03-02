@@ -32,6 +32,7 @@ typedef enum BrushState
 typedef struct Editor
 {
 	Gfx* gfx;
+	DynList* temp_texts;
 
 	EditorState state;
 
@@ -44,6 +45,7 @@ typedef struct Editor
 	Entity* showing_entity;
 
 	BrushState bstate;
+	u32 brush_dim;
 	Tile brush;
 	EntityType selected_entity;
 } Editor;

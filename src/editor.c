@@ -41,8 +41,21 @@ void editor_load_level(Map* map, const char* filepath)
 	fclose(fp);
 }
 
-void editor_save_level(Map* map, const char* filepath)
+void editor_push_saved(Editor* editor)
 {
+	dynList_push(editor->temp_texts, temporary_text_new(
+				"Saved map to file...",
+				(Vector2) {GetScreenWidth() - GetScreenHeight() / 3.5, GetScreenHeight() / 24},
+				20,
+				240,
+				RED
+				));
+}
+
+void editor_save_level(Editor* editor, const char* filepath)
+{
+	Map* map = editor->map;
+
 	FILE* fp = NULL;
 
 	fp = fopen(filepath, "wb");
@@ -63,7 +76,7 @@ void editor_save_level(Map* map, const char* filepath)
 		Entity* e = dynList_get(map->entities, i);
 		fwrite(e, sizeof(Entity), 1, fp);
 	}	
-
+	editor_push_saved(editor);
 	fclose(fp);
 }
 
@@ -115,6 +128,9 @@ void editor_reset_map(Editor* editor)
 Editor* editor_new()
 {
 	Editor* editor = malloc(sizeof(Editor));
+
+	editor->temp_texts = dynList_new();
+
 	editor->state = EDITORSTATE_MAINCANVAS;
 	editor->pos = vector2(4.0, 4.0);
 	editor->map = map_new();
@@ -124,6 +140,7 @@ Editor* editor_new()
 	editor->brush = (Tile) { 3, 0, ENTITYCLASS_NONE };
 	editor->gfx = gfx_new();
 	editor->bstate = BRUSHSTATE_TILE;
+	editor->brush_dim = 1;
 	editor->selected_entity = ENTITY_PLACEHOLDER;
 	editor->showing_entity = entity_new_editor(editor->selected_entity, (Vector2) {0.0, 0.0} );
 	for(int x = 0; x < editor->map->dim.x; x++)
@@ -160,7 +177,14 @@ void editor_select_tile(Editor* editor)
 	{
 		V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
 		Tile selected = map_get_tile(editor->map, mp);
-		map_set_tile(editor->map, mp, editor->brush);
+		for(i32 i = 0; i < editor->brush_dim; i++)
+		{
+			for(i32 j = 0; j < editor->brush_dim; j++)
+			{
+				map_set_tile(editor->map, v2_add(mp, (V2) {i, j} ), editor->brush);
+			}
+			//map_set_tile(editor->map, mp, editor->brush);
+		}
 		//printf("INFO: Solid: %d Type: %d Anim: %d\n", editor->brush.solid, editor->brush.type, editor->brush.animated);
 		//printf("%d\n", selected.type);
 	}
@@ -202,7 +226,7 @@ void editor_save(Editor* editor)
 	if(IsKeyReleased(KEY_P))
 	{
 		P_EDITORINFO("%s", "Saved Map\n");
-		editor_save_level(editor->map, "../maps/test.tmp");
+		editor_save_level(editor, "../maps/test.tmp");
 	}
 }
 
@@ -267,14 +291,25 @@ void editor_copy_entity(Editor* editor)
 	}
 }
 
-void editor_move_camera(Editor* editor)
+void editor_change_brush_dim(Editor* editor)
+{
+	if(IsKeyReleased(KEY_EQUAL))
+	{
+		editor->brush_dim += editor->brush_dim >= 4 ? 0 : 1;
+	}
+	if(IsKeyReleased(KEY_MINUS))
+	{
+		editor->brush_dim -= editor->brush_dim <= 1 ? 0 : 1;
+	}
+}
+
+void editor_move_camera(Editor* editor, MapCamera* cam)
 {
 	if(IsKeyDown(KEY_SPACE))
 	{
-		MapCamera* cam = editor->map->camera;
-		Vector2 mp = Vector2Subtract(Vector2Scale(GetMousePosition(), (f32) 1 / editor->map->camera->tile_len), cam->offset);
-		Vector2 mp_raw = Vector2Scale(GetMousePosition(), (f32) 1 / editor->map->camera->tile_len);
-		Vector2 mid = Vector2Scale(vector2(GetScreenWidth() / editor->map->camera->tile_len, GetScreenHeight() / editor->map->camera->tile_len), 0.5);
+		Vector2 mp = Vector2Subtract(Vector2Scale(GetMousePosition(), (f32) 1 / cam->tile_len), cam->offset);
+		Vector2 mp_raw = Vector2Scale(GetMousePosition(), (f32) 1 / cam->tile_len);
+		Vector2 mid = Vector2Scale(vector2(GetScreenWidth() / cam->tile_len, GetScreenHeight() / cam->tile_len), 0.5);
 
 		Vector2 sub = Vector2Subtract(mp_raw, mid);
 		const f32 theta = atan2(sub.y, sub.x);
@@ -288,8 +323,8 @@ void editor_move_camera(Editor* editor)
 const u8* key_tutorial_text[] = 
 {
 	"F1: Color map",
-	"F2: Tile mode",
-	"F3: Entity mode",
+	"F2: Tile view",
+	"F3: Entity view",
 	"P: Save Map",
 	"M1 + C: Copy Tile/Entity",
 	"M1 + D: Delete Tile/Entity",
@@ -306,32 +341,35 @@ void editor_print_tutorial()
 	{
 		for(i32 i = 0; i < sizeof(key_tutorial_text) / sizeof(key_tutorial_text[0]); i++)
 		{
-			DrawText(key_tutorial_text[i], x, y + y_offset * i, font_size, YELLOW);
+			DrawText(key_tutorial_text[i], x, y + y_offset * i, font_size, DARKGREEN);
 		}
 	}
 }
 
+void editor_print_info(Editor* editor)
+{
+	const u8 font_size = 15;
+	const u32 x = GetScreenWidth() - GetScreenWidth() / 8;
+	const u32 y = GetScreenHeight() - GetScreenHeight() / 16;
+	const u32 y_offset = 30;
+	DrawText(TextFormat("Brush Size: %d", editor->brush_dim), x, y + y_offset * 0, font_size, DARKGREEN);
+}
+
 void editor_tick(Editor* editor)
 {
-
 	MapCamera* cam = editor->map->camera;
 	switch(editor->state)
 	{
 		case EDITORSTATE_MAINCANVAS:
 			cam_tick(editor->map, cam->pos);
-#if 0
-			if(IsKeyDown(KEY_W)) cam->pos.y -= 0.15;
-			if(IsKeyDown(KEY_S)) cam->pos.y += 0.15;
-			if(IsKeyDown(KEY_A)) cam->pos.x -= 0.15;
-			if(IsKeyDown(KEY_D)) cam->pos.x += 0.15;
-#endif 
 			editor_switch_state(editor);
-			editor_move_camera(editor);
+			editor_move_camera(editor, editor->map->camera);
 			editor_save(editor);
 			switch(editor->bstate)
 			{
 				case BRUSHSTATE_TILE:
 					editor_copy_tile(editor);
+					editor_change_brush_dim(editor);
 					editor_delete_tile(editor);
 					editor_select_tile(editor);
 					break;
@@ -344,9 +382,9 @@ void editor_tick(Editor* editor)
 			}
 			break;
 		case EDITORSTATE_BRUSHCANVAS:
-			cam_tick(editor->map, editor->pos);
+			cam_tick(editor->map, editor->map->camera->pos);
 			editor_switch_state(editor);
-			editor_move_camera(editor);
+			editor_move_camera(editor, editor->map->camera);
 			switch(editor->bstate)
 			{
 				case BRUSHSTATE_TILE:
@@ -392,8 +430,14 @@ void editor_entities_render(Editor* editor)
 	}
 }
 
+void editor_render_ui(Editor* editor)
+{
+	temporary_text_render(editor->temp_texts);
+}
+
 void editor_render(Editor* editor)
 {
+
 	V2 length = v2_new(editor->map->camera->visible_tiles.x, editor->map->camera->visible_tiles.y);
 	MapCamera* cam = editor->map->camera;
 	V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + editor->map->camera->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + editor->map->camera->offset.y));
@@ -427,24 +471,35 @@ void editor_render(Editor* editor)
 		}
 	}
 
-
-	switch(editor->bstate)
+	if(!IsKeyDown(KEY_D))
 	{
-		case BRUSHSTATE_TILE:	
-			DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, editor->map->camera->tile_len}, (Vector2) {0}, 0.0, WHITE);
-			break;
-		case BRUSHSTATE_ENTITY:
-			//editor->showing_entity->pos = Vector2Subtract(map_get_mouse_cords(editor->map), Vector2Scale(editor->showing_entity->dim, 0.5));
-			editor->showing_entity->pos = (Vector2) {mp.x, mp.y};//(map_get_mouse_cords(editor->map));
-			editor_entity_render(editor->showing_entity, editor);
-			//DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN}, (Vector2) {0}, 0.0, WHITE);
-			break;
+		switch(editor->bstate)
+		{
+			case BRUSHSTATE_TILE:
+				for(i32 i = 0; i < editor->brush_dim; i++)
+				{
+					for(i32 j = 0; j < editor->brush_dim; j++)
+					{
+						V2 mp_full = v2_add(mp, (V2) {i, j});
+						DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp_full.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp_full.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, editor->map->camera->tile_len}, (Vector2) {0}, 0.0, WHITE);
+					}
+				}
+				break;
+			case BRUSHSTATE_ENTITY:
+				//editor->showing_entity->pos = Vector2Subtract(map_get_mouse_cords(editor->map), Vector2Scale(editor->showing_entity->dim, 0.5));
+				editor->showing_entity->pos = (Vector2) {mp.x, mp.y};//(map_get_mouse_cords(editor->map));
+				editor_entity_render(editor->showing_entity, editor);
+				//DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN}, (Vector2) {0}, 0.0, WHITE);
+				break;
 
+		}
 	}
 	//DrawRectangle((cam->pos.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (cam->pos.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);
 	if(editor->bstate == BRUSHSTATE_ENTITY) editor_entities_render(editor);
 	editor_print_tutorial();
+	editor_print_info(editor);
 	//DrawRectangle((mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);
+	editor_render_ui(editor);
 }
 
 

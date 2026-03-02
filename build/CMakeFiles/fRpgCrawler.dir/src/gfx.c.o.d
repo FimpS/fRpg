@@ -37,8 +37,15 @@ CMakeFiles/fRpgCrawler.dir/src/gfx.c.o: \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
- /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/string.h \
+ /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+ /usr/include/strings.h /home/samuel/c/game/fRpgCrawler/include/gfx.h \
  /usr/local/include/raylib.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdarg.h \
- /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h
+ /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
+ /home/samuel/c/game/fRpgCrawler/include/../lib/types.h \
+ /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+ /home/samuel/c/game/fRpgCrawler/include/../lib/dynList.h

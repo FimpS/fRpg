@@ -2,9 +2,21 @@
 #define GFX_H
 
 #include "raylib.h"
+#include "../lib/types.h"
+#include "../lib/dynList.h"
 
 #define TEXTURE_COUNT 1
+#define MAX_SCREEN_STRING_LEN 48
 
+typedef struct TemporaryText
+{
+	u8 text[MAX_SCREEN_STRING_LEN];
+	Vector2 pos;
+	Color color;
+	u32 dim;
+	u32 time;
+	u32 timer;
+} TemporaryText;
 
 typedef enum TextureIndex
 {
@@ -17,5 +29,13 @@ typedef struct Gfx
 } Gfx;
 
 Gfx* gfx_new();
+
+TemporaryText* temporary_text_new(const u8* text,
+								  const Vector2 pos,
+								  const u32 dim,
+								  const u32 timer,
+								  const Color color);
+void temporary_text_destroy(TemporaryText* t);
+void temporary_text_render(DynList* ts);
 
 #endif
