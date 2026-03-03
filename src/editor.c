@@ -98,6 +98,12 @@ static Tile tile_sheet[] =
 	{4, 0, 0},
 };
 
+static const Rectangle entity_textures[] =
+{
+	{0, 0, 16, 16},
+	{0, 0, 16, 16},
+};
+
 void editor_reset_map(Editor* editor)
 {
 	Map* map = editor->brush_map;
@@ -125,12 +131,36 @@ void editor_reset_map(Editor* editor)
 	}
 }
 
+void editor_hotbar_init(Editor* editor)
+{
+	const Tile t = tile_sheet[0];
+	for(i32 i = 0; i < HOTBAR_LEN; i++)
+	{
+		editor->hotbar[i] = t;
+	}
+	editor->hotbar[2] = tile_sheet[1];
+	editor->hotbar[0] = tile_sheet[2];
+	editor->hotbar[3] = tile_sheet[3];
+}
+
+void editor_entity_hotbar_init(Editor* editor)
+{
+	EntityType t = ENTITY_PLACEHOLDER;
+	for(i32 i = 0; i < HOTBAR_LEN; i++)
+	{
+		editor->entity_hotbar[i] = t;
+	}
+}
+
 Editor* editor_new()
 {
 	Editor* editor = malloc(sizeof(Editor));
 
 	editor->temp_texts = dynList_new();
 	editor->selected_hotbar = 0;
+	editor_hotbar_init(editor);
+	editor_entity_hotbar_init(editor);
+	editor->lock_hotbar = false;
 
 	editor->state = EDITORSTATE_MAINCANVAS;
 	editor->pos = vector2(4.0, 4.0);
@@ -238,8 +268,11 @@ void editor_copy_tile(Editor* editor)
 	{
 		V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
 		Tile selected = map_get_tile(editor->map, mp);
+		if(!editor->lock_hotbar)
+		{
+			editor->hotbar[editor->selected_hotbar] = selected;
+		}
 		editor->brush = selected;
-		// editor_set_brush(editor);
 	}
 }
 
@@ -287,6 +320,10 @@ void editor_copy_entity(Editor* editor)
 				editor->selected_entity = ecurr->type;
 				entity_destroy(editor->showing_entity);
 				editor->showing_entity = entity_new_editor(editor->selected_entity, (Vector2) {0.0, 0.0} );
+				if(!editor->lock_hotbar)
+				{
+					editor->entity_hotbar[editor->selected_hotbar] = editor->showing_entity->type;
+				}
 			}
 		}
 	}
@@ -331,6 +368,7 @@ const u8* key_tutorial_text[] =
 	"M1 + C: Copy Tile/Entity",
 	"M1 + D: Delete Tile/Entity",
 	"Scroll: Zoom in/out",
+	"L: Lock/Unlock hotbar",
 	"P: Save Map",
 };
 
@@ -354,8 +392,24 @@ void editor_print_info(Editor* editor)
 	const u8 font_size = 15;
 	const u32 x = GetScreenWidth() - GetScreenWidth() / 8;
 	const u32 y = GetScreenHeight() - GetScreenHeight() / 16;
-	const u32 y_offset = 30;
+	const u32 y_offset = 20;
 	DrawText(TextFormat("Brush Size: %d", editor->brush_dim), x, y + y_offset * 0, font_size, DARKGREEN);
+	if(editor->lock_hotbar)
+	{
+		DrawText("Hotbar Locked", x, y - y_offset * 1, font_size, RED);
+	}
+	else
+	{
+		DrawText("Hotbar UnLocked", x, y - y_offset * 1, font_size, DARKGREEN);
+	}
+}
+
+void editor_toggle_hotbar_lock(Editor* editor)
+{
+	if(IsKeyReleased(KEY_L))
+	{
+		editor->lock_hotbar = !editor->lock_hotbar;
+	}
 }
 
 void editor_tick(Editor* editor)
@@ -365,6 +419,7 @@ void editor_tick(Editor* editor)
 	{
 		case EDITORSTATE_MAINCANVAS:
 			cam_tick(editor->map, cam->pos);
+			editor_toggle_hotbar_lock(editor);
 			editor_switch_state(editor);
 			editor_move_camera(editor, editor->map->camera);
 			editor_save(editor);
@@ -441,9 +496,16 @@ void editor_render_inventory(Editor* editor)
 	if(select >= KEY_ONE && select <= KEY_NINE)
 	{
 		editor->selected_hotbar = select - KEY_ONE;
+		editor->brush = editor->hotbar[editor->selected_hotbar];
+		editor->selected_entity = editor->entity_hotbar[editor->selected_hotbar];
+
+		editor->selected_entity = editor->entity_hotbar[editor->selected_hotbar];
+		entity_destroy(editor->showing_entity);
+		editor->showing_entity = entity_new_editor(editor->selected_entity, (Vector2) {0.0, 0.0} );
+
 	}
 
-	const Rectangle hotbar_src= {
+	const Rectangle hotbar_src = {
 		.x = 0,
 		.y = 48,
 		.width = 180,
@@ -458,10 +520,43 @@ void editor_render_inventory(Editor* editor)
 	};
 	DrawTexturePro(gfx->texs[TEXTURE_EDITOR_UI], hotbar_src, hotbar_dst, (Vector2) {0}, 0.0, WHITE);
 
+
+	switch(editor->bstate)
+	{
+		case BRUSHSTATE_TILE:
+			for(i32 i = 0; i < HOTBAR_LEN; i++)
+			{
+				const Rectangle hotbar_item_src = tilemap_textures[editor->hotbar[i].type];
+				const i32 width_offset = (i32)((f32)(64 * 4.5));
+				const Rectangle hotbar_item_dst = {
+					.x = GetScreenWidth() / 2 - width_offset + i * 64 + 9,
+					.y = GetScreenHeight() - GetScreenHeight() / 8 + 8,
+					.width = 46,
+					.height = 42,
+				};
+				DrawTexturePro(gfx->texs[TEXTURE_TILEMAP], hotbar_item_src, hotbar_item_dst, (Vector2) {0}, 0.0, WHITE);
+			}
+			break;
+		case BRUSHSTATE_ENTITY:
+			for(i32 i = 0; i < HOTBAR_LEN; i++)
+			{
+				const Rectangle hotbar_item_src = entity_textures[editor->entity_hotbar[i]];
+				const i32 width_offset = (i32)((f32)(64 * 4.5));
+				const Rectangle hotbar_item_dst = {
+					.x = GetScreenWidth() / 2 - width_offset + i * 64 + 9,
+					.y = GetScreenHeight() - GetScreenHeight() / 8 + 8,
+					.width = 46,
+					.height = 42,
+				};
+				DrawTexturePro(gfx->texs[TEXTURE_TILEMAP], hotbar_item_src, hotbar_item_dst, (Vector2) {0}, 0.0, WHITE);
+			}
+			break;
+	}
+
 	const Rectangle src = {
 		.x = 0,
 		.y = 0,
-		.width = 16,
+		.width = 15,
 		.height = 16,
 	};
 	const Rectangle dst = {
@@ -471,6 +566,7 @@ void editor_render_inventory(Editor* editor)
 		.height = 50,
 	};
 	DrawTexturePro(gfx->texs[TEXTURE_EDITOR_UI], src, dst, (Vector2) {0}, 0.0, WHITE);
+
 }
 
 void editor_render_ui(Editor* editor)

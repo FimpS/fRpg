@@ -6,6 +6,7 @@
 #include "../lib/dynList.h"
 
 #define EDITORSTATEMAXSIZE 2
+#define HOTBAR_LEN 9
 
 typedef enum TileType //Not needed probably, But some kind of list of what A tile should look like idk last part to think about...
 					  //
@@ -50,6 +51,9 @@ typedef struct Editor
 	EntityType selected_entity;
 
 	i32 selected_hotbar;
+	Tile hotbar[HOTBAR_LEN];
+	EntityType entity_hotbar[HOTBAR_LEN];
+	bool lock_hotbar;
 } Editor;
 
 bool AAB(Entity* e, Vector2 p);
