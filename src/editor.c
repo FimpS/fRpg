@@ -46,7 +46,7 @@ void editor_push_saved(Editor* editor)
 	dynList_push(editor->temp_texts, temporary_text_new(
 				"Saved map to file...",
 				(Vector2) {GetScreenWidth() - GetScreenHeight() / 3.5, GetScreenHeight() / 24},
-				20,
+				20 + (i32)((f32)(GetScreenWidth() + GetScreenHeight()) / 364),
 				240,
 				RED
 				));
@@ -162,11 +162,19 @@ Editor* editor_new()
 	editor_entity_hotbar_init(editor);
 	editor->lock_hotbar = false;
 
-	editor->spline = (EditorSpline) {
+	editor->spline = (EditorMode) {
 		.start_cord = (V2) {0, 0},
 		.mode = false,
 		.end_cord = (V2) {0, 0},
 	};
+	editor->quad = (EditorMode) {
+		.start_cord = (V2) {0, 0},
+		.mode = false,
+		.end_cord = (V2) {0, 0},
+	};
+	editor->quad_buffer = NULL;
+	editor->quad_dim = (V2) {0, 0};
+	editor->quad_copied = false;
 
 	editor->state = EDITORSTATE_MAINCANVAS;
 	editor->pos = vector2(4.0, 4.0);
@@ -210,7 +218,7 @@ void editor_select_tile(Editor* editor)
 {
 	//if(IsMouseButtonReleased(0))
 	MapCamera* cam = editor->map->camera;
-	if(IsMouseButtonDown(0) && !IsKeyDown(KEY_D) && !IsKeyDown(KEY_C))
+	if(IsMouseButtonDown(0) && !IsKeyDown(KEY_D) && !IsKeyDown(KEY_C) && !IsKeyDown(KEY_LEFT_SHIFT))
 	{
 		V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
 		Tile selected = map_get_tile(editor->map, mp);
@@ -260,7 +268,7 @@ void editor_switch_state(Editor* editor)
 
 void editor_save(Editor* editor)
 {
-	if(IsKeyReleased(KEY_P))
+	if(IsKeyPressed(KEY_S) && IsKeyDown(KEY_LEFT_CONTROL))
 	{
 		P_EDITORINFO("%s", "Saved Map\n");
 		editor_save_level(editor, "../maps/test.tmp");
@@ -369,12 +377,13 @@ const u8* key_tutorial_text[] =
 	"F1: Color map",
 	"F2: Tile view",
 	"F3: Entity view",
-	"Ctrl + R: Reload last save",
+	"Ctrl + Alt + R: Reload last save",
 	"+ : Increase brush size",
 	"- : Decrease brush size",
 	"M1 + C: Copy Tile/Entity",
 	"M1 + D: Delete Tile/Entity",
 	"M1 + Shift: Spline mode (M2 to cancel, M1 to draw)",
+	"Shift + R: Rectangle mode",
 	"Scroll: Zoom in/out",
 	"L: Lock/Unlock hotbar",
 	"P: Save Map",
@@ -423,7 +432,7 @@ void editor_toggle_hotbar_lock(Editor* editor)
 
 void editor_reload_last_save(Editor* editor)
 {
-	if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyReleased(KEY_R))
+	if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_R))
 	{
 		const u32 len = dynList_len(editor->map->entities);
 		for(i32 i = 0; i < len; i++)
@@ -494,7 +503,7 @@ void editor_draw_line(MapCamera* cam, V2 v1, V2 v2, Color color)
 void editor_spline_mode(Editor* editor)
 {
 	MapCamera* cam = editor->map->camera;
-	if(!editor->spline.mode && IsMouseButtonPressed(0) && IsKeyDown(KEY_LEFT_SHIFT))
+	if(!editor->spline.mode && IsMouseButtonPressed(0) && IsKeyDown(KEY_LEFT_SHIFT) && !IsKeyDown(KEY_R))
 	{
 		editor->spline.mode = true;
 		editor->spline.start_cord = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
@@ -522,6 +531,98 @@ void editor_spline_mode(Editor* editor)
 		editor_spline(editor->map, v1, v2, editor->brush);
 	}
 
+}
+
+void editor_copy_selection(Editor* editor, const V2 v1, const V2 v2)
+{
+
+    const i32 x1 = v1.x < v2.x ? v1.x : v2.x;
+    const i32 y1 = v1.y < v2.y ? v1.y : v2.y;
+    const i32 x2 = v1.x > v2.x ? v1.x : v2.x;
+    const i32 y2 = v1.y > v2.y ? v1.y : v2.y;
+
+	editor->quad_dim = (V2) {
+		.x = abs(x1 - x2) + 1,
+		.y = abs(y1 - y2) + 1,
+	};
+
+	if(editor->quad_buffer != NULL) free(editor->quad_buffer);	
+	
+	const u32 buffer_size = editor->quad_dim.x * editor->quad_dim.y;
+	if(buffer_size >= 1 << 16)
+	{
+		P_ERROR("BUFFER TOO LARGE");
+		return;
+	}
+	editor->quad_buffer = malloc(sizeof(Tile) * buffer_size);
+
+
+
+	for(i32 x = 0; x < editor->quad_dim.x; x++)
+	{
+		for(i32 y = 0; y < editor->quad_dim.y; y++)
+		{
+			const V2 c_pos = (V2) {x1 + x, y1 + y};
+			editor->quad_buffer[y * editor->quad_dim.x + x] = map_get_tile(editor->map, c_pos);
+		}
+	}
+	editor->quad_copied = true;
+}
+
+void editor_quad_copy_mode(Editor* editor)
+{
+	MapCamera* cam = editor->map->camera;
+	if(!editor->quad.mode && IsMouseButtonPressed(0) && IsKeyDown(KEY_LEFT_SHIFT) && IsKeyDown(KEY_R))
+	{
+		editor->quad.mode = true;
+		editor->quad.start_cord = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
+		return;
+	}
+
+	if(editor->quad.mode)
+	{
+		editor->quad.end_cord = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
+		V2 a = editor->quad.start_cord;
+		V2 b = editor->quad.end_cord;
+
+		const i32 x1 = a.x < b.x ? a.x : b.x;
+		const i32 y1 = a.y < b.y ? a.y : b.y;
+		const i32 x2 = a.x > b.x ? a.x : b.x;
+		const i32 y2 = a.y > b.y ? a.y : b.y;
+
+		const V2 v1 = {x1, y1};
+		const V2 v2 = {x2 + 1, y1};
+		const V2 v3 = {x2 + 1, y2 + 1};
+		const V2 v4 = {x1, y2 + 1};
+
+		editor_draw_line(cam, v1, v2, RED);
+		editor_draw_line(cam, v2, v3, RED);
+		editor_draw_line(cam, v3, v4, RED);
+		editor_draw_line(cam, v4, v1, RED);
+	}
+
+	if(editor->quad.mode && IsMouseButtonPressed(0))
+	{
+		editor->quad.end_cord = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
+		V2 v1 = editor->quad.start_cord;
+		V2 v2 = editor->quad.end_cord;
+		editor_copy_selection(editor, v1, v2);
+		editor->quad.mode = false;
+	}
+
+	if(editor->quad_copied && IsKeyPressed(KEY_V) && IsKeyDown(KEY_LEFT_CONTROL))
+	{
+		V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
+		for(i32 x = 0; x < editor->quad_dim.x; x ++)
+		{
+			for(i32 y = 0; y < editor->quad_dim.y; y++)
+			{
+				const Tile tile = editor->quad_buffer[y * editor->quad_dim.x + x];
+				const V2 pos = (V2) {mp.x + x, mp.y + y};
+				map_set_tile(editor->map, pos, tile);
+			}
+		}
+	}
 }
 
 void editor_tick(Editor* editor)
@@ -751,6 +852,7 @@ void editor_render(Editor* editor)
 	//DrawRectangle((cam->pos.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (cam->pos.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);
 	if(editor->bstate == BRUSHSTATE_ENTITY) editor_entities_render(editor);
 	editor_spline_mode(editor);
+	editor_quad_copy_mode(editor);
 	editor_print_tutorial();
 	editor_print_info(editor);
 	//DrawRectangle((mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);

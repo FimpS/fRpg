@@ -31,13 +31,12 @@ typedef enum BrushState
 } BrushState;
 
 
-typedef struct EditorSpline
+typedef struct EditorMode
 {
 	V2 start_cord;
 	bool mode;
 	V2 end_cord;
-
-} EditorSpline;
+} EditorMode;
 
 typedef struct Editor
 {
@@ -64,7 +63,12 @@ typedef struct Editor
 	EntityType entity_hotbar[HOTBAR_LEN];
 	bool lock_hotbar;
 
-	EditorSpline spline;
+	EditorMode spline;
+
+	EditorMode quad;
+	Tile* quad_buffer;
+	V2 quad_dim;
+	bool quad_copied;
 } Editor;
 
 bool AAB(Entity* e, Vector2 p);
