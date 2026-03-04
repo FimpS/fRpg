@@ -162,6 +162,12 @@ Editor* editor_new()
 	editor_entity_hotbar_init(editor);
 	editor->lock_hotbar = false;
 
+	editor->spline = (EditorSpline) {
+		.start_cord = (V2) {0, 0},
+		.mode = false,
+		.end_cord = (V2) {0, 0},
+	};
+
 	editor->state = EDITORSTATE_MAINCANVAS;
 	editor->pos = vector2(4.0, 4.0);
 	editor->map = map_new();
@@ -363,13 +369,16 @@ const u8* key_tutorial_text[] =
 	"F1: Color map",
 	"F2: Tile view",
 	"F3: Entity view",
+	"Ctrl + R: Reload last save",
 	"+ : Increase brush size",
 	"- : Decrease brush size",
 	"M1 + C: Copy Tile/Entity",
 	"M1 + D: Delete Tile/Entity",
+	"M1 + Shift: Spline mode (M2 to cancel, M1 to draw)",
 	"Scroll: Zoom in/out",
 	"L: Lock/Unlock hotbar",
 	"P: Save Map",
+	"F11: Toggle fullscreen",
 };
 
 void editor_print_tutorial()
@@ -389,7 +398,7 @@ void editor_print_tutorial()
 
 void editor_print_info(Editor* editor)
 {
-	const u8 font_size = 15;
+	const u8 font_size = (GetScreenWidth() + GetScreenWidth()) / 156;
 	const u32 x = GetScreenWidth() - GetScreenWidth() / 8;
 	const u32 y = GetScreenHeight() - GetScreenHeight() / 16;
 	const u32 y_offset = 20;
@@ -412,14 +421,119 @@ void editor_toggle_hotbar_lock(Editor* editor)
 	}
 }
 
+void editor_reload_last_save(Editor* editor)
+{
+	if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyReleased(KEY_R))
+	{
+		const u32 len = dynList_len(editor->map->entities);
+		for(i32 i = 0; i < len; i++)
+		{
+			Entity* e = dynList_get(editor->map->entities, i);
+			dynList_pop(editor->map->entities);
+			entity_destroy(e);
+		}
+		editor_load_level(editor->map, "../maps/test.tmp");
+	}
+}
+
+void editor_toggle_fullscreen()
+{
+	if(IsKeyReleased(KEY_F11))
+	{
+		ToggleFullscreen();
+	}
+}
+
+void editor_spline(Map* map, V2 start, V2 end, Tile tile)
+{
+    i32 x0 = start.x;
+    i32 y0 = start.y;
+    i32 x1 = end.x;
+    i32 y1 = end.y;
+
+    i32 dx = abs(x1 - x0);
+    i32 dy = abs(y1 - y0);
+
+    i32 sx = (x0 < x1) ? 1 : -1;
+    i32 sy = (y0 < y1) ? 1 : -1;
+
+    i32 err = dx - dy;
+
+    while (true)
+    {
+        map_set_tile(map, v2_new(x0, y0), tile);
+
+        if (x0 == x1 && y0 == y1)
+            break;
+
+        i32 e2 = 2 * err;
+
+        if (e2 > -dy)
+        {
+            err -= dy;
+            x0 += sx;
+        }
+
+        if (e2 < dx)
+        {
+            err += dx;
+            y0 += sy;
+        }
+    }
+}
+
+void editor_draw_line(MapCamera* cam, V2 v1, V2 v2, Color color)
+{
+	DrawLine((v1.x - cam->offset.x) * cam->tile_len, 
+			 (v1.y - cam->offset.y) * cam->tile_len, 
+			 (v2.x - cam->offset.x) * cam->tile_len, 
+			 (v2.y - cam->offset.y) * cam->tile_len, 
+			 color);
+}
+
+void editor_spline_mode(Editor* editor)
+{
+	MapCamera* cam = editor->map->camera;
+	if(!editor->spline.mode && IsMouseButtonPressed(0) && IsKeyDown(KEY_LEFT_SHIFT))
+	{
+		editor->spline.mode = true;
+		editor->spline.start_cord = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
+		return;
+	}
+	if(editor->spline.mode)
+	{
+		editor->spline.end_cord = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
+		V2 v1 = editor->spline.start_cord;
+		V2 v2 = editor->spline.end_cord;
+		editor_draw_line(cam, v1, v2, RED);
+	}
+
+	if(editor->spline.mode && IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+	{
+		editor->spline.mode = false;
+	}
+
+	if(editor->spline.mode && IsMouseButtonPressed(0))
+	{
+		editor->spline.end_cord = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + cam->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + cam->offset.y));
+		const V2 v1 = editor->spline.start_cord;
+		const V2 v2 = editor->spline.end_cord;
+		editor->spline.mode = false;
+		editor_spline(editor->map, v1, v2, editor->brush);
+	}
+
+}
+
 void editor_tick(Editor* editor)
 {
 	MapCamera* cam = editor->map->camera;
+	editor_toggle_hotbar_lock(editor);
+	editor_reload_last_save(editor);
+	editor_toggle_fullscreen();
 	switch(editor->state)
 	{
 		case EDITORSTATE_MAINCANVAS:
 			cam_tick(editor->map, cam->pos);
-			editor_toggle_hotbar_lock(editor);
 			editor_switch_state(editor);
 			editor_move_camera(editor, editor->map->camera);
 			editor_save(editor);
@@ -636,6 +750,7 @@ void editor_render(Editor* editor)
 	}
 	//DrawRectangle((cam->pos.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (cam->pos.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);
 	if(editor->bstate == BRUSHSTATE_ENTITY) editor_entities_render(editor);
+	editor_spline_mode(editor);
 	editor_print_tutorial();
 	editor_print_info(editor);
 	//DrawRectangle((mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);

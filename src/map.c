@@ -35,9 +35,11 @@ void cam_tick(Map* map, Vector2 source)
 {
 	MapCamera* cam = map->camera;
 
+	const f32 t = 128.0*(2048.0)/(GetScreenHeight() + GetScreenWidth());
+	const f32 t2 = 128.0*(764.0)/(GetScreenHeight() + GetScreenWidth());
 	cam->tile_len += GetMouseWheelMove() * 4;
-	if(cam->tile_len >= MAX_SCROLL_UP) { cam->tile_len = MAX_SCROLL_UP; }
-	else if(cam->tile_len <= MAX_SCROLL_DOWN) { cam->tile_len = MAX_SCROLL_DOWN; }
+	if(cam->tile_len >= (i32)t) { cam->tile_len = (i32)t; }
+	else if(cam->tile_len <= t2) { cam->tile_len = t2; }
 
 
 	Vector2 mouse_pos = GetMousePosition();
