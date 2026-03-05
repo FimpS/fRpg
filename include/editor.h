@@ -1,12 +1,15 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
+#include <string.h>
+
 #include "../include/map.h"
 #include "../include/gfx.h"
 #include "../lib/dynList.h"
 
 #define EDITORSTATEMAXSIZE 2
 #define HOTBAR_LEN 9
+#define MAX_FILE_LEN 64
 
 typedef enum TileType //Not needed probably, But some kind of list of what A tile should look like idk last part to think about...
 					  //
@@ -45,6 +48,7 @@ typedef struct Editor
 
 	EditorState state;
 
+	u8 filename[MAX_FILE_LEN];
 	Map* map;
 	Map* brush_map;
 
@@ -75,6 +79,7 @@ bool AAB(Entity* e, Vector2 p);
 Editor* editor_new();
 void editor_tick(Editor* editor);
 void editor_render(Editor* editor);
+void editor_parse_file_input(u8* file_buffer);
 // TODO
 // Argc, and Argv
 // selected Tile at bottom left

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "../include/editor.h"
@@ -15,7 +16,17 @@
 #define DEBUG_MODE 1
 #define P_EDITORINFO(s, ...) if ( DEBUG_MODE )  { printf("EDITOR INFO: "); printf(s, __VA_ARGS__); }
 
-void editor_load_level(Map* map, const char* filepath)
+void editor_parse_file_input(u8* file_buffer)
+{
+	u8 filepath[MAX_FILE_LEN];
+	strcpy(file_buffer, "../maps/");
+	strcat(file_buffer, file_buffer);
+	strcat(file_buffer, ".tmp");
+	strcpy(file_buffer, filepath);
+	printf("%s\n", file_buffer);
+}
+
+bool editor_load_level(Map* map, const char* filepath)
 {
 	FILE* fp = NULL;
 
@@ -23,7 +34,9 @@ void editor_load_level(Map* map, const char* filepath)
 	if(!fp)
 	{
 		P_ERROR("ERROR: Failed to open file\n");
+		return false;
 	}
+
 
 	if(fread(map->content, sizeof(Tile), map->dim.x * map->dim.y, fp) != map->dim.x * map->dim.y)
 	{
@@ -39,6 +52,7 @@ void editor_load_level(Map* map, const char* filepath)
 		dynList_push(map->entities, allocated_entity);
 	}
 	fclose(fp);
+	return true;
 }
 
 void editor_push_saved(Editor* editor)
@@ -104,7 +118,7 @@ static const Rectangle entity_textures[] =
 	{0, 0, 16, 16},
 };
 
-void editor_reset_map(Editor* editor)
+void editor_reset_brushmap(Editor* editor)
 {
 	Map* map = editor->brush_map;
 	for(int x = 0; x < map->dim.x; x++)
@@ -152,7 +166,23 @@ void editor_entity_hotbar_init(Editor* editor)
 	}
 }
 
-Editor* editor_new()
+void editor_init_empty_level(Editor* editor)
+{
+	Map* map = editor->map;
+	for(int x = 0; x < map->dim.x; x++)
+	{
+		for(int y = 0; y < map->dim.y; y++)
+		{
+			map->content[y * map->dim.x + x] = (Tile) {
+				.type = 0,
+					.animated = false,
+					.solid = false,	
+			};
+		}
+	}
+}
+
+Editor* editor_new(const u8* map_filename, V2 map_dim)
 {
 	Editor* editor = malloc(sizeof(Editor));
 
@@ -188,6 +218,7 @@ Editor* editor_new()
 	editor->brush_dim = 1;
 	editor->selected_entity = ENTITY_PLACEHOLDER;
 	editor->showing_entity = entity_new_editor(editor->selected_entity, (Vector2) {0.0, 0.0} );
+#if 0
 	for(int x = 0; x < editor->map->dim.x; x++)
 	{
 		for(int y = 0; y < editor->map->dim.y; y++)
@@ -196,15 +227,17 @@ Editor* editor_new()
 				.type = 0,
 					.animated = false,
 			};
-			//printf("%d ", editor->map->content[y * editor->map->dim.x + x].type);
 		}
-		//printf("\n");
 	}
-	editor_load_level(editor->map, "../maps/test.tmp");
-	editor_reset_map(editor);
-	//editor_save_level(editor->brush_map, "../maps/BrushCanvas.tmp");
-	//editor_load_level(editor->brush_map, "../maps/BrushCanvas.tmp");
-	//printf("%d %d\n", GetScreenHeight(), GetScreenWidth());
+#endif
+	strcpy(editor->filename, map_filename);
+	bool file_exists = editor_load_level(editor->map, editor->filename);
+	if(!file_exists)
+	{
+		editor->map->dim = map_dim;
+		editor_init_empty_level(editor);
+	}
+	editor_reset_brushmap(editor);
 	return editor;
 }
 

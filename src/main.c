@@ -67,7 +67,7 @@ int main(void) {
 
 #if EDITOR
 
-i32 main()
+i32 main(i32 argc, u8* argv[])
 {
 	srand(time(NULL));
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -75,7 +75,21 @@ i32 main()
     SetTargetFPS(60);
 
 	ToggleFullscreen();
-	Editor* editor = editor_new();	
+	u8 filename[MAX_FILE_LEN];
+	if(argc < 4)
+	{
+		printf("Too few arguments");
+		CloseWindow();
+	}
+	strcpy(filename, argv[1]);
+	editor_parse_file_input(filename);
+	V2 map_dimension = {
+		.x = atoi(argv[2]),
+		.y = atoi(argv[3]),
+	};
+	Editor* editor = editor_new(filename, map_dimension);	
+	CloseWindow();
+	return 0;
 	//dynList_push(editor->map->entities, entity_new(ENTITY_PLACEHOLDER, vector2(1.0, 1.0)));
 	//dynList_push(editor->map->entities, entity_new(ENTITY_PLACEHOLDER2, vector2(4.0, 4.0)));
 

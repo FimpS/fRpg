@@ -11,5 +11,6 @@ Features:
         - Fix alignment for fullscreen (DONE)
         - Lock hotbar logic (DONE)
         --------------------------
-        - Do the same for entity (DONE maybe i need to redo entities for editor)
+        - Do the same for entity (DONE)
     - proper file management for maps (name input)
+        - filename new and reopne existing, map dimensions

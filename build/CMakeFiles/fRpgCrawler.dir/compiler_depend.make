@@ -70,6 +70,8 @@ CMakeFiles/fRpgCrawler.dir/src/editor.c.o: /home/samuel/c/game/fRpgCrawler/src/e
   /usr/include/stdint.h \
   /usr/include/stdio.h \
   /usr/include/stdlib.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
   /usr/include/unistd.h \
   /usr/include/x86_64-linux-gnu/bits/byteswap.h \
   /usr/include/x86_64-linux-gnu/bits/confname.h \
@@ -108,10 +110,12 @@ CMakeFiles/fRpgCrawler.dir/src/editor.c.o: /home/samuel/c/game/fRpgCrawler/src/e
   /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
   /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
@@ -499,10 +503,6 @@ CMakeFiles/fRpgCrawler.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/st
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
-
-/usr/include/strings.h:
-
 /usr/local/include/raymath.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/9/include/stdarg.h:
@@ -510,6 +510,8 @@ CMakeFiles/fRpgCrawler.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/st
 /usr/include/x86_64-linux-gnu/bits/unistd_ext.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
 
@@ -532,6 +534,10 @@ CMakeFiles/fRpgCrawler.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/st
 /usr/include/time.h:
 
 /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
+
+/usr/include/x86_64-linux-gnu/bits/confname.h:
+
+/usr/include/unistd.h:
 
 /usr/local/include/raylib.h:
 
@@ -589,19 +595,13 @@ CMakeFiles/fRpgCrawler.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/st
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 
-/usr/include/string.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h:
-
-/home/samuel/c/game/fRpgCrawler/lib/types.h:
-
-/usr/include/x86_64-linux-gnu/bits/endian.h:
-
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
 
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
 
 /home/samuel/c/game/fRpgCrawler/include/gfx.h:
+
+/usr/include/strings.h:
 
 /usr/include/stdlib.h:
 
@@ -647,6 +647,14 @@ CMakeFiles/fRpgCrawler.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/st
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
+/usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h:
+
+/home/samuel/c/game/fRpgCrawler/lib/types.h:
+
+/usr/include/x86_64-linux-gnu/bits/endian.h:
+
+/usr/include/string.h:
+
 /usr/include/x86_64-linux-gnu/bits/waitflags.h:
 
 /home/samuel/c/game/fRpgCrawler/src/main.c:
@@ -669,8 +677,6 @@ CMakeFiles/fRpgCrawler.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/st
 
 /usr/lib/gcc/x86_64-linux-gnu/9/include/stddef.h:
 
-/usr/include/unistd.h:
-
 /home/samuel/c/game/fRpgCrawler/src/entity.c:
 
 /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
@@ -686,5 +692,3 @@ CMakeFiles/fRpgCrawler.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/st
 /usr/include/x86_64-linux-gnu/bits/getopt_posix.h:
 
 /usr/include/stdio.h:
-
-/usr/include/x86_64-linux-gnu/bits/confname.h:

@@ -23,8 +23,8 @@ MapCamera* cam_new()
 	MapCamera* mc_new = malloc(sizeof(MapCamera));
 	*mc_new = (MapCamera) {
 		.pos = (Vector2) {0.0, 0.0},
-		.visible_tiles = (V2) {0, 0},
-		.offset = (Vector2) {0, 0},
+		.visible_tiles = (V2) {0.0, 0.0},
+		.offset = (Vector2) {0.0, 0.0},
 		.tile_offset = (Vector2) {0, 0},
 		.tile_len = 40,
 		.zoom = 0.0,

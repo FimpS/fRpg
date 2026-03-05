@@ -67,6 +67,7 @@ CMakeFiles/fRpgCrawler.dir/src/main.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
  /home/samuel/c/game/fRpgCrawler/lib/types.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/editor.h \
+ /usr/include/string.h /usr/include/strings.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/map.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/v2.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/types.h \
@@ -82,5 +83,4 @@ CMakeFiles/fRpgCrawler.dir/src/main.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/dynList.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/src/../lib/hashmap.h \
- /usr/include/string.h /usr/include/strings.h \
  /home/samuel/c/game/fRpgCrawler/src/../lib/types.h
