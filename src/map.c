@@ -35,7 +35,7 @@ void cam_tick(Map* map, Vector2 source)
 {
 	MapCamera* cam = map->camera;
 
-	const f32 t = 128.0*(2048.0)/(GetScreenHeight() + GetScreenWidth());
+	const f32 t = 128.0*(4096.0)/(GetScreenHeight() + GetScreenWidth());
 	const f32 t2 = 128.0*(764.0)/(GetScreenHeight() + GetScreenWidth());
 	cam->tile_len += GetMouseWheelMove() * 4;
 	if(cam->tile_len >= (i32)t) { cam->tile_len = (i32)t; }
@@ -52,10 +52,12 @@ void cam_tick(Map* map, Vector2 source)
 	f32 half_w = cam->visible_tiles.x * 0.5;
 	f32 half_h = cam->visible_tiles.y * 0.5;
 
+#if 0
 	if (cam->pos.x < half_w) cam->pos.x = half_w;
 	if (cam->pos.y < half_h) cam->pos.y = half_h;
 	if (cam->pos.x > map->dim.x - half_w) cam->pos.x = map->dim.x - half_w;
 	if (cam->pos.y > map->dim.y - half_h) cam->pos.y = map->dim.y - half_h;
+#endif
 
 	cam->offset = (Vector2) { cam->pos.x - half_w, cam->pos.y - half_h };
 

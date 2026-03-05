@@ -76,24 +76,35 @@ i32 main(i32 argc, u8* argv[])
 
 	ToggleFullscreen();
 	u8 filename[MAX_FILE_LEN];
-	if(argc < 4)
+	if(argc < 2)
 	{
-		printf("Too few arguments");
 		CloseWindow();
+		return 0;
 	}
 	strcpy(filename, argv[1]);
 	editor_parse_file_input(filename);
-	V2 map_dimension = {
-		.x = atoi(argv[2]),
-		.y = atoi(argv[3]),
-	};
+	V2 map_dimension;
+	if(argc >= 4)
+	{
+		map_dimension = (V2) {
+			.x = atoi(argv[2]),
+				.y = atoi(argv[3]),
+		};
+	}
+	else
+	{
+		map_dimension = (V2) {
+			.x = 64,
+				.y = 64,
+		};
+	}
 	Editor* editor = editor_new(filename, map_dimension);	
-	CloseWindow();
-	return 0;
+	//CloseWindow();
+	//return 0;
 	//dynList_push(editor->map->entities, entity_new(ENTITY_PLACEHOLDER, vector2(1.0, 1.0)));
 	//dynList_push(editor->map->entities, entity_new(ENTITY_PLACEHOLDER2, vector2(4.0, 4.0)));
 
-    while (!WindowShouldClose()) 
+	while (!WindowShouldClose()) 
 	{
 		BeginDrawing();
 		editor_tick(editor);

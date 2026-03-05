@@ -10,8 +10,6 @@
 
 #define ENTITY_TYPE_LIST_LEN ENTITY_LAST
 
-#define P_ERROR(...) printf("ERROR: %s", __VA_ARGS__);
-
 
 #define DEBUG_MODE 1
 #define P_EDITORINFO(s, ...) if ( DEBUG_MODE )  { printf("EDITOR INFO: "); printf(s, __VA_ARGS__); }
@@ -19,11 +17,10 @@
 void editor_parse_file_input(u8* file_buffer)
 {
 	u8 filepath[MAX_FILE_LEN];
-	strcpy(file_buffer, "../maps/");
-	strcat(file_buffer, file_buffer);
-	strcat(file_buffer, ".tmp");
+	strcpy(filepath, "../maps/");
+	strcat(filepath, file_buffer);
+	strcat(filepath, ".tmp");
 	strcpy(file_buffer, filepath);
-	printf("%s\n", file_buffer);
 }
 
 bool editor_load_level(Map* map, const char* filepath)
@@ -37,11 +34,14 @@ bool editor_load_level(Map* map, const char* filepath)
 		return false;
 	}
 
+	fread(&map->dim, sizeof(V2), 1, fp);
 
-	if(fread(map->content, sizeof(Tile), map->dim.x * map->dim.y, fp) != map->dim.x * map->dim.y)
+	u32 c = 0;
+	if((c = fread(map->content, sizeof(Tile), map->dim.x * map->dim.y, fp)) != map->dim.x * map->dim.y)
 	{
-		P_ERROR("ERROR: File failed to read appropriate bytes\n");
+		P_ERROR("File failed to read appropriate bytes\n");
 	}
+	printf("bytes: %d %d %d\n", c, map->dim.x, map->dim.y);
 	u32 entity_list_len = 0;
 	fread(&entity_list_len, sizeof(unsigned), 1, fp);
 
@@ -57,9 +57,13 @@ bool editor_load_level(Map* map, const char* filepath)
 
 void editor_push_saved(Editor* editor)
 {
+	u8 text[MAX_FILE_LEN];
+	strcpy(text, "Saved map to ");
+	strcat(text, editor->filename + 8);
+	strcat(text, "...");
 	dynList_push(editor->temp_texts, temporary_text_new(
-				"Saved map to file...",
-				(Vector2) {GetScreenWidth() - GetScreenHeight() / 3.5, GetScreenHeight() / 24},
+				text,
+				(Vector2) {GetScreenWidth() - GetScreenHeight() / 2, GetScreenHeight() / 24},
 				20 + (i32)((f32)(GetScreenWidth() + GetScreenHeight()) / 364),
 				240,
 				RED
@@ -77,6 +81,8 @@ void editor_save_level(Editor* editor, const char* filepath)
 	{
 		P_ERROR("ERROR: Failed to open file\n");
 	}
+
+	fwrite(&map->dim, sizeof(V2), 1, fp);
 
 	if(fwrite(map->content, sizeof(Tile), map->dim.x * map->dim.y, fp) != map->dim.x * map->dim.y)
 	{
@@ -304,7 +310,7 @@ void editor_save(Editor* editor)
 	if(IsKeyPressed(KEY_S) && IsKeyDown(KEY_LEFT_CONTROL))
 	{
 		P_EDITORINFO("%s", "Saved Map\n");
-		editor_save_level(editor, "../maps/test.tmp");
+		editor_save_level(editor, editor->filename);
 	}
 }
 
@@ -474,7 +480,7 @@ void editor_reload_last_save(Editor* editor)
 			dynList_pop(editor->map->entities);
 			entity_destroy(e);
 		}
-		editor_load_level(editor->map, "../maps/test.tmp");
+		editor_load_level(editor->map, editor->filename);
 	}
 }
 
@@ -825,72 +831,95 @@ void editor_render_ui(Editor* editor)
 
 void editor_render(Editor* editor)
 {
+    MapCamera* cam = editor->map->camera;
+    i32 tile = cam->tile_len;
 
-	V2 length = v2_new(editor->map->camera->visible_tiles.x, editor->map->camera->visible_tiles.y);
-	MapCamera* cam = editor->map->camera;
-	V2 mp = v2_new(((f32)GetMouseX() / editor->map->camera->tile_len + editor->map->camera->offset.x), ((f32)GetMouseY() / editor->map->camera->tile_len + editor->map->camera->offset.y));
-	i32 start_x = (i32)floorf(cam->offset.x);
-	i32 start_y = (i32)floorf(cam->offset.y);
+    i32 start_x = (i32)floorf(cam->offset.x);
+    i32 start_y = (i32)floorf(cam->offset.y);
 
-	for (i32 x = 0; x <= cam->visible_tiles.x + 0; x++)
-	{
-		for (i32 y = 0; y <= cam->visible_tiles.y + 0; y++)
-		{
-			i32 tx = start_x + x;
-			i32 ty = start_y + y;
+    Vector2 mouse = GetMousePosition();
+    V2 mp = {
+        (i32)floorf(mouse.x / tile + cam->offset.x),
+        (i32)floorf(mouse.y / tile + cam->offset.y)
+    };
 
-			if (tx < 0 || ty < 0 || tx >= editor->map->dim.x || ty >= editor->map->dim.y)
-			{
-				continue;
-			}
-			Tile tile = map_get_tile(editor->map,
-					v2_new(start_x + x, start_y + y));
+    Texture2D tex = editor->gfx->texs[TEXTURE_TILEMAP];
 
-			Rectangle rec_dst = {
-				x * cam->tile_len - cam->tile_offset.x,
-				y * cam->tile_len - cam->tile_offset.y,
-				cam->tile_len,
-				cam->tile_len
-			};
-			Rectangle rec_tex = tilemap_textures[tile.type];
-			Texture2D tex = editor->gfx->texs[TEXTURE_TILEMAP];
+    for (i32 x = 0; x < cam->visible_tiles.x + 1; x++)
+    {
+        for (i32 y = 0; y < cam->visible_tiles.y + 1; y++)
+        {
+            i32 tx = start_x + x;
+            i32 ty = start_y + y;
 
-			DrawTexturePro(tex, rec_tex, rec_dst, (Vector2){0}, 0.0f, WHITE);
-		}
-	}
+            Rectangle dst = {
+                (tx - cam->offset.x) * tile,
+                (ty - cam->offset.y) * tile,
+                tile,
+                tile
+            };
 
-	if(!IsKeyDown(KEY_D))
-	{
-		switch(editor->bstate)
-		{
-			case BRUSHSTATE_TILE:
-				for(i32 i = 0; i < editor->brush_dim; i++)
-				{
-					for(i32 j = 0; j < editor->brush_dim; j++)
-					{
-						V2 mp_full = v2_add(mp, (V2) {i, j});
-						DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp_full.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp_full.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, editor->map->camera->tile_len}, (Vector2) {0}, 0.0, WHITE);
-					}
-				}
-				break;
-			case BRUSHSTATE_ENTITY:
-				//editor->showing_entity->pos = Vector2Subtract(map_get_mouse_cords(editor->map), Vector2Scale(editor->showing_entity->dim, 0.5));
-				editor->showing_entity->pos = (Vector2) {mp.x, mp.y};//(map_get_mouse_cords(editor->map));
-				editor_entity_render(editor->showing_entity, editor);
-				//DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], tilemap_textures[editor->brush.type], (Rectangle) {(mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN}, (Vector2) {0}, 0.0, WHITE);
-				break;
+            if (tx < 0 || ty < 0 || tx >= editor->map->dim.x || ty >= editor->map->dim.y)
+            {
+                DrawRectangleRec(dst, BLACK);
+                continue;
+            }
 
-		}
-	}
-	//DrawRectangle((cam->pos.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (cam->pos.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);
-	if(editor->bstate == BRUSHSTATE_ENTITY) editor_entities_render(editor);
-	editor_spline_mode(editor);
-	editor_quad_copy_mode(editor);
-	editor_print_tutorial();
-	editor_print_info(editor);
-	//DrawRectangle((mp.x - editor->map->camera->offset.x) * editor->map->camera->tile_len, (mp.y - editor->map->camera->offset.y) * editor->map->camera->tile_len, editor->map->camera->tile_len, TILE_LEN, DARKBLUE);
-	editor_render_ui(editor);
+            Tile tile_data = map_get_tile(editor->map, (V2){tx, ty});
+            Rectangle src = tilemap_textures[tile_data.type];
+
+            DrawTexturePro(tex, src, dst, (Vector2){0}, 0, WHITE);
+        }
+    }
+
+    if(!IsKeyDown(KEY_D))
+    {
+        switch(editor->bstate)
+        {
+            case BRUSHSTATE_TILE:
+            {
+                for(i32 i = 0; i < editor->brush_dim; i++)
+                {
+                    for(i32 j = 0; j < editor->brush_dim; j++)
+                    {
+                        V2 pos = {mp.x + i, mp.y + j};
+
+                        Rectangle dst = {
+                            (pos.x - cam->offset.x) * tile,
+                            (pos.y - cam->offset.y) * tile,
+                            tile,
+                            tile
+                        };
+
+                        DrawTexturePro(
+                            tex,
+                            tilemap_textures[editor->brush.type],
+                            dst,
+                            (Vector2){0},
+                            0,
+                            WHITE
+                        );
+                    }
+                }
+            } break;
+
+            case BRUSHSTATE_ENTITY:
+            {
+                editor->showing_entity->pos = (Vector2){mp.x, mp.y};
+                editor_entity_render(editor->showing_entity, editor);
+            } break;
+        }
+    }
+
+    if(editor->bstate == BRUSHSTATE_ENTITY) editor_entities_render(editor);
+
+    editor_spline_mode(editor);
+    editor_quad_copy_mode(editor);
+
+    editor_print_tutorial();
+    editor_print_info(editor);
+
+    editor_render_ui(editor);
 }
-
 
 
