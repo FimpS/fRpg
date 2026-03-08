@@ -45,5 +45,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/fRpgCrawler.dir/DependInfo.cmake"
+  "CMakeFiles/engine.dir/DependInfo.cmake"
+  "CMakeFiles/game.dir/DependInfo.cmake"
+  "CMakeFiles/editor.dir/DependInfo.cmake"
   )

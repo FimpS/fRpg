@@ -117,24 +117,50 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named fRpgCrawler
+# Target rules for targets named engine
 
 # Build rule for target.
-fRpgCrawler: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fRpgCrawler
-.PHONY : fRpgCrawler
+engine: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 engine
+.PHONY : engine
 
 # fast build rule for target.
-fRpgCrawler/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/build
-.PHONY : fRpgCrawler/fast
+engine/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/build
+.PHONY : engine/fast
+
+#=============================================================================
+# Target rules for targets named game
+
+# Build rule for target.
+game: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 game
+.PHONY : game
+
+# fast build rule for target.
+game/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/game.dir/build.make CMakeFiles/game.dir/build
+.PHONY : game/fast
+
+#=============================================================================
+# Target rules for targets named editor
+
+# Build rule for target.
+editor: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 editor
+.PHONY : editor
+
+# fast build rule for target.
+editor/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/build
+.PHONY : editor/fast
 
 lib/dynList.o: lib/dynList.c.o
 .PHONY : lib/dynList.o
 
 # target to build an object file
 lib/dynList.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/lib/dynList.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/lib/dynList.c.o
 .PHONY : lib/dynList.c.o
 
 lib/dynList.i: lib/dynList.c.i
@@ -142,7 +168,7 @@ lib/dynList.i: lib/dynList.c.i
 
 # target to preprocess a source file
 lib/dynList.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/lib/dynList.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/lib/dynList.c.i
 .PHONY : lib/dynList.c.i
 
 lib/dynList.s: lib/dynList.c.s
@@ -150,7 +176,7 @@ lib/dynList.s: lib/dynList.c.s
 
 # target to generate assembly for a file
 lib/dynList.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/lib/dynList.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/lib/dynList.c.s
 .PHONY : lib/dynList.c.s
 
 src/editor.o: src/editor.c.o
@@ -158,7 +184,7 @@ src/editor.o: src/editor.c.o
 
 # target to build an object file
 src/editor.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/editor.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/editor.c.o
 .PHONY : src/editor.c.o
 
 src/editor.i: src/editor.c.i
@@ -166,7 +192,7 @@ src/editor.i: src/editor.c.i
 
 # target to preprocess a source file
 src/editor.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/editor.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/editor.c.i
 .PHONY : src/editor.c.i
 
 src/editor.s: src/editor.c.s
@@ -174,7 +200,7 @@ src/editor.s: src/editor.c.s
 
 # target to generate assembly for a file
 src/editor.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/editor.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/editor.c.s
 .PHONY : src/editor.c.s
 
 src/entity.o: src/entity.c.o
@@ -182,7 +208,7 @@ src/entity.o: src/entity.c.o
 
 # target to build an object file
 src/entity.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/entity.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity.c.o
 .PHONY : src/entity.c.o
 
 src/entity.i: src/entity.c.i
@@ -190,7 +216,7 @@ src/entity.i: src/entity.c.i
 
 # target to preprocess a source file
 src/entity.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/entity.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity.c.i
 .PHONY : src/entity.c.i
 
 src/entity.s: src/entity.c.s
@@ -198,7 +224,7 @@ src/entity.s: src/entity.c.s
 
 # target to generate assembly for a file
 src/entity.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/entity.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity.c.s
 .PHONY : src/entity.c.s
 
 src/gfx.o: src/gfx.c.o
@@ -206,7 +232,7 @@ src/gfx.o: src/gfx.c.o
 
 # target to build an object file
 src/gfx.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/gfx.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/gfx.c.o
 .PHONY : src/gfx.c.o
 
 src/gfx.i: src/gfx.c.i
@@ -214,7 +240,7 @@ src/gfx.i: src/gfx.c.i
 
 # target to preprocess a source file
 src/gfx.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/gfx.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/gfx.c.i
 .PHONY : src/gfx.c.i
 
 src/gfx.s: src/gfx.c.s
@@ -222,7 +248,7 @@ src/gfx.s: src/gfx.c.s
 
 # target to generate assembly for a file
 src/gfx.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/gfx.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/gfx.c.s
 .PHONY : src/gfx.c.s
 
 src/main.o: src/main.c.o
@@ -230,7 +256,7 @@ src/main.o: src/main.c.o
 
 # target to build an object file
 src/main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/main.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/game.dir/build.make CMakeFiles/game.dir/src/main.c.o
 .PHONY : src/main.c.o
 
 src/main.i: src/main.c.i
@@ -238,7 +264,7 @@ src/main.i: src/main.c.i
 
 # target to preprocess a source file
 src/main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/main.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/game.dir/build.make CMakeFiles/game.dir/src/main.c.i
 .PHONY : src/main.c.i
 
 src/main.s: src/main.c.s
@@ -246,15 +272,39 @@ src/main.s: src/main.c.s
 
 # target to generate assembly for a file
 src/main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/main.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/game.dir/build.make CMakeFiles/game.dir/src/main.c.s
 .PHONY : src/main.c.s
+
+src/main_editor.o: src/main_editor.c.o
+.PHONY : src/main_editor.o
+
+# target to build an object file
+src/main_editor.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/main_editor.c.o
+.PHONY : src/main_editor.c.o
+
+src/main_editor.i: src/main_editor.c.i
+.PHONY : src/main_editor.i
+
+# target to preprocess a source file
+src/main_editor.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/main_editor.c.i
+.PHONY : src/main_editor.c.i
+
+src/main_editor.s: src/main_editor.c.s
+.PHONY : src/main_editor.s
+
+# target to generate assembly for a file
+src/main_editor.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/editor.dir/build.make CMakeFiles/editor.dir/src/main_editor.c.s
+.PHONY : src/main_editor.c.s
 
 src/map.o: src/map.c.o
 .PHONY : src/map.o
 
 # target to build an object file
 src/map.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/map.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/map.c.o
 .PHONY : src/map.c.o
 
 src/map.i: src/map.c.i
@@ -262,7 +312,7 @@ src/map.i: src/map.c.i
 
 # target to preprocess a source file
 src/map.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/map.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/map.c.i
 .PHONY : src/map.c.i
 
 src/map.s: src/map.c.s
@@ -270,7 +320,7 @@ src/map.s: src/map.c.s
 
 # target to generate assembly for a file
 src/map.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/map.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/map.c.s
 .PHONY : src/map.c.s
 
 src/state.o: src/state.c.o
@@ -278,7 +328,7 @@ src/state.o: src/state.c.o
 
 # target to build an object file
 src/state.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/state.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/state.c.o
 .PHONY : src/state.c.o
 
 src/state.i: src/state.c.i
@@ -286,7 +336,7 @@ src/state.i: src/state.c.i
 
 # target to preprocess a source file
 src/state.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/state.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/state.c.i
 .PHONY : src/state.c.i
 
 src/state.s: src/state.c.s
@@ -294,7 +344,7 @@ src/state.s: src/state.c.s
 
 # target to generate assembly for a file
 src/state.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fRpgCrawler.dir/build.make CMakeFiles/fRpgCrawler.dir/src/state.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/state.c.s
 .PHONY : src/state.c.s
 
 # Help Target
@@ -305,7 +355,9 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... fRpgCrawler"
+	@echo "... editor"
+	@echo "... engine"
+	@echo "... game"
 	@echo "... lib/dynList.o"
 	@echo "... lib/dynList.i"
 	@echo "... lib/dynList.s"
@@ -321,6 +373,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/main_editor.o"
+	@echo "... src/main_editor.i"
+	@echo "... src/main_editor.s"
 	@echo "... src/map.o"
 	@echo "... src/map.i"
 	@echo "... src/map.s"

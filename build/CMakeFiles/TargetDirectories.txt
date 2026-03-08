@@ -1,3 +1,5 @@
-/home/samuel/c/game/fRpgCrawler/build/CMakeFiles/fRpgCrawler.dir
+/home/samuel/c/game/fRpgCrawler/build/CMakeFiles/engine.dir
+/home/samuel/c/game/fRpgCrawler/build/CMakeFiles/game.dir
+/home/samuel/c/game/fRpgCrawler/build/CMakeFiles/editor.dir
 /home/samuel/c/game/fRpgCrawler/build/CMakeFiles/edit_cache.dir
 /home/samuel/c/game/fRpgCrawler/build/CMakeFiles/rebuild_cache.dir

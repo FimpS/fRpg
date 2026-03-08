@@ -1,44 +1,50 @@
 [
 {
   "directory": "/home/samuel/c/game/fRpgCrawler/build",
-  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/fRpgCrawler.dir/lib/dynList.c.o -c /home/samuel/c/game/fRpgCrawler/lib/dynList.c",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/lib/dynList.c.o -c /home/samuel/c/game/fRpgCrawler/lib/dynList.c",
   "file": "/home/samuel/c/game/fRpgCrawler/lib/dynList.c",
-  "output": "CMakeFiles/fRpgCrawler.dir/lib/dynList.c.o"
+  "output": "CMakeFiles/engine.dir/lib/dynList.c.o"
 },
 {
   "directory": "/home/samuel/c/game/fRpgCrawler/build",
-  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/fRpgCrawler.dir/src/editor.c.o -c /home/samuel/c/game/fRpgCrawler/src/editor.c",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/src/editor.c.o -c /home/samuel/c/game/fRpgCrawler/src/editor.c",
   "file": "/home/samuel/c/game/fRpgCrawler/src/editor.c",
-  "output": "CMakeFiles/fRpgCrawler.dir/src/editor.c.o"
+  "output": "CMakeFiles/engine.dir/src/editor.c.o"
 },
 {
   "directory": "/home/samuel/c/game/fRpgCrawler/build",
-  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/fRpgCrawler.dir/src/entity.c.o -c /home/samuel/c/game/fRpgCrawler/src/entity.c",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/src/entity.c.o -c /home/samuel/c/game/fRpgCrawler/src/entity.c",
   "file": "/home/samuel/c/game/fRpgCrawler/src/entity.c",
-  "output": "CMakeFiles/fRpgCrawler.dir/src/entity.c.o"
+  "output": "CMakeFiles/engine.dir/src/entity.c.o"
 },
 {
   "directory": "/home/samuel/c/game/fRpgCrawler/build",
-  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/fRpgCrawler.dir/src/gfx.c.o -c /home/samuel/c/game/fRpgCrawler/src/gfx.c",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/src/gfx.c.o -c /home/samuel/c/game/fRpgCrawler/src/gfx.c",
   "file": "/home/samuel/c/game/fRpgCrawler/src/gfx.c",
-  "output": "CMakeFiles/fRpgCrawler.dir/src/gfx.c.o"
+  "output": "CMakeFiles/engine.dir/src/gfx.c.o"
 },
 {
   "directory": "/home/samuel/c/game/fRpgCrawler/build",
-  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/fRpgCrawler.dir/src/main.c.o -c /home/samuel/c/game/fRpgCrawler/src/main.c",
-  "file": "/home/samuel/c/game/fRpgCrawler/src/main.c",
-  "output": "CMakeFiles/fRpgCrawler.dir/src/main.c.o"
-},
-{
-  "directory": "/home/samuel/c/game/fRpgCrawler/build",
-  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/fRpgCrawler.dir/src/map.c.o -c /home/samuel/c/game/fRpgCrawler/src/map.c",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/src/map.c.o -c /home/samuel/c/game/fRpgCrawler/src/map.c",
   "file": "/home/samuel/c/game/fRpgCrawler/src/map.c",
-  "output": "CMakeFiles/fRpgCrawler.dir/src/map.c.o"
+  "output": "CMakeFiles/engine.dir/src/map.c.o"
 },
 {
   "directory": "/home/samuel/c/game/fRpgCrawler/build",
-  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/fRpgCrawler.dir/src/state.c.o -c /home/samuel/c/game/fRpgCrawler/src/state.c",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/src/state.c.o -c /home/samuel/c/game/fRpgCrawler/src/state.c",
   "file": "/home/samuel/c/game/fRpgCrawler/src/state.c",
-  "output": "CMakeFiles/fRpgCrawler.dir/src/state.c.o"
+  "output": "CMakeFiles/engine.dir/src/state.c.o"
+},
+{
+  "directory": "/home/samuel/c/game/fRpgCrawler/build",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/game.dir/src/main.c.o -c /home/samuel/c/game/fRpgCrawler/src/main.c",
+  "file": "/home/samuel/c/game/fRpgCrawler/src/main.c",
+  "output": "CMakeFiles/game.dir/src/main.c.o"
+},
+{
+  "directory": "/home/samuel/c/game/fRpgCrawler/build",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/editor.dir/src/main_editor.c.o -c /home/samuel/c/game/fRpgCrawler/src/main_editor.c",
+  "file": "/home/samuel/c/game/fRpgCrawler/src/main_editor.c",
+  "output": "CMakeFiles/editor.dir/src/main_editor.c.o"
 }
 ]

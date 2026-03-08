@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/editor.dir/src/main_editor.c.o -o editor  libengine.a /usr/local/lib/libraylib.a -L/usr/local/lib -lraylib -lm -ldl -lpthread

@@ -195,6 +195,9 @@ PKG_CONFIG_ARGN:STRING=
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
+//Dependencies for the target
+engine_LIB_DEPENDS:STATIC=general;raylib;general;m;general;dl;general;pthread;
+
 //Value Computed by CMake
 fRpgCrawler_BINARY_DIR:STATIC=/home/samuel/c/game/fRpgCrawler/build
 
