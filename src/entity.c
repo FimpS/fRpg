@@ -33,13 +33,12 @@ bool AABB(Entity* s, Entity* t)
 	return true;
 }
 
-void entities_tick(GameState* state)
+void entities_tick(DynList* entities)
 {
-	for(i32 i = 0; i < dynList_len(state->entities); i++)
+	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
-		Entity* e = dynList_get(state->entities, i);
+		Entity* e = dynList_get(entities, i);
 		e->state.tick(e);
-		//printf("%d\n", e->type);
 	}
 }
 
@@ -48,11 +47,11 @@ void entity_render(GameState* state)
 	//DrawTexturePro(state->tex, rec_tex, rec_dst, (Vector2) {0}, 0.0, WHITE);
 }
 
-void entities_render(GameState* state)
+void entities_render(DynList* entities)
 {
-	for(i32 i = 0; i < dynList_len(state->entities); i++)
+	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
-		Entity* e = dynList_get(state->entities, i);
+		Entity* e = dynList_get(entities, i);
 		//render_entity(e);
 	}
 }

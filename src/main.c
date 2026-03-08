@@ -17,23 +17,18 @@ int main(void) {
 
 	HashMap* map = hmap_new(32);
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(1200, 900, "raylib - input example");
+    InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "2D - TileMapEditor");
     SetTargetFPS(60);
-	//ToggleFullscreen();
 
     Vector2 rectPos = { 400, 300 };
     float speed = 4.0f;
 	GameState* state = state_new();
 
-	dynList_push(state->entities, entity_new(
-				ENTITY_PLACEHOLDER, 
-				vector2( -1.0, 2.0)
-				));
-
-
-    while (!WindowShouldClose()) {
+	ToggleFullscreen();
+    while (!WindowShouldClose()) 
+	{
 		BeginDrawing();
-		
+		state_tick(state);
 		EndDrawing();
 	}
 

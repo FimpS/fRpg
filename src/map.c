@@ -84,6 +84,37 @@ void map_destroy(Map* map)
 	free(map);
 }
 
+bool map_load_level(Map* map, const char* filepath)
+{
+	FILE* fp = NULL;
+
+	fp = fopen(filepath, "rb");
+	if(!fp)
+	{
+		P_ERROR("ERROR: Failed to open file\n");
+		return false;
+	}
+
+	fread(&map->dim, sizeof(V2), 1, fp);
+
+	u32 c = 0;
+	if((c = fread(map->content, sizeof(Tile), map->dim.x * map->dim.y, fp)) != map->dim.x * map->dim.y)
+	{
+		P_ERROR("File failed to read appropriate bytes\n");
+	}
+	u32 entity_list_len = 0;
+	fread(&entity_list_len, sizeof(unsigned), 1, fp);
+
+	for (u32 i = 0; i < entity_list_len; i++)
+	{
+		Entity* allocated_entity = malloc(sizeof(Entity));
+		fread(allocated_entity, sizeof(Entity), 1, fp);
+		dynList_push(map->entities, allocated_entity);
+	}
+	fclose(fp);
+	return true;
+}
+
 Tile map_get_tile(Map* map, V2 pos)
 {
 	return pos.x >= 0 && pos.x < map->dim.x && pos.y >= 0 && pos.y < map->dim.y ? map->content[pos.y * map->dim.x + pos.x] : (Tile) {-1};
@@ -95,6 +126,52 @@ void map_set_tile(Map* map, V2 pos, Tile tile)
 	{
 		map->content[pos.y * map->dim.x + pos.x] = tile;
 	}
+}
+
+static Rectangle tilemap_textures[] =
+{
+	[0] = {0, 0, 16, 16},
+	[TILETYPE_TEST1] = {0, 16, 16, 16},
+	[TILETYPE_TEST2] = {16, 0, 16, 16},
+	[TILETYPE_TEST3] = {32, 0, 16, 16},
+	[TILETYPE_TEST4] = {48, 0, 16, 16},
+};
+
+void map_render(Map* map, Texture2D* texp)
+{
+	MapCamera* cam = map->camera;
+	Texture2D tex = *texp;
+    i32 tile = cam->tile_len;
+
+    i32 start_x = (i32)floorf(cam->offset.x);
+    i32 start_y = (i32)floorf(cam->offset.y);
+
+    Vector2 mouse = GetMousePosition();
+    V2 mp = {
+        (i32)floorf(mouse.x / tile + cam->offset.x),
+        (i32)floorf(mouse.y / tile + cam->offset.y)
+    };
+
+    for (i32 x = 0; x < cam->visible_tiles.x + 1; x++)
+    {
+        for (i32 y = 0; y < cam->visible_tiles.y + 1; y++)
+        {
+            i32 tx = start_x + x;
+            i32 ty = start_y + y;
+
+            Rectangle dst = {
+                (tx - cam->offset.x) * tile,
+                (ty - cam->offset.y) * tile,
+                tile,
+                tile
+            };
+
+            Tile tile_data = map_get_tile(map, (V2){tx, ty});
+            Rectangle src = tilemap_textures[tile_data.type];
+
+            DrawTexturePro(tex, src, dst, (Vector2){0}, 0, WHITE);
+        }
+    }	
 }
 
 

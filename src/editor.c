@@ -41,7 +41,6 @@ bool editor_load_level(Map* map, const char* filepath)
 	{
 		P_ERROR("File failed to read appropriate bytes\n");
 	}
-	printf("bytes: %d %d %d\n", c, map->dim.x, map->dim.y);
 	u32 entity_list_len = 0;
 	fread(&entity_list_len, sizeof(unsigned), 1, fp);
 

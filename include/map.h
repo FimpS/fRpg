@@ -11,6 +11,15 @@
 #include "../include/entity.h"
 #include "raylib.h"
 
+typedef enum TileType //Not needed probably, But some kind of list of what A tile should look like idk last part to think about...
+					  //
+{
+	TILETYPE_TEST1 = 1,
+	TILETYPE_TEST2,
+	TILETYPE_TEST3,
+	TILETYPE_TEST4,
+} TileType;
+
 typedef enum EntityClass
 {
 	ENTITYCLASS_NONE,
@@ -34,17 +43,10 @@ typedef struct Tile
 	bool solid;
 } Tile;
 
-typedef struct EntitySignature //should prob be in Map...
-{
-	EntityType type;
-	V2 spawn_tile;
-} EntitySignature;
-
 typedef struct Map
 {
 	MapCamera* camera;
 	Tile* content;
-	EntitySignature* entsinfo;
 	DynList* entities;
 	V2 dim;	
 } Map;
@@ -53,8 +55,11 @@ typedef struct Map
 Vector2 map_get_mouse_cords(Map* map);
 Map* map_new();
 void map_destroy(Map* map);
+
+bool map_load_level(Map* map, const char* filepath);
 Tile map_get_tile(Map* map, V2 pos);
 void map_set_tile(Map* map, V2 pos, Tile tile);
+void map_render(Map* map, Texture2D* texp);
 
 void cam_tick(Map* map, Vector2 source);
 

@@ -47,7 +47,7 @@ Entity* entity_new_editor(EntityType type, Vector2 pos);
 
 void entity_destroy(Entity* e);
 
-void entities_tick(GameState* state);
-void entities_render(GameState* state);
+void entities_tick(DynList* entities);
+void entities_render(DynList* entities);
 
 #endif

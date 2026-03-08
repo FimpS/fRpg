@@ -49,7 +49,7 @@ i32 main(i32 argc, u8* argv[])
 		BeginDrawing();
 		editor_tick(editor);
 		editor_render(editor);
-		DrawText(TextFormat("Height: %d ; Width: %d", GetScreenHeight(), GetScreenWidth()), 100, 100, 40, GREEN);
+		//DrawText(TextFormat("Height: %d ; Width: %d", GetScreenHeight(), GetScreenWidth()), 100, 100, 40, GREEN);
 		EndDrawing();
 	}
 	CloseWindow();

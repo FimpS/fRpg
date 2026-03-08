@@ -11,15 +11,6 @@
 #define HOTBAR_LEN 9
 #define MAX_FILE_LEN 64
 
-typedef enum TileType //Not needed probably, But some kind of list of what A tile should look like idk last part to think about...
-					  //
-{
-	TILETYPE_TEST1 = 1,
-	TILETYPE_TEST2,
-	TILETYPE_TEST3,
-	TILETYPE_TEST4,
-} TileType;
-
 
 typedef enum EditorState
 {
