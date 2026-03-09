@@ -49,13 +49,16 @@ CMakeFiles/engine.dir/lib/dynList.c.o: /home/samuel/c/game/fRpgCrawler/lib/dynLi
 
 CMakeFiles/engine.dir/src/editor.c.o: /home/samuel/c/game/fRpgCrawler/src/editor.c \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
-  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
@@ -144,11 +147,14 @@ CMakeFiles/engine.dir/src/editor.c.o: /home/samuel/c/game/fRpgCrawler/src/editor
 
 CMakeFiles/engine.dir/src/entity.c.o: /home/samuel/c/game/fRpgCrawler/src/entity.c \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
+  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
+  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -279,9 +285,13 @@ CMakeFiles/engine.dir/src/gfx.c.o: /home/samuel/c/game/fRpgCrawler/src/gfx.c \
 
 CMakeFiles/engine.dir/src/map.c.o: /home/samuel/c/game/fRpgCrawler/src/map.c \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -362,14 +372,20 @@ CMakeFiles/engine.dir/src/map.c.o: /home/samuel/c/game/fRpgCrawler/src/map.c \
   /usr/local/include/raymath.h
 
 CMakeFiles/engine.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/state.c \
+  /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
+  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/include/global.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /usr/include/alloca.h \
   /usr/include/endian.h \
@@ -377,6 +393,7 @@ CMakeFiles/engine.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/state.c
   /usr/include/math.h \
   /usr/include/stdc-predef.h \
   /usr/include/stdint.h \
+  /usr/include/stdio.h \
   /usr/include/stdlib.h \
   /usr/include/x86_64-linux-gnu/bits/byteswap.h \
   /usr/include/x86_64-linux-gnu/bits/endian.h \
@@ -397,17 +414,25 @@ CMakeFiles/engine.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/state.c
   /usr/include/x86_64-linux-gnu/bits/select.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
   /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
   /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
+  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
   /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
   /usr/include/x86_64-linux-gnu/bits/time64.h \
   /usr/include/x86_64-linux-gnu/bits/timesize.h \
   /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
   /usr/include/x86_64-linux-gnu/bits/types/time_t.h \

@@ -70,4 +70,5 @@ CMakeFiles/engine.dir/src/entity.c.o: \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../include/entity.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/gfx.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../lib/dynList.h
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/gfx.h
