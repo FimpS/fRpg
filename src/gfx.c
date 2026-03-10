@@ -54,6 +54,18 @@ static const u8* texture_filenames[] =
 	"../assets/EditorUI.png",
 };
 
+LightGfx* lightgfx_new()
+{
+	LightGfx* lightgfx = malloc(sizeof(LightGfx));
+
+	*lightgfx = (LightGfx) {
+			.map = LoadRenderTexture(GetScreenWidth(), GetScreenHeight()),
+	};
+
+	return lightgfx;
+
+}
+
 void gfx_load_textures(Texture2D* texs)
 {
 	const u32 len = sizeof(texture_filenames) / sizeof(texture_filenames[0]);
@@ -68,9 +80,18 @@ Gfx* gfx_new()
 	Gfx* gnew = malloc(sizeof(Gfx));
 	*gnew = (Gfx) {
 		.texs = malloc(sizeof(Texture2D) * TEXTURE_COUNT),
+		.light_map = lightgfx_new(),
 	};
 
 	gfx_load_textures(gnew->texs);
 
 	return gnew;
 }
+
+
+
+
+
+
+
+

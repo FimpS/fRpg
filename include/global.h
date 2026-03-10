@@ -6,6 +6,7 @@
 #include "types.h"
 
 static inline Vector2 vector2(f32 x, f32 y) { return (Vector2) {x, y}; }
+static inline Vector2 Vector2Midpoint(Vector2 v, Vector2 u) { return (Vector2) {v.x + u.x / 2.0, v.y + u.y / 2.0}; }
 #define P_ERROR(s, ...) { printf("ERROR: "); printf(s, ##__VA_ARGS__); }
 
 

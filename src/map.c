@@ -29,6 +29,7 @@ MapCamera* cam_new()
 		.tile_len = 40,
 		.zoom = 0.0,
 	};
+	return mc_new;
 }
 
 void cam_tick(Map* map, Vector2 source)
@@ -137,41 +138,118 @@ static Rectangle tilemap_textures[] =
 	[TILETYPE_TEST4] = {48, 0, 16, 16},
 };
 
+void map_reset_light(Map* map)
+{
+	const u32 len = map->dim.x * map->dim.y;
+	for(i32 i = 0; i < len; i++)
+	{
+		map->content[i].light = 0.25;
+	}
+}
+
+void map_add_entity_lights(Map *map)
+{
+    for(i32 i = 0; i < dynList_len(map->entities); i++)
+    {
+        Entity* e = dynList_get(map->entities, i);
+		Vector2 pos = Vector2Midpoint(e->pos, e->dim);
+
+        i32 tx = (i32)floorf(pos.x);
+        i32 ty = (i32)floorf(pos.y);
+
+        if(tx >= 0 && ty >= 0 && tx < map->dim.x && ty < map->dim.y)
+        {
+            map->content[ty * map->dim.x + tx].light = 1.0;
+        }
+    }
+}
+
+void map_populate_step(Map *map, Vector2 pos, f32 value)
+{
+    Tile *t = &map->content[(i32)pos.y * map->dim.x + (i32)pos.x];
+
+    if(t->solid) value *= 0.5;
+
+    if(value > t->light)
+        t->light = value;
+}
+
+void map_populate_light(Map *map)
+{
+	const f32 decay = 0.08;
+	const f32 epsilon = 0.01;
+	const u32 max_iterations = 12;
+
+	for(i32 iter = 0; iter < max_iterations; iter++)
+	{
+		for(i32 y = 1; y < map->dim.y-1; y++)
+		{
+			for(i32 x = 1; x < map->dim.x-1; x++)
+			{
+				Tile *t = &map->content[y * map->dim.x + x];
+				const f32 light = t->light;
+
+				if(light <= epsilon) continue;
+
+				const f32 spread = light - decay;
+
+				if(spread <= 0) continue;
+
+				map_populate_step(map, (Vector2) {x + 1, y}, spread);
+				map_populate_step(map, (Vector2) {x - 1, y}, spread);
+				map_populate_step(map, (Vector2) {x, y + 1}, spread);
+				map_populate_step(map, (Vector2) {x, y - 1}, spread);
+				const f32 diag = spread - decay * 0.5f;
+
+				if(diag > 0)
+				{
+					map_populate_step(map, (Vector2) {x + 1, y + 1}, diag);
+					map_populate_step(map, (Vector2) {x - 1, y - 1}, diag);
+					map_populate_step(map, (Vector2) {x + 1, y - 1}, diag);
+					map_populate_step(map, (Vector2) {x - 1, y + 1}, diag);
+				}
+			}
+		}
+	}
+}
+
 void map_render(Map* map, Texture2D* texp)
 {
 	MapCamera* cam = map->camera;
 	Texture2D tex = *texp;
-    i32 tile = cam->tile_len;
+	i32 tile = cam->tile_len;
 
-    i32 start_x = (i32)floorf(cam->offset.x);
-    i32 start_y = (i32)floorf(cam->offset.y);
+	i32 start_x = (i32)floorf(cam->offset.x);
+	i32 start_y = (i32)floorf(cam->offset.y);
 
-    Vector2 mouse = GetMousePosition();
-    V2 mp = {
-        (i32)floorf(mouse.x / tile + cam->offset.x),
-        (i32)floorf(mouse.y / tile + cam->offset.y)
-    };
+	Vector2 mouse = GetMousePosition();
+	V2 mp = {
+		(i32)floorf(mouse.x / tile + cam->offset.x),
+		(i32)floorf(mouse.y / tile + cam->offset.y)
+	};
 
-    for (i32 x = 0; x < cam->visible_tiles.x + 1; x++)
-    {
-        for (i32 y = 0; y < cam->visible_tiles.y + 1; y++)
-        {
-            i32 tx = start_x + x;
-            i32 ty = start_y + y;
+	for (i32 x = 0; x < cam->visible_tiles.x + 1; x++)
+	{
+		for (i32 y = 0; y < cam->visible_tiles.y + 1; y++)
+		{
+			i32 tx = start_x + x;
+			i32 ty = start_y + y;
 
-            Rectangle dst = {
-                (tx - cam->offset.x) * tile,
-                (ty - cam->offset.y) * tile,
-                tile,
-                tile
-            };
+			Rectangle dst = {
+				(tx - cam->offset.x) * tile,
+				(ty - cam->offset.y) * tile,
+				tile,
+				tile
+			};
 
-            Tile tile_data = map_get_tile(map, (V2){tx, ty});
-            Rectangle src = tilemap_textures[tile_data.type];
+			Tile tile_data = map_get_tile(map, (V2){tx, ty});
+			Rectangle src = tilemap_textures[tile_data.type];
+			const f32 light_level = tile_data.light * tile_data.light;	
+			Color diffuse = (Color) {255 * light_level, 255 * light_level, 255 * light_level, 255};
 
-            DrawTexturePro(tex, src, dst, (Vector2){0}, 0, WHITE);
-        }
-    }	
+			DrawTexturePro(tex, src, dst, (Vector2){0}, 0, diffuse);
+		}
+	}	
 }
 
 

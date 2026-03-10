@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "../lib/types.h"
 #include "../include/state.h"
+#include "../include/gfx.h"
 
 typedef struct Entity Entity;
 
@@ -37,6 +38,7 @@ typedef struct Entity
 {
 	Vector2 pos;
 	Vector2 dim;
+	Light light;
 	EntityType type;
 	EntityState state;
 	u32 id;

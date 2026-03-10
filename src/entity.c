@@ -7,7 +7,7 @@
 
 void estate_placeholder_tick(Entity* self)
 {
-	self->pos.x += 0.05;
+	//self->pos.x += 0.05;
 }
 
 EntityState state_map[] =
@@ -42,9 +42,10 @@ void entities_tick(DynList* entities)
 	}
 }
 
-void entity_render(GameState* state)
+void entity_render(Entity* self)
 {
 	//DrawTexturePro(state->tex, rec_tex, rec_dst, (Vector2) {0}, 0.0, WHITE);
+	//DrawTexturePro(state->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, (Rectangle) {(self->pos.x - camera->offset.x) * editor->map->camera->tile_len, (self->pos.y - camera->offset.y) * editor->map->camera->tile_len, self->dim.x * editor->map->camera->tile_len, self->dim.y * editor->map->camera->tile_len}, (Vector2) {0}, 0.0, RED);
 }
 
 void entities_render(DynList* entities)
@@ -52,7 +53,6 @@ void entities_render(DynList* entities)
 	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
 		Entity* e = dynList_get(entities, i);
-		//render_entity(e);
 	}
 }
 
@@ -62,6 +62,12 @@ Entity* entity_new_editor(EntityType type, Vector2 pos)
 	newe->type = type;
 	newe->state = state_map[newe->type];
 	newe->pos = pos;
+	newe->light = (Light) {
+		.pos = newe->pos,
+		.distance = 1.0,
+		.tint = WHITE,
+		.value = 5.0,
+	};
 	newe->dim = (Vector2) {2.0, 2.0};
 	newe->id = 1;
 }
@@ -72,6 +78,12 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	newe->type = type;
 	newe->state = state_map[newe->type];
 	newe->pos = pos;
+	newe->light = (Light) {
+		.pos = newe->pos,
+		.distance = 10.0,
+		.tint = WHITE,
+		.value = 5.0,
+	};
 	newe->dim = (Vector2) {2.0, 2.0};
 	newe->id = 1;
 }

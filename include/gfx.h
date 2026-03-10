@@ -24,8 +24,23 @@ typedef enum TextureIndex
 	TEXTURE_EDITOR_UI,
 } TextureIndex;
 
+
+typedef struct Light
+{
+	Vector2 pos;
+	f32 distance;
+	Color tint;
+	f32 value;
+} Light;
+
+typedef struct LightGfx
+{
+	RenderTexture2D map;
+} LightGfx;
+
 typedef struct Gfx
 {
+	LightGfx* light_map;
 	Texture2D* texs;
 } Gfx;
 

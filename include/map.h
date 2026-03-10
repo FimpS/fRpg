@@ -39,6 +39,7 @@ typedef struct MapCamera
 typedef struct Tile
 {
 	i32 type;
+	f32 light;
 	bool animated;
 	bool solid;
 } Tile;
@@ -62,5 +63,9 @@ void map_set_tile(Map* map, V2 pos, Tile tile);
 void map_render(Map* map, Texture2D* texp);
 
 void cam_tick(Map* map, Vector2 source);
+void map_reset_light(Map* map);
+void map_populate_light(Map* map);
+void propagate(Map* map, i32 x, i32 y, f32 value);
+void map_add_entity_lights(Map* map);
 
 #endif
