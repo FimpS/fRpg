@@ -73,6 +73,9 @@ Map* map_new()
 	new_map->entities = dynList_new();
 	//memset(new_map, 0, sizeof(new_map->content));	
 	new_map->dim = v2_new(0, 0);
+	new_map->light_settings = (LightSettings) {
+		.ambient_light = 0.1,
+	};
 	new_map->camera = cam_new();
 	return new_map;
 }
@@ -143,8 +146,14 @@ void map_reset_light(Map* map)
 	const u32 len = map->dim.x * map->dim.y;
 	for(i32 i = 0; i < len; i++)
 	{
-		map->content[i].light = 0.25;
+		map->content[i].light = map->light_settings.ambient_light;
+		map->content[i].light_level = 0.0;
 	}
+}
+
+f32 map_light_flicker()
+{
+	return frand( (Vector2) {0.9, 0.075} );
 }
 
 void map_add_entity_lights(Map *map)
@@ -159,27 +168,31 @@ void map_add_entity_lights(Map *map)
 
         if(tx >= 0 && ty >= 0 && tx < map->dim.x && ty < map->dim.y)
         {
-            map->content[ty * map->dim.x + tx].light = 1.0;
+            map->content[ty * map->dim.x + tx].light = e->light.value * map_light_flicker();
+            map->content[ty * map->dim.x + tx].light_level = e->light.distance;
         }
     }
 }
 
-void map_populate_step(Map *map, Vector2 pos, f32 value)
+void map_populate_step(Map *map, Vector2 pos, f32 value, f32 v)
 {
     Tile *t = &map->content[(i32)pos.y * map->dim.x + (i32)pos.x];
 
-    if(t->solid) value *= 0.5;
+    if(t->solid) value *= 0.4;
 
     if(value > t->light)
+	{
+		t->light_level = v;
         t->light = value;
+	}
 }
 
 void map_populate_light(Map *map)
 {
-	const f32 decay = 0.08;
+	const f32 light_decay = 0.10;
+	const f32 energy_decay = 1.0;
 	const f32 epsilon = 0.01;
-	const u32 max_iterations = 12;
-
+	const u32 max_iterations = 10;
 	for(i32 iter = 0; iter < max_iterations; iter++)
 	{
 		for(i32 y = 1; y < map->dim.y-1; y++)
@@ -188,25 +201,40 @@ void map_populate_light(Map *map)
 			{
 				Tile *t = &map->content[y * map->dim.x + x];
 				const f32 light = t->light;
+				const f32 energy = t->light_level;
 
 				if(light <= epsilon) continue;
 
-				const f32 spread = light - decay;
-
+				const f32 spread = light - light_decay;
+				f32 loss = energy - energy_decay;
+				
+				if(energy <= 0) continue;
 				if(spread <= 0) continue;
 
-				map_populate_step(map, (Vector2) {x + 1, y}, spread);
-				map_populate_step(map, (Vector2) {x - 1, y}, spread);
-				map_populate_step(map, (Vector2) {x, y + 1}, spread);
-				map_populate_step(map, (Vector2) {x, y - 1}, spread);
-				const f32 diag = spread - decay * 0.5f;
-
-				if(diag > 0)
+				map_populate_step(map, (Vector2) {x + 1, y}, spread, loss);
+				map_populate_step(map, (Vector2) {x - 1, y}, spread, loss);
+				map_populate_step(map, (Vector2) {x, y + 1}, spread, loss);
+				map_populate_step(map, (Vector2) {x, y - 1}, spread, loss);
+				const f32 diag = spread - loss * 1/sqrtf(2.0);
+				loss *= sqrtf(2.0);
+				if(diag > 0 && 1)
 				{
-					map_populate_step(map, (Vector2) {x + 1, y + 1}, diag);
-					map_populate_step(map, (Vector2) {x - 1, y - 1}, diag);
-					map_populate_step(map, (Vector2) {x + 1, y - 1}, diag);
-					map_populate_step(map, (Vector2) {x - 1, y + 1}, diag);
+					Tile *t_right = &map->content[y * map->dim.x + (x + 1)];
+					Tile *t_left  = &map->content[y * map->dim.x + (x - 1)];
+					Tile *t_up    = &map->content[(y - 1) * map->dim.x + x];
+					Tile *t_down  = &map->content[(y + 1) * map->dim.x + x];
+
+					if(!(t_right->solid && t_down->solid))
+						map_populate_step(map, (Vector2){x + 1, y + 1}, diag, loss);
+
+					if(!(t_left->solid && t_up->solid))
+						map_populate_step(map, (Vector2){x - 1, y - 1}, diag, loss);
+
+					if(!(t_right->solid && t_up->solid))
+						map_populate_step(map, (Vector2){x + 1, y - 1}, diag, loss);
+
+					if(!(t_left->solid && t_down->solid))
+						map_populate_step(map, (Vector2){x - 1, y + 1}, diag, loss);
 				}
 			}
 		}
@@ -244,7 +272,7 @@ void map_render(Map* map, Texture2D* texp)
 
 			Tile tile_data = map_get_tile(map, (V2){tx, ty});
 			Rectangle src = tilemap_textures[tile_data.type];
-			const f32 light_level = tile_data.light * tile_data.light;	
+			const f32 light_level =  sqrt(tile_data.light) * sqrtf(tile_data.light);	
 			Color diffuse = (Color) {255 * light_level, 255 * light_level, 255 * light_level, 255};
 
 			DrawTexturePro(tex, src, dst, (Vector2){0}, 0, diffuse);

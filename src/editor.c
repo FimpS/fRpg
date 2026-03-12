@@ -110,11 +110,11 @@ static Rectangle tilemap_textures[] =
 
 static Tile tile_sheet[] =
 {
-	{0, 0.0, 0, 0},
-	{1, 0.0, 0, 1},
-	{2, 0.0, 0, 1},
-	{3, 0.0, 0, 1},
-	{4, 0.0, 0, 1},
+	{0, 0.0, 0.0, 0, 0},
+	{1, 0.0, 0.0, 0, 1},
+	{2, 0.0, 0.0, 0, 1},
+	{3, 0.0, 0.0, 0, 1},
+	{4, 0.0, 0.0, 0, 1},
 };
 
 static const Rectangle entity_textures[] =

@@ -39,10 +39,11 @@ void state_tick(GameState* state)
 		Entity* self = dynList_get(entities, i);
 		if( i == 0 )
 		{
-		if(IsKeyDown(KEY_D)) { self->pos.x += 0.1; };
-		if(IsKeyDown(KEY_A)) { self->pos.x -= 0.1; };
-		if(IsKeyDown(KEY_W)) { self->pos.y -= 0.1; };
-		if(IsKeyDown(KEY_S)) { self->pos.y += 0.1; };
+		const f32 f = 0.2;
+		if(IsKeyDown(KEY_D)) { self->pos.x += f; };
+		if(IsKeyDown(KEY_A)) { self->pos.x -= f; };
+		if(IsKeyDown(KEY_W)) { self->pos.y -= f; };
+		if(IsKeyDown(KEY_S)) { self->pos.y += f; };
 		}
 		DrawTexturePro(state->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, 
 				(Rectangle) {

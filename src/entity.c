@@ -66,7 +66,7 @@ Entity* entity_new_editor(EntityType type, Vector2 pos)
 		.pos = newe->pos,
 		.distance = 1.0,
 		.tint = WHITE,
-		.value = 5.0,
+		.value = 1.0,
 	};
 	newe->dim = (Vector2) {2.0, 2.0};
 	newe->id = 1;
@@ -80,9 +80,9 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	newe->pos = pos;
 	newe->light = (Light) {
 		.pos = newe->pos,
-		.distance = 10.0,
+		.distance = 12.0,
 		.tint = WHITE,
-		.value = 5.0,
+		.value = 0.8,
 	};
 	newe->dim = (Vector2) {2.0, 2.0};
 	newe->id = 1;

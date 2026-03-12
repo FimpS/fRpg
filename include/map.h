@@ -40,15 +40,22 @@ typedef struct Tile
 {
 	i32 type;
 	f32 light;
+	f32 light_level;
 	bool animated;
 	bool solid;
 } Tile;
+
+typedef struct LightSettings
+{
+	f32 ambient_light;
+} LightSettings;
 
 typedef struct Map
 {
 	MapCamera* camera;
 	Tile* content;
 	DynList* entities;
+	LightSettings light_settings;
 	V2 dim;	
 } Map;
 
