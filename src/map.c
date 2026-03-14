@@ -32,6 +32,39 @@ MapCamera* cam_new()
 	return mc_new;
 }
 
+void cam_tick_editor(Map* map, Vector2 source)
+{
+	MapCamera* cam = map->camera;
+
+	const f32 t = 128.0*(4096.0)/(GetScreenHeight() + GetScreenWidth());
+	const f32 t2 = 128.0*(764.0)/(GetScreenHeight() + GetScreenWidth());
+	cam->tile_len += GetMouseWheelMove() * 4;
+	if(cam->tile_len >= (i32)t) { cam->tile_len = (i32)t; }
+	else if(cam->tile_len <= t2) { cam->tile_len = t2; }
+
+
+	Vector2 mouse_pos = GetMousePosition();
+	cam->pos = vector2(source.x, source.y);
+	cam->visible_tiles = v2_new(
+			(i32) ceilf(GetScreenWidth() / cam->tile_len) + 1,
+			(i32) ceilf(GetScreenHeight() / cam->tile_len) + 1);
+
+
+	f32 half_w = cam->visible_tiles.x * 0.5;
+	f32 half_h = cam->visible_tiles.y * 0.5;
+
+#if 0
+	if (cam->pos.x < half_w) cam->pos.x = half_w;
+	if (cam->pos.y < half_h) cam->pos.y = half_h;
+	if (cam->pos.x > map->dim.x - half_w) cam->pos.x = map->dim.x - half_w;
+	if (cam->pos.y > map->dim.y - half_h) cam->pos.y = map->dim.y - half_h;
+#endif
+
+	cam->offset = (Vector2) { cam->pos.x - half_w, cam->pos.y - half_h };
+
+	cam->tile_offset = (Vector2) { (cam->offset.x - ((i32) cam->offset.x)) * cam->tile_len, (cam->offset.y - ((i32) cam->offset.y)) * cam->tile_len };
+}
+
 void cam_tick(Map* map, Vector2 source)
 {
 	MapCamera* cam = map->camera;
@@ -74,7 +107,7 @@ Map* map_new()
 	//memset(new_map, 0, sizeof(new_map->content));	
 	new_map->dim = v2_new(0, 0);
 	new_map->light_settings = (LightSettings) {
-		.ambient_light = 0.1,
+		.ambient_light = 0.05,
 	};
 	new_map->camera = cam_new();
 	return new_map;
@@ -163,13 +196,13 @@ void map_add_entity_lights(Map *map)
         Entity* e = dynList_get(map->entities, i);
 		Vector2 pos = Vector2Midpoint(e->pos, e->dim);
 
-        i32 tx = (i32)floorf(pos.x);
-        i32 ty = (i32)floorf(pos.y);
+		V2 t = (V2) { (i32)floorf(pos.x), (i32)floorf(pos.y) };
+		V2 v = (V2) { (i32)ceilf(pos.x), (i32)ceilf(pos.y) };
 
-        if(tx >= 0 && ty >= 0 && tx < map->dim.x && ty < map->dim.y)
+        if(t.x >= 0 && t.y >= 0 && t.x < map->dim.x && t.y < map->dim.y)
         {
-            map->content[ty * map->dim.x + tx].light = e->light.value * map_light_flicker();
-            map->content[ty * map->dim.x + tx].light_level = e->light.distance;
+            map->content[t.y * map->dim.x + t.x].light = e->light.value * map_light_flicker();
+            map->content[t.y * map->dim.x + t.x].light_level = e->light.distance;
         }
     }
 }
@@ -225,16 +258,16 @@ void map_populate_light(Map *map)
 					Tile *t_down  = &map->content[(y + 1) * map->dim.x + x];
 
 					if(!(t_right->solid && t_down->solid))
-						map_populate_step(map, (Vector2){x + 1, y + 1}, diag, loss);
+						map_populate_step(map, (Vector2) {x + 1, y + 1}, diag, loss);
 
 					if(!(t_left->solid && t_up->solid))
-						map_populate_step(map, (Vector2){x - 1, y - 1}, diag, loss);
+						map_populate_step(map, (Vector2) {x - 1, y - 1}, diag, loss);
 
 					if(!(t_right->solid && t_up->solid))
-						map_populate_step(map, (Vector2){x + 1, y - 1}, diag, loss);
+						map_populate_step(map, (Vector2) {x + 1, y - 1}, diag, loss);
 
 					if(!(t_left->solid && t_down->solid))
-						map_populate_step(map, (Vector2){x - 1, y + 1}, diag, loss);
+						map_populate_step(map, (Vector2) {x - 1, y + 1}, diag, loss);
 				}
 			}
 		}
@@ -272,7 +305,7 @@ void map_render(Map* map, Texture2D* texp)
 
 			Tile tile_data = map_get_tile(map, (V2){tx, ty});
 			Rectangle src = tilemap_textures[tile_data.type];
-			const f32 light_level =  sqrt(tile_data.light) * sqrtf(tile_data.light);	
+			const f32 light_level =  sqrtf(tile_data.light) * 1;// sqrtf(tile_data.light);	
 			Color diffuse = (Color) {255 * light_level, 255 * light_level, 255 * light_level, 255};
 
 			DrawTexturePro(tex, src, dst, (Vector2){0}, 0, diffuse);

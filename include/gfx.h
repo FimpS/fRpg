@@ -29,6 +29,7 @@ typedef struct Light
 {
 	Vector2 pos;
 	f32 distance;
+	f32 self;
 	Color tint;
 	f32 value;
 } Light;

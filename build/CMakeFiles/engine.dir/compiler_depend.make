@@ -49,8 +49,7 @@ CMakeFiles/engine.dir/lib/dynList.c.o: /home/samuel/c/game/fRpgCrawler/lib/dynLi
 
 CMakeFiles/engine.dir/src/editor.c.o: /home/samuel/c/game/fRpgCrawler/src/editor.c \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
-  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
-  /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
@@ -146,10 +145,11 @@ CMakeFiles/engine.dir/src/editor.c.o: /home/samuel/c/game/fRpgCrawler/src/editor
   /usr/local/include/raymath.h
 
 CMakeFiles/engine.dir/src/entity.c.o: /home/samuel/c/game/fRpgCrawler/src/entity.c \
+  /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
-  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
+  /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
@@ -158,6 +158,7 @@ CMakeFiles/engine.dir/src/entity.c.o: /home/samuel/c/game/fRpgCrawler/src/entity
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
+  /home/samuel/c/game/fRpgCrawler/include/global.h \
   /usr/include/alloca.h \
   /usr/include/endian.h \
   /usr/include/features.h \
@@ -285,8 +286,7 @@ CMakeFiles/engine.dir/src/gfx.c.o: /home/samuel/c/game/fRpgCrawler/src/gfx.c \
 
 CMakeFiles/engine.dir/src/map.c.o: /home/samuel/c/game/fRpgCrawler/src/map.c \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
-  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
-  /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
@@ -381,6 +381,7 @@ CMakeFiles/engine.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/state.c
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
+  /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \

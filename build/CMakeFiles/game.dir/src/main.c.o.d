@@ -60,9 +60,10 @@ CMakeFiles/game.dir/src/main.c.o: \
  /usr/local/include/raylib.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/types.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/state.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/types.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/state.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/map.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../lib/types.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../lib/v2.h \
@@ -76,8 +77,7 @@ CMakeFiles/game.dir/src/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../include/entity.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/gfx.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../lib/dynList.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/gfx.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/entity.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/state.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
  /home/samuel/c/game/fRpgCrawler/lib/types.h \

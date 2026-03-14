@@ -70,6 +70,7 @@ void map_set_tile(Map* map, V2 pos, Tile tile);
 void map_render(Map* map, Texture2D* texp);
 
 void cam_tick(Map* map, Vector2 source);
+void cam_tick_editor(Map* map, Vector2 source);
 void map_reset_light(Map* map);
 void map_populate_light(Map* map);
 void propagate(Map* map, i32 x, i32 y, f32 value);

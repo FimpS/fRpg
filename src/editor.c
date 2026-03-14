@@ -672,7 +672,7 @@ void editor_tick(Editor* editor)
 	switch(editor->state)
 	{
 		case EDITORSTATE_MAINCANVAS:
-			cam_tick(editor->map, cam->pos);
+			cam_tick_editor(editor->map, cam->pos);
 			editor_switch_state(editor);
 			editor_move_camera(editor, editor->map->camera);
 			editor_save(editor);

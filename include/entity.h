@@ -3,9 +3,10 @@
 
 #include "raylib.h"
 #include "../lib/types.h"
-#include "../include/state.h"
 #include "../include/gfx.h"
+#include "../include/state.h"
 
+typedef struct GameState GameState;
 typedef struct Entity Entity;
 
 typedef enum EntityType
@@ -18,6 +19,7 @@ typedef enum EntityType
 typedef enum EntityStateType
 {
 	ESTYPE_PLACEHOLDER,
+	ESTYPE_PLACEHOLDER2,
 	ESTYPE_CLEAR,
 
 } EntityStateType;
@@ -49,7 +51,7 @@ Entity* entity_new_editor(EntityType type, Vector2 pos);
 
 void entity_destroy(Entity* e);
 
-void entities_tick(DynList* entities);
-void entities_render(DynList* entities);
+void entities_tick(DynList* entities, GameState* state);
+void entities_render(DynList* entities, GameState* state);
 
 #endif

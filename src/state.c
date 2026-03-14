@@ -23,7 +23,7 @@ void state_tick(GameState* state)
 	DynList* entities = map->entities;
 
 
-	entities_tick(map->entities);
+	entities_tick(map->entities, state);
 	Entity* e = dynList_get(entities, 0);
 	cam_tick(map, Vector2Midpoint(e->pos, e->dim));
 
@@ -39,12 +39,13 @@ void state_tick(GameState* state)
 		Entity* self = dynList_get(entities, i);
 		if( i == 0 )
 		{
-		const f32 f = 0.2;
+		const f32 f = 0.1;
 		if(IsKeyDown(KEY_D)) { self->pos.x += f; };
 		if(IsKeyDown(KEY_A)) { self->pos.x -= f; };
 		if(IsKeyDown(KEY_W)) { self->pos.y -= f; };
 		if(IsKeyDown(KEY_S)) { self->pos.y += f; };
 		}
+#if 0
 		DrawTexturePro(state->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, 
 				(Rectangle) {
 				(self->pos.x - cam->offset.x) * cam->tile_len, 
@@ -52,8 +53,9 @@ void state_tick(GameState* state)
 				self->dim.x * cam->tile_len, 
 				self->dim.y * cam->tile_len}, 
 				(Vector2) {0}, 0.0, RED);
+#endif
 	}
-
+	entities_render(state->map->entities, state);
 
 #if 0
 	BeginTextureMode(state->gfx->light_map->map);
