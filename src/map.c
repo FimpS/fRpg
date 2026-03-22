@@ -222,10 +222,10 @@ void map_populate_step(Map *map, Vector2 pos, f32 value, f32 v)
 
 void map_populate_light(Map *map)
 {
-	const f32 light_decay = 0.10;
+	const f32 light_decay = 0.06;
 	const f32 energy_decay = 1.0;
 	const f32 epsilon = 0.01;
-	const u32 max_iterations = 10;
+	const u32 max_iterations = 16;
 	for(i32 iter = 0; iter < max_iterations; iter++)
 	{
 		for(i32 y = 1; y < map->dim.y-1; y++)
@@ -305,7 +305,7 @@ void map_render(Map* map, Texture2D* texp)
 
 			Tile tile_data = map_get_tile(map, (V2){tx, ty});
 			Rectangle src = tilemap_textures[tile_data.type];
-			const f32 light_level =  sqrtf(tile_data.light) * 1;// sqrtf(tile_data.light);	
+			const f32 light_level =  sqrtf(sqrtf(tile_data.light)) * 1;// sqrtf(tile_data.light);	
 			Color diffuse = (Color) {255 * light_level, 255 * light_level, 255 * light_level, 255};
 
 			DrawTexturePro(tex, src, dst, (Vector2){0}, 0, diffuse);
