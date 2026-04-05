@@ -251,6 +251,30 @@ src/gfx.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/gfx.c.s
 .PHONY : src/gfx.c.s
 
+src/item.o: src/item.c.o
+.PHONY : src/item.o
+
+# target to build an object file
+src/item.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/item.c.o
+.PHONY : src/item.c.o
+
+src/item.i: src/item.c.i
+.PHONY : src/item.i
+
+# target to preprocess a source file
+src/item.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/item.c.i
+.PHONY : src/item.c.i
+
+src/item.s: src/item.c.s
+.PHONY : src/item.s
+
+# target to generate assembly for a file
+src/item.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/item.c.s
+.PHONY : src/item.c.s
+
 src/main.o: src/main.c.o
 .PHONY : src/main.o
 
@@ -347,6 +371,30 @@ src/state.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/state.c.s
 .PHONY : src/state.c.s
 
+src/ui.o: src/ui.c.o
+.PHONY : src/ui.o
+
+# target to build an object file
+src/ui.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/ui.c.o
+.PHONY : src/ui.c.o
+
+src/ui.i: src/ui.c.i
+.PHONY : src/ui.i
+
+# target to preprocess a source file
+src/ui.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/ui.c.i
+.PHONY : src/ui.c.i
+
+src/ui.s: src/ui.c.s
+.PHONY : src/ui.s
+
+# target to generate assembly for a file
+src/ui.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/ui.c.s
+.PHONY : src/ui.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -370,6 +418,9 @@ help:
 	@echo "... src/gfx.o"
 	@echo "... src/gfx.i"
 	@echo "... src/gfx.s"
+	@echo "... src/item.o"
+	@echo "... src/item.i"
+	@echo "... src/item.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
@@ -382,6 +433,9 @@ help:
 	@echo "... src/state.o"
 	@echo "... src/state.i"
 	@echo "... src/state.s"
+	@echo "... src/ui.o"
+	@echo "... src/ui.i"
+	@echo "... src/ui.s"
 .PHONY : help
 
 
