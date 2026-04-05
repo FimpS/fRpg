@@ -12,6 +12,8 @@ typedef struct InventoryCell
 {
 	Item item;
 	Rectangle hitbox;
+	i32 focused;
+	u32 id;
 	
 } InventoryCell;
 
@@ -25,6 +27,7 @@ typedef struct Inventory
 
 Inventory* ui_inventory_new();
 
+void ui_inventory_tick(Inventory* inventory, GameState* state);
 void ui_inventory_render(Inventory* inventory, GameState* state);
 
 

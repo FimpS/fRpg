@@ -7,6 +7,8 @@
 
 #define TEXTURE_COUNT 3
 #define MAX_SCREEN_STRING_LEN 48
+#define DEFAULT_RES_X 1920
+#define DEFAULT_RES_Y 1080
 
 typedef struct TemporaryText
 {
@@ -22,6 +24,7 @@ typedef enum TextureIndex
 {
 	TEXTURE_TILEMAP,
 	TEXTURE_EDITOR_UI,
+	TEXTURE_GAME_UI,
 } TextureIndex;
 
 
@@ -49,6 +52,7 @@ typedef struct Gfx
 
 Gfx* gfx_new();
 
+Vector2 gfx_to_monitor(Vector2 pixels);
 TemporaryText* temporary_text_new(const u8* text,
 								  const Vector2 pos,
 								  const u32 dim,

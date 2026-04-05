@@ -1,9 +1,16 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "gfx.h"
 
+Vector2 gfx_to_monitor(Vector2 pixels)
+{
+	Vector2 monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
+	
+	return (Vector2) { ceilf(monitor.x / ( DEFAULT_RES_X / pixels.x) ), ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.y )) };
+}
 
 TemporaryText* temporary_text_new(const u8* text, 
 								 const Vector2 pos, 
