@@ -35,14 +35,14 @@ bool editor_load_level(Map* map, const char* filepath)
 	}
 
 	fread(&map->dim, sizeof(V2), 1, fp);
-
+	map->content = realloc(map->content, sizeof(Tile) * map->dim.x * map->dim.y);
 	u32 c = 0;
 	if((c = fread(map->content, sizeof(Tile), map->dim.x * map->dim.y, fp)) != map->dim.x * map->dim.y)
 	{
-		P_ERROR("File failed to read appropriate bytes\n");
+		P_ERROR("File failed to read appropriate bytes Read: %d | Expected: %d\n", c, map->dim.x * map->dim.y);
 	}
 	u32 entity_list_len = 0;
-	fread(&entity_list_len, sizeof(unsigned), 1, fp);
+	fread(&entity_list_len, sizeof(u32), 1, fp);
 
 	for (u32 i = 0; i < entity_list_len; i++)
 	{
@@ -82,6 +82,7 @@ void editor_save_level(Editor* editor, const char* filepath)
 	}
 
 	fwrite(&map->dim, sizeof(V2), 1, fp);
+	P_EDITORINFO("Saved dim: %d %d\n", map->dim.x, map->dim.y);
 
 	if(fwrite(map->content, sizeof(Tile), map->dim.x * map->dim.y, fp) != map->dim.x * map->dim.y)
 	{
@@ -213,34 +214,25 @@ Editor* editor_new(const u8* map_filename, V2 map_dim)
 
 	editor->state = EDITORSTATE_MAINCANVAS;
 	editor->pos = vector2(4.0, 4.0);
-	editor->map = map_new();
-	editor->brush_map = map_new();
-	editor->map->dim = v2_new(64, 64);
-	editor->brush_map->dim = v2_new(64, 64);
+	editor->brush_map = map_new(v2_new(64, 64));
+	//editor->map->dim = v2_new(64, 64);
 	editor->brush = (Tile) { 3, 0, ENTITYCLASS_NONE };
 	editor->gfx = gfx_new();
 	editor->bstate = BRUSHSTATE_TILE;
 	editor->brush_dim = 1;
 	editor->selected_entity = ENTITY_PLACEHOLDER;
 	editor->showing_entity = entity_new_editor(editor->selected_entity, (Vector2) {0.0, 0.0} );
-#if 0
-	for(int x = 0; x < editor->map->dim.x; x++)
-	{
-		for(int y = 0; y < editor->map->dim.y; y++)
-		{
-			editor->map->content[y * editor->map->dim.x + x] = (Tile) {
-				.type = 0,
-					.animated = false,
-			};
-		}
-	}
-#endif
+
 	strcpy(editor->filename, map_filename);
+	editor->map = map_new(map_dim);
 	bool file_exists = editor_load_level(editor->map, editor->filename);
 	if(!file_exists)
 	{
-		editor->map->dim = map_dim;
 		editor_init_empty_level(editor);
+	}
+	else
+	{
+//		editor->map = map_new(v2_new(64, 64));
 	}
 	editor_reset_brushmap(editor);
 	return editor;
@@ -348,7 +340,7 @@ void editor_delete_entity(Editor* editor)
 		for(i32 i = 0; i < dynList_len(editor->map->entities); i++)
 		{
 			Entity* ecurr = dynList_get(editor->map->entities, i);
-			if(AAB(ecurr, (Vector2) {mp.x, mp.y} ))
+			if(entity_AAB(ecurr, (Vector2) {mp.x, mp.y} ))
 			{
 				ecurr->state.type = ESTYPE_CLEAR;
 				break;
@@ -367,7 +359,7 @@ void editor_copy_entity(Editor* editor)
 		for(i32 i = 0; i < dynList_len(editor->map->entities); i++)
 		{
 			Entity* ecurr = dynList_get(editor->map->entities, i);
-			if(AAB(ecurr, (Vector2) {mp.x, mp.y} ))
+			if(entity_AAB(ecurr, (Vector2) {mp.x, mp.y} ))
 			{
 				editor->selected_entity = ecurr->type;
 				entity_destroy(editor->showing_entity);

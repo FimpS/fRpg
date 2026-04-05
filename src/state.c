@@ -9,7 +9,7 @@ GameState* state_new()
 	GameState* newstate = malloc(sizeof(GameState));
 
 	*newstate = (GameState) {
-		.map = map_new(),
+		.map = map_new(v2_new(0, 0)),
 		.gfx = gfx_new(),
 	};
 	map_load_level(newstate->map, "../maps/test.tmp");

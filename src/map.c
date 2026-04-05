@@ -37,7 +37,7 @@ void cam_tick_editor(Map* map, Vector2 source)
 	MapCamera* cam = map->camera;
 
 	const f32 t = 128.0*(4096.0)/(GetScreenHeight() + GetScreenWidth());
-	const f32 t2 = 128.0*(764.0)/(GetScreenHeight() + GetScreenWidth());
+	const f32 t2 = 128.0*(164.0)/(GetScreenHeight() + GetScreenWidth());
 	cam->tile_len += GetMouseWheelMove() * 4;
 	if(cam->tile_len >= (i32)t) { cam->tile_len = (i32)t; }
 	else if(cam->tile_len <= t2) { cam->tile_len = t2; }
@@ -70,7 +70,7 @@ void cam_tick(Map* map, Vector2 source)
 	MapCamera* cam = map->camera;
 
 	const f32 t = 128.0*(4096.0)/(GetScreenHeight() + GetScreenWidth());
-	const f32 t2 = 128.0*(764.0)/(GetScreenHeight() + GetScreenWidth());
+	const f32 t2 = 128.0*(164.0)/(GetScreenHeight() + GetScreenWidth());
 	cam->tile_len += GetMouseWheelMove() * 4;
 	if(cam->tile_len >= (i32)t) { cam->tile_len = (i32)t; }
 	else if(cam->tile_len <= t2) { cam->tile_len = t2; }
@@ -99,15 +99,17 @@ void cam_tick(Map* map, Vector2 source)
 }
 
 // Now we have reason to save map so loading in map_new is not bad option...
-Map* map_new()
+Map* map_new(V2 dim)
 {
 	Map* new_map = malloc(sizeof(Map));
-	new_map->content = malloc(sizeof(Tile) * CONTENT_SIZE);
+	new_map->content = malloc(sizeof(Tile) * dim.x * dim.y);
 	new_map->entities = dynList_new();
+	new_map->dim = dim;
+	printf("%d %d\n", dim.x, dim.y);
 	//memset(new_map, 0, sizeof(new_map->content));	
-	new_map->dim = v2_new(0, 0);
+	//new_map->dim = v2_new(0, 0);
 	new_map->light_settings = (LightSettings) {
-		.ambient_light = 0.05,
+		.ambient_light = 0.15,
 	};
 	new_map->camera = cam_new();
 	return new_map;
@@ -124,7 +126,6 @@ void map_destroy(Map* map)
 bool map_load_level(Map* map, const char* filepath)
 {
 	FILE* fp = NULL;
-
 	fp = fopen(filepath, "rb");
 	if(!fp)
 	{
@@ -133,6 +134,7 @@ bool map_load_level(Map* map, const char* filepath)
 	}
 
 	fread(&map->dim, sizeof(V2), 1, fp);
+	map->content = realloc(map->content, sizeof(Tile) * map->dim.x * map->dim.y);
 
 	u32 c = 0;
 	if((c = fread(map->content, sizeof(Tile), map->dim.x * map->dim.y, fp)) != map->dim.x * map->dim.y)
@@ -142,6 +144,7 @@ bool map_load_level(Map* map, const char* filepath)
 	u32 entity_list_len = 0;
 	fread(&entity_list_len, sizeof(unsigned), 1, fp);
 
+	printf("%d\n", entity_list_len);
 	for (u32 i = 0; i < entity_list_len; i++)
 	{
 		Entity* allocated_entity = malloc(sizeof(Entity));
@@ -184,45 +187,60 @@ void map_reset_light(Map* map)
 	}
 }
 
-f32 map_light_flicker()
+static i32 tick = 0;
+
+f32 map_light_flicker(Vector2 flicker)
 {
-	return frand( (Vector2) {0.9, 0.075} );
+	if(tick % (rand() % 4 + 4) == 0)
+	{
+		return frand(flicker);
+	}
+	else return flicker.x;
 }
+
 
 void map_add_entity_lights(Map *map)
 {
-    for(i32 i = 0; i < dynList_len(map->entities); i++)
-    {
-        Entity* e = dynList_get(map->entities, i);
+	tick ++;
+	for(i32 i = 0; i < dynList_len(map->entities); i++)
+	{
+		Entity* e = dynList_get(map->entities, i);
 		Vector2 pos = Vector2Midpoint(e->pos, e->dim);
+
+		Tile map_tile = map_get_tile(map, Vector2V2(pos));
+		if(e->light.value <= map->light_settings.ambient_light || map_tile.solid) 
+		{
+			continue;
+		}
+		e->light.self = 1.0;//e->light.value * 2.0;
 
 		V2 t = (V2) { (i32)floorf(pos.x), (i32)floorf(pos.y) };
 		V2 v = (V2) { (i32)ceilf(pos.x), (i32)ceilf(pos.y) };
 
-        if(t.x >= 0 && t.y >= 0 && t.x < map->dim.x && t.y < map->dim.y)
-        {
-            map->content[t.y * map->dim.x + t.x].light = e->light.value * map_light_flicker();
-            map->content[t.y * map->dim.x + t.x].light_level = e->light.distance;
-        }
-    }
+		if(t.x >= 0 && t.y >= 0 && t.x < map->dim.x && t.y < map->dim.y)
+		{
+			map->content[t.y * map->dim.x + t.x].light = e->light.value * map_light_flicker(e->light.flicker);
+			map->content[t.y * map->dim.x + t.x].light_level = e->light.distance;
+		}
+	}
 }
 
 void map_populate_step(Map *map, Vector2 pos, f32 value, f32 v)
 {
-    Tile *t = &map->content[(i32)pos.y * map->dim.x + (i32)pos.x];
+	Tile *t = &map->content[(i32)pos.y * map->dim.x + (i32)pos.x];
 
-    if(t->solid) value *= 0.4;
+	if(t->solid) value *= 0.4;
 
-    if(value > t->light)
+	if(value > t->light)
 	{
 		t->light_level = v;
-        t->light = value;
+		t->light = value;
 	}
 }
 
 void map_populate_light(Map *map)
 {
-	const f32 light_decay = 0.06;
+	const f32 light_decay = 0.12;
 	const f32 energy_decay = 1.0;
 	const f32 epsilon = 0.01;
 	const u32 max_iterations = 16;
@@ -232,17 +250,17 @@ void map_populate_light(Map *map)
 		{
 			for(i32 x = 1; x < map->dim.x-1; x++)
 			{
-				Tile *t = &map->content[y * map->dim.x + x];
+				Tile* t = &map->content[y * map->dim.x + x];
 				const f32 light = t->light;
 				const f32 energy = t->light_level;
 
 				if(light <= epsilon) continue;
-
-				const f32 spread = light - light_decay;
+				const f32 spread = light - (energy) / 100.0;
 				f32 loss = energy - energy_decay;
-				
+
 				if(energy <= 0) continue;
-				if(spread <= 0) continue;
+				//if(loss <= 0) continue;
+				//if(spread <= 0) continue;
 
 				map_populate_step(map, (Vector2) {x + 1, y}, spread, loss);
 				map_populate_step(map, (Vector2) {x - 1, y}, spread, loss);
@@ -305,7 +323,7 @@ void map_render(Map* map, Texture2D* texp)
 
 			Tile tile_data = map_get_tile(map, (V2){tx, ty});
 			Rectangle src = tilemap_textures[tile_data.type];
-			const f32 light_level =  sqrtf(sqrtf(tile_data.light)) * 1;// sqrtf(tile_data.light);	
+			const f32 light_level =  (sqrtf(tile_data.light)) * 1;// sqrtf(tile_data.light);	
 			Color diffuse = (Color) {255 * light_level, 255 * light_level, 255 * light_level, 255};
 
 			DrawTexturePro(tex, src, dst, (Vector2){0}, 0, diffuse);

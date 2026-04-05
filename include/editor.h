@@ -66,7 +66,6 @@ typedef struct Editor
 	bool quad_copied;
 } Editor;
 
-bool AAB(Entity* e, Vector2 p);
 Editor* editor_new();
 void editor_tick(Editor* editor);
 void editor_render(Editor* editor);

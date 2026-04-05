@@ -46,6 +46,14 @@ typedef struct Entity
 	u32 id;
 } Entity;
 
+typedef struct PlayerEntity
+{
+	Entity entity;
+	
+} PlayerEntity;
+
+bool entity_AAB(Entity* e, Vector2 p);
+
 Entity* entity_new(EntityType type, Vector2 pos);
 Entity* entity_new_editor(EntityType type, Vector2 pos);
 

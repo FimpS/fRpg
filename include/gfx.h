@@ -5,7 +5,7 @@
 #include "../lib/types.h"
 #include "../lib/dynList.h"
 
-#define TEXTURE_COUNT 2
+#define TEXTURE_COUNT 3
 #define MAX_SCREEN_STRING_LEN 48
 
 typedef struct TemporaryText
@@ -29,7 +29,9 @@ typedef struct Light
 {
 	Vector2 pos;
 	f32 distance;
+	bool light_source;
 	f32 self;
+	Vector2 flicker;
 	Color tint;
 	f32 value;
 } Light;

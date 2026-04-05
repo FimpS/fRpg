@@ -61,7 +61,7 @@ typedef struct Map
 
 
 Vector2 map_get_mouse_cords(Map* map);
-Map* map_new();
+Map* map_new(V2 dim);
 void map_destroy(Map* map);
 
 bool map_load_level(Map* map, const char* filepath);
