@@ -4,19 +4,19 @@
 #include "ui.h"
 #include "global.h"
 
-u32 ui_inventory_len(Inventory* inventory)
+u32 ui_inventory_cap(Inventory* inventory)
 {
 	return inventory->rows * inventory->cols;
 }
 
 void ui_inventory_init_cells(Inventory* inventory)
 {
-	const u32 len = ui_inventory_len(inventory);
+	const u32 cap = ui_inventory_cap(inventory);
 
 	Vector2 dim = gfx_to_monitor( (Vector2) {50, 50} );
 	Vector2 pos = gfx_to_monitor( (Vector2) { GetScreenWidth() - 100 - dim.x, 100 } );
 
-	for(i32 i = 0; i < len; i++)
+	for(i32 i = 0; i < cap; i++)
 	{
 		inventory->cells[i] = (InventoryCell) {
 			.hitbox = {
@@ -24,11 +24,13 @@ void ui_inventory_init_cells(Inventory* inventory)
 				pos.y + ( (i / inventory->cols) * dim.y ), 
 				dim.x, 
 				dim.y },
-			.item = {0},
+			.item = (Item) {
+				.info = item_info_table[ITEM_TYPE_NONE],
+				.type = ITEM_TYPE_NONE,
+			},
 			.focused = false,
 			.id = i,
 		};
-		//P_LOG("%f %f %f %f\n", pos.x, pos.y, dim.x, dim.y);
 	}
 }
 
@@ -40,46 +42,132 @@ Inventory* ui_inventory_new()
 	*inv_new = (Inventory) {
 		.cols = 6,
 			.rows = 10,
-			.hitbox = { screen_pos.x, screen_pos.y, dim.x, dim.y }
+			.hitbox = { screen_pos.x, screen_pos.y, dim.x, dim.y },
+			.mode = INVENTORY_MODE_NONE,
+			.moved_id = -1,
+			.focus_id = -1,
 	};
 	ui_inventory_init_cells(inv_new);
+
+	ui_inventory_add_item(inv_new, (Item) {
+			.type = ITEM_TYPE_PLACEHOLDER,
+			.info = item_info_table[ITEM_TYPE_PLACEHOLDER],
+			} );
+	ui_inventory_add_item(inv_new, (Item) {
+			.type = ITEM_TYPE_PLACEHOLDER,
+			.info = item_info_table[ITEM_TYPE_PLACEHOLDER],
+			} );
+
+
 	return inv_new;
 }
 
-void ui_inventory_cell_tick(InventoryCell* cell, GameState* state)
+InventoryCell ui_inventory_get_cell(Inventory* inventory, Vector2 pos)
+{
+	const u32 cap = ui_inventory_cap(inventory);
+	for(i32 i = 0; i < cap; i++)
+	{
+		InventoryCell cell = inventory->cells[i];
+		if(AAB(cell.hitbox, pos))
+		{
+			return cell;
+		}
+	}
+}
+
+void ui_inventory_cell_tick(InventoryCell* cell, Inventory* inventory, GameState* state)
 {
 	Vector2 mouse_cords = GetMousePosition();
 	if(AAB(cell->hitbox, mouse_cords))
 	{
-		cell->focused = true;
-	} else cell->focused = false;
+		cell->focused = cell->id;
+	} else cell->focused = -1;
+
+	if(inventory->mode == INVENTORY_MODE_NONE && 
+			cell->item.type != ITEM_TYPE_NONE &&
+			AAB(cell->hitbox, mouse_cords) && 
+			IsMouseButtonDown(0))
+	{
+		inventory->mode = INVENTORY_MODE_MOVE;
+		inventory->moved_id = cell->id;
+	}
+}
+
+void ui_inventory_swap_items(Inventory* inventory, GameState* state)
+{
+	i32 focus_id = inventory->focus_id;
+	i32 moved_id = inventory->moved_id;
+	Item tmp = inventory->cells[focus_id].item;
+	inventory->cells[focus_id].item = inventory->cells[moved_id].item;
+	inventory->cells[moved_id].item = tmp;
+}
+
+void ui_inventory_move_mode(Inventory* inventory, GameState* state)
+{
+	if(inventory->mode == INVENTORY_MODE_MOVE && IsMouseButtonReleased(0))
+	{
+		inventory->mode = INVENTORY_MODE_NONE;
+		ui_inventory_swap_items(inventory, state);
+	}
 }
 
 void ui_inventory_tick(Inventory* inventory, GameState* state)
 {
-	const u32 len = ui_inventory_len(inventory);
-	for(i32 i = 0; i < len; i++)
+	const u32 cap = ui_inventory_cap(inventory);
+	for(i32 i = 0; i < cap; i++)
 	{
-		ui_inventory_cell_tick(&inventory->cells[i], state);
+		ui_inventory_cell_tick(&inventory->cells[i], inventory, state);
 	}
+	ui_inventory_move_mode(inventory, state);
 }
 
 void ui_inventory_cell_render(InventoryCell cell, GameState* state)
 {
 	Gfx* gfx = state->gfx;
 	Rectangle r;
-	if(cell.item.type == ITEM_TYPE_NONE)
+	//if(cell.item.type == ITEM_TYPE_NONE)
 	{
 		r = (Rectangle) {0, 16, 16, 16};
 		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
-			r, 
-			cell.hitbox, 
-			(Vector2) {0}, 
-			0.0, 
-			WHITE);
+				r, 
+				cell.hitbox, 
+				(Vector2) {0}, 
+				0.0, 
+				WHITE);
+	}
+	{
+		r = (Rectangle) {0, 32, 16, 16};
+		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
+				r, 
+				cell.hitbox, 
+				(Vector2) {0}, 
+				0.0, 
+				DARKGRAY);
+	}
+	if(cell.item.type == ITEM_TYPE_PLACEHOLDER)
+	{
+		r = (Rectangle) {16, 0, 16, 16};
+		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
+				r, 
+				cell.hitbox, 
+				(Vector2) {0}, 
+				0.0, 
+				WHITE);
 	}
 
-	
+}
+
+void ui_inventory_add_item(Inventory* inventory, Item item)
+{
+	const u32 cap = ui_inventory_cap(inventory);
+	for(i32 i = 0; i < cap; i++)
+	{
+		InventoryCell* cell = &inventory->cells[i];
+		if(cell->item.type == ITEM_TYPE_NONE)
+		{
+			cell->item = item; break;
+		}
+	}
 }
 
 void ui_inventory_background_render(Inventory* inventory, GameState* state)
@@ -100,20 +188,41 @@ void ui_item_cell_text_render(Inventory* inventory, GameState* state, const i32 
 	if(id != -1) 
 	{
 		InventoryCell cell = inventory->cells[id];
-		DrawText(TextFormat("ID: %d", cell.id), cell.hitbox.x, cell.hitbox.y, 20, GREEN);
+		DrawText(TextFormat("%s\n%s", cell.item.info.name, cell.item.info.description), cell.hitbox.x, cell.hitbox.y, 20, GREEN);
 	}
 }
 
 void ui_inventory_render(Inventory* inventory, GameState* state)
 {
-	const u32 len = ui_inventory_len(inventory);
+	Gfx* gfx = state->gfx;
+	const u32 cap = ui_inventory_cap(inventory);
 	i32 focused_cell_id = -1;
 	ui_inventory_background_render(inventory, state);
-	for(i32 i = 0; i < len; i++)
+	for(i32 i = 0; i < cap; i++)
 	{
 		ui_inventory_cell_render(inventory->cells[i], state);
-		if(inventory->cells[i].focused) focused_cell_id = inventory->cells[i].id;
+		if(inventory->cells[i].focused != -1) 
+		{
+			inventory->focus_id = inventory->cells[i].id;
+			focused_cell_id = inventory->cells[i].id;
+		}
 	}
 	ui_item_cell_text_render(inventory, state, focused_cell_id);
+#if 1
+	//TODO fix this its static now
+	if(inventory->mode == INVENTORY_MODE_MOVE)
+	{
+		Vector2 mouse_cords = GetMousePosition();
+		Rectangle r = {16, 0, 16, 16};
+		Rectangle tr = inventory->cells[inventory->focus_id].hitbox;
+		tr.x = mouse_cords.x; tr.y = mouse_cords.y;
+		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
+				r, 
+				tr, 
+				(Vector2) {0}, 
+				0.0, 
+				WHITE);
+	}
+#endif
 }
 

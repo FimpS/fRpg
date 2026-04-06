@@ -293,8 +293,25 @@ CMakeFiles/engine.dir/src/gfx.c.o: /home/samuel/c/game/fRpgCrawler/src/gfx.c \
   /usr/local/include/raylib.h
 
 CMakeFiles/engine.dir/src/item.c.o: /home/samuel/c/game/fRpgCrawler/src/item.c \
+  /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/item.h \
-  /usr/include/stdc-predef.h
+  /usr/include/features.h \
+  /usr/include/stdc-predef.h \
+  /usr/include/stdint.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h
 
 CMakeFiles/engine.dir/src/map.c.o: /home/samuel/c/game/fRpgCrawler/src/map.c \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
@@ -481,6 +498,7 @@ CMakeFiles/engine.dir/src/ui.c.o: /home/samuel/c/game/fRpgCrawler/src/ui.c \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
+  /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/global.h \
   /home/samuel/c/game/fRpgCrawler/include/item.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \

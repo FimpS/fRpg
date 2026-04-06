@@ -89,6 +89,7 @@ CMakeFiles/game.dir/src/main.c.o: \
  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/item.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/state.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/v2.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/src/../lib/hashmap.h \
  /home/samuel/c/game/fRpgCrawler/src/../lib/types.h
