@@ -52,11 +52,13 @@ Inventory* ui_inventory_new()
 	ui_inventory_add_item(inv_new, (Item) {
 			.type = ITEM_TYPE_PLACEHOLDER,
 			.info = item_info_table[ITEM_TYPE_PLACEHOLDER],
+			.enchant = { 1 },
 			} );
-	ui_inventory_add_item(inv_new, (Item) {
-			.type = ITEM_TYPE_PLACEHOLDER,
-			.info = item_info_table[ITEM_TYPE_PLACEHOLDER],
-			} );
+	inv_new->cells[13].item = (Item) {
+			.type = ITEM_TYPE_HELMET,
+			.info = item_info_table[ITEM_TYPE_HELMET],
+			.enchant = { rand() % 4 },
+			};
 
 
 	return inv_new;
@@ -121,34 +123,54 @@ void ui_inventory_tick(Inventory* inventory, GameState* state)
 	ui_inventory_move_mode(inventory, state);
 }
 
+static const Color enchant_to_color_table[] =
+{
+	WHITE,
+	{50, 10, 150, 255},
+	{235, 25, 200, 255},
+	{200, 200, 10, 255},
+	{},
+	{},
+	{},
+	{},
+	{},
+};
+
+static const Rectangle inventory_item_table[] =
+{
+	{0, 0, 16, 16},
+	{16, 0, 16, 16},
+	{16, 16, 16, 16},
+};
+
+void ui_inventory_cell_background_render(InventoryCell* cell, GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	Rectangle source_background = (Rectangle) {0, 16, 16, 16};
+	Rectangle source_border = (Rectangle) {0, 32, 16, 16};
+
+	DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
+			source_background, 
+			cell->hitbox, 
+			(Vector2) {0}, 
+			0.0, 
+			enchant_to_color_table[cell->item.enchant.level]);
+	DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
+			source_border, 
+			cell->hitbox, 
+			(Vector2) {0}, 
+			0.0, 
+			WHITE);
+}
+
 void ui_inventory_cell_render(InventoryCell cell, GameState* state)
 {
 	Gfx* gfx = state->gfx;
-	Rectangle r;
-	//if(cell.item.type == ITEM_TYPE_NONE)
+	ui_inventory_cell_background_render(&cell, state);
+	if(cell.item.type != ITEM_TYPE_NONE)
 	{
-		r = (Rectangle) {0, 16, 16, 16};
 		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
-				r, 
-				cell.hitbox, 
-				(Vector2) {0}, 
-				0.0, 
-				WHITE);
-	}
-	{
-		r = (Rectangle) {0, 32, 16, 16};
-		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
-				r, 
-				cell.hitbox, 
-				(Vector2) {0}, 
-				0.0, 
-				DARKGRAY);
-	}
-	if(cell.item.type == ITEM_TYPE_PLACEHOLDER)
-	{
-		r = (Rectangle) {16, 0, 16, 16};
-		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
-				r, 
+				inventory_item_table[cell.item.type], 
 				cell.hitbox, 
 				(Vector2) {0}, 
 				0.0, 
@@ -224,5 +246,10 @@ void ui_inventory_render(Inventory* inventory, GameState* state)
 				WHITE);
 	}
 #endif
+}
+
+void ui_text_box_render()
+{
+
 }
 

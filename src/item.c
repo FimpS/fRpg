@@ -11,4 +11,9 @@ const ItemInfo item_info_table[] = {
 		.description = "Description for Placeholder Ring",
 		.class = ITEM_CLASS_RING,
 	},
+	(ItemInfo) {
+		.name = "Placeholder Helmet",
+		.description = "Description for Placeholder Helmet",
+		.class = ITEM_CLASS_HELMET,
+	},
 };

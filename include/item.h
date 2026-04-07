@@ -10,12 +10,14 @@ typedef enum
 {
 	ITEM_TYPE_NONE,
 	ITEM_TYPE_PLACEHOLDER,
+	ITEM_TYPE_HELMET,
 } ItemType;
 
 typedef enum
 {
 	ITEM_CLASS_NONE,
 	ITEM_CLASS_RING,
+	ITEM_CLASS_HELMET,
 } ItemClass;
 
 typedef struct ItemInfo
@@ -25,10 +27,16 @@ typedef struct ItemInfo
 	ItemClass class;
 } ItemInfo;
 
+typedef struct ItemEnchant
+{
+	i32 level; //maybe this is a ratio of the level of the enemy?
+} ItemEnchant;
+
 typedef struct Item
 {
 	ItemType type;
 	ItemInfo info;
+	ItemEnchant enchant;
 } Item;
 
 extern const ItemInfo item_info_table[];
