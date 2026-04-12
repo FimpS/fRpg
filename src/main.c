@@ -15,6 +15,7 @@
 
 
 int main(void) {
+	srand(time(NULL));
 	SetTraceLogLevel(LOG_ERROR);
 	//HashMap* map = hmap_new(32);
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);

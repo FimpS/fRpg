@@ -46,8 +46,10 @@ CMakeFiles/engine.dir/src/ui.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
- /home/samuel/c/game/fRpgCrawler/include/ui.h \
+ /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/string.h \
+ /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+ /usr/include/strings.h /home/samuel/c/game/fRpgCrawler/include/ui.h \
  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
  /home/samuel/c/game/fRpgCrawler/include/item.h \

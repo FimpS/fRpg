@@ -8,6 +8,7 @@
 #include "../lib/v2.h"
 
 #define TOTAL_INVENTORY_CELLS 60
+#define TOTAL_INVENTORY_BUTTONS 1
 
 typedef enum
 {
@@ -21,7 +22,20 @@ typedef struct InventoryCell
 	Rectangle hitbox;
 	i32 focused;
 	u32 id;
+	bool stackable;
+	u32 amount;
 } InventoryCell;
+
+typedef struct Inventory Inventory;
+
+typedef struct InventoryButton
+{
+	Rectangle hitbox;
+	Rectangle src_rec;
+	Rectangle hover_src_rec;
+	bool hovered;
+	void (*on_click)(Inventory* inventroy, GameState* state);
+} InventoryButton;
 
 typedef struct Inventory
 {
@@ -29,11 +43,16 @@ typedef struct Inventory
 	Rectangle hitbox;
 	u32 cols;
 	u32 rows;
-	V2 focused_cells;
+
 	i32 focus_id;
 	i32 moved_id;
 	InventoryMode mode;
+
+	InventoryButton buttons[TOTAL_INVENTORY_BUTTONS];
 } Inventory;
+
+void ui_wrap_text_render(const u8* text, Vector2 pos, const i32 max_width, const u32 padding, const u32 font_size, GameState* state);
+void ui_text_box_render(const u8* text, Vector2 pos, GameState* state);
 
 Inventory* ui_inventory_new();
 

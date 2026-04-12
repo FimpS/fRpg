@@ -5,18 +5,35 @@
 
 #include "gfx.h"
 
-Vector2 gfx_to_monitor(Vector2 pixels)
+u32 gfx_to_monitor(u32 pixels)
+{
+	Vector2 monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
+	return ceilf(monitor.x / ( DEFAULT_RES_X / pixels) );
+}
+
+Vector2 gfx_to_monitor_vector(Vector2 pixels)
 {
 	Vector2 monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
 	
 	return (Vector2) { ceilf(monitor.x / ( DEFAULT_RES_X / pixels.x) ), ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.y )) };
 }
 
+Rectangle gfx_to_monitor_rectangle(Rectangle pixels)
+{
+	Rectangle monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
+	
+	return (Rectangle) { ceilf(monitor.x / ( DEFAULT_RES_X / pixels.x) ), 
+		ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.y )),
+		ceilf(monitor.x / ( DEFAULT_RES_X / pixels.width )),
+		ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.height )) 
+	};
+}
+
 TemporaryText* temporary_text_new(const u8* text, 
-								 const Vector2 pos, 
-								 const u32 dim, 
-								 const u32 timer, 
-								 const Color color)
+		const Vector2 pos, 
+		const u32 dim, 
+		const u32 timer, 
+		const Color color)
 {
 	TemporaryText* tmp_text_new = malloc(sizeof(TemporaryText));	
 	strcpy(tmp_text_new->text, text);
@@ -67,7 +84,7 @@ LightGfx* lightgfx_new()
 	LightGfx* lightgfx = malloc(sizeof(LightGfx));
 
 	*lightgfx = (LightGfx) {
-			.map = LoadRenderTexture(GetScreenWidth(), GetScreenHeight()),
+		.map = LoadRenderTexture(GetScreenWidth(), GetScreenHeight()),
 	};
 
 	return lightgfx;
@@ -88,7 +105,8 @@ Gfx* gfx_new()
 	Gfx* gnew = malloc(sizeof(Gfx));
 	*gnew = (Gfx) {
 		.texs = malloc(sizeof(Texture2D) * TEXTURE_COUNT),
-		.light_map = lightgfx_new(),
+			.font = LoadFont("../fonts/PixelSans.ttf"),
+			.light_map = lightgfx_new(),
 	};
 
 	gfx_load_textures(gnew->texs);

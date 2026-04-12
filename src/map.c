@@ -105,7 +105,6 @@ Map* map_new(V2 dim)
 	new_map->content = malloc(sizeof(Tile) * dim.x * dim.y);
 	new_map->entities = dynList_new();
 	new_map->dim = dim;
-	printf("%d %d\n", dim.x, dim.y);
 	//memset(new_map, 0, sizeof(new_map->content));	
 	//new_map->dim = v2_new(0, 0);
 	new_map->light_settings = (LightSettings) {
@@ -144,7 +143,6 @@ bool map_load_level(Map* map, const char* filepath)
 	u32 entity_list_len = 0;
 	fread(&entity_list_len, sizeof(unsigned), 1, fp);
 
-	printf("%d\n", entity_list_len);
 	for (u32 i = 0; i < entity_list_len; i++)
 	{
 		Entity* allocated_entity = malloc(sizeof(Entity));

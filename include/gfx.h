@@ -46,13 +46,17 @@ typedef struct LightGfx
 
 typedef struct Gfx
 {
+	Font font;
 	LightGfx* light_map;
 	Texture2D* texs;
 } Gfx;
 
 Gfx* gfx_new();
 
-Vector2 gfx_to_monitor(Vector2 pixels);
+Vector2 gfx_to_monitor_vector(Vector2 pixels);
+Rectangle gfx_to_monitor_rectangle(Rectangle pixels);
+u32 gfx_to_monitor(u32 pixels);
+
 TemporaryText* temporary_text_new(const u8* text,
 								  const Vector2 pos,
 								  const u32 dim,
