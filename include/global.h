@@ -1,9 +1,11 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#include <stdio.h>
 
 #include "raylib.h"
 #include "types.h"
+#include "../lib/v2.h"
 
 #define LOG_MODE 1
 

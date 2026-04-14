@@ -25,6 +25,7 @@ typedef struct ItemInfo
 	u8 name[MAX_NAME_LEN];
 	u8 description[MAX_DESC_LEN];
 	ItemClass class;
+	bool stackable;
 } ItemInfo;
 
 typedef struct ItemEnchant

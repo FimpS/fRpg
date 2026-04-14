@@ -700,19 +700,34 @@ void editor_tick(Editor* editor)
 			break;
 	}
 }
+Rectangle entity_get_render_frame(Entity* self, Editor* editor)
+{
+	EntityAnimation* animation = &self->state.animation;
+	return animation->frames[ ( (animation->timer ++ ) / animation->stop_timer ) % animation->amount_frames];
+}
 
 void editor_entity_render(Entity* self, Editor* editor)
 {
-	MapCamera* camera = editor->map->camera;
-	if(self->type == 0)
-	{
-		DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, (Rectangle) {(self->pos.x - camera->offset.x) * editor->map->camera->tile_len, (self->pos.y - camera->offset.y) * editor->map->camera->tile_len, self->dim.x * editor->map->camera->tile_len, self->dim.y * editor->map->camera->tile_len}, (Vector2) {0}, 0.0, RED);
-	}
-	else
-	{
-		DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, (Rectangle) {(self->pos.x - camera->offset.x) * editor->map->camera->tile_len, (self->pos.y - camera->offset.y) * editor->map->camera->tile_len, self->dim.x * editor->map->camera->tile_len, self->dim.y * editor->map->camera->tile_len}, (Vector2) {0}, 0.0, GREEN);
-	}
+	MapCamera* cam = editor->map->camera;
+	const u32 rgb_values = 255 * self->light.self;
+	const u32 rgb = 255;
+	Color color = { rgb_values, rgb_values, rgb_values, rgb};
+
+	Rectangle src_frame = entity_get_render_frame(self, editor);
+
+	DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], 
+			src_frame, 
+			(Rectangle) {
+			(self->pos.x - cam->offset.x) * cam->tile_len, 
+			(self->pos.y - cam->offset.y) * cam->tile_len, 
+			self->dim.x * cam->tile_len, 
+			self->dim.y * cam->tile_len
+			}, 
+			(Vector2) {0}, 
+			0.0, 
+			color);
 }
+
 
 void editor_check_dead_entity(DynList* entities, Entity* e, i32* i)
 {

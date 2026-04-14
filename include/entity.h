@@ -6,6 +6,8 @@
 #include "../include/gfx.h"
 #include "../include/state.h"
 
+#define MAX_ENTITY_ANIMATION_FRAMES 8
+
 typedef struct GameState GameState;
 typedef struct Entity Entity;
 
@@ -24,6 +26,14 @@ typedef enum EntityStateType
 
 } EntityStateType;
 
+typedef struct EntityAnimation
+{
+	Rectangle frames[MAX_ENTITY_ANIMATION_FRAMES];
+	u32 amount_frames;
+	u32 timer;
+	u32 stop_timer;
+} EntityAnimation;
+
 typedef struct EntitySprite
 {
 	Rectangle rec_bmap;
@@ -33,7 +43,7 @@ typedef struct EntityState
 {
 	EntityStateType type;
 	void (*tick)(Entity* self);
-	EntitySprite sprite;
+	EntityAnimation animation;
 } EntityState;
 
 typedef struct Entity

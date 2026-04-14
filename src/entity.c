@@ -21,10 +21,26 @@ void estate_placeholder_tick(Entity* self)
 	}
 }
 
-EntityState state_map[] =
-{
-	{ESTYPE_PLACEHOLDER, estate_placeholder_tick, {{0, 0, 16, 16}, }, },
-	{ESTYPE_PLACEHOLDER2, estate_placeholder_tick, {{0, 0, 16, 16}, }, },
+const EntityState entity_state_table[] = {
+	(EntityState) {
+		.type = ESTYPE_PLACEHOLDER, 
+		.tick = estate_placeholder_tick, 
+		.animation = {
+			.stop_timer = 8,
+			.amount_frames = 1,
+			.frames = { {0, 0, 16, 16}, {0, 16, 16, 16}, },
+		},
+	},
+	(EntityState) {
+		.type = ESTYPE_PLACEHOLDER2, 
+		.tick = estate_placeholder_tick, 
+		.animation = {
+			.stop_timer = 8,
+			.amount_frames = 1,
+			.frames = { {0, 0, 16, 16}, {0, 16, 16, 16}, },
+		},
+	},
+
 };
 
 /* PRIVATE */
@@ -70,15 +86,23 @@ void entities_tick(DynList* entities, GameState* state)
 	}
 }
 
+Rectangle entity_get_render_frame(Entity* self, GameState* state)
+{
+	EntityAnimation* animation = &self->state.animation;
+	const u32 expression = ( (animation->timer ++ ) / animation->stop_timer ) % animation->amount_frames;
+	return animation->frames[ expression ];
+}
+
 void entity_render(Entity* self, GameState* state)
 {
 	MapCamera* cam = state->map->camera;
 	const u32 rgb_values = 255 * self->light.self;
 	const u32 rgb = 255;
 	Color color = { rgb_values, rgb_values, rgb_values, rgb};
-	//Color color = { rgb, rgb, rgb, rgb};
+
+	Rectangle src_frame = entity_get_render_frame(self, state);
 	DrawTexturePro(state->gfx->texs[TEXTURE_TILEMAP], 
-			self->state.sprite.rec_bmap, 
+			src_frame, 
 			(Rectangle) {
 			(self->pos.x - cam->offset.x) * cam->tile_len, 
 			(self->pos.y - cam->offset.y) * cam->tile_len, 
@@ -103,7 +127,7 @@ Entity* entity_new_editor(EntityType type, Vector2 pos)
 {
 	Entity* newe = malloc(sizeof(Entity));
 	newe->type = type;
-	newe->state = state_map[newe->type];
+	newe->state = entity_state_table[newe->type];
 	newe->pos = pos;
 	newe->light = (Light) {
 		.pos = newe->pos,
@@ -119,7 +143,7 @@ Entity* entity_new(EntityType type, Vector2 pos)
 {
 	Entity* newe = malloc(sizeof(Entity));
 	newe->type = type;
-	newe->state = state_map[newe->type];
+	newe->state = entity_state_table[newe->type];
 	newe->pos = pos;
 	if(type == ESTYPE_PLACEHOLDER)
 	{

@@ -1,5 +1,6 @@
 CMakeFiles/engine.dir/src/item.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/item.c /usr/include/stdc-predef.h \
+ /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
  /home/samuel/c/game/fRpgCrawler/include/item.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/types.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \

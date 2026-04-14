@@ -3,7 +3,10 @@
 #include <string.h>
 #include <math.h>
 
-#include "gfx.h"
+#include "../include/gfx.h"
+#include "../include/global.h"
+#include "raylib.h"
+#include "raymath.h"
 
 u32 gfx_to_monitor(u32 pixels)
 {
@@ -72,6 +75,26 @@ void temporary_text_render(DynList* ts)
 	}
 }
 
+
+static const Rectangle mouse_render_table[][2] = {
+	{ {16, 64, 16, 16}, {0, 0, 24, 24} },
+	{ {0, 64, 16, 16}, {0, 0, 32, 32} },
+	{ {0, 16, 16, 16}, {0, 0, 32, 32} },
+};
+
+void gfx_render_mouse(Gfx* gfx)
+{
+	Rectangle dst = mouse_render_table[gfx->mouse.type][1];
+	const Vector2 mouse_cords = Vector2SubtractValue(GetMousePosition(), dst.height / 2); 
+	Color color = IsMouseButtonDown(0) ? (Color) LIGHTGRAY : WHITE;
+	DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
+			mouse_render_table[gfx->mouse.type][0],
+			(Rectangle) {mouse_cords.x, mouse_cords.y, dst.width, dst.height},
+			(Vector2) {0},
+			0.0,
+			color);
+}
+
 static const u8* texture_filenames[] = 
 {
 	"../assets/TileMap.png",
@@ -107,14 +130,15 @@ Gfx* gfx_new()
 		.texs = malloc(sizeof(Texture2D) * TEXTURE_COUNT),
 			.font = LoadFont("../fonts/PixelSans.ttf"),
 			.light_map = lightgfx_new(),
+			.mouse = (MouseGfx) {
+				.type = MOUSE_TYPE_STANDARD,
+			},
 	};
 
 	gfx_load_textures(gnew->texs);
 
 	return gnew;
 }
-
-
 
 
 

@@ -9,7 +9,10 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+  /home/samuel/c/game/fRpgCrawler/include/item.h \
   /home/samuel/c/game/fRpgCrawler/include/map.h \
+  /home/samuel/c/game/fRpgCrawler/include/state.h \
+  /home/samuel/c/game/fRpgCrawler/include/ui.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
@@ -22,7 +25,6 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
   /home/samuel/c/game/fRpgCrawler/include/global.h \
-  /home/samuel/c/game/fRpgCrawler/include/item.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/include/ui.h \
   /home/samuel/c/game/fRpgCrawler/lib/hashmap.h \

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../include/state.h"
+#include "../include/ui.h"
 #include "../include/global.h"
 
 GameState* state_new()
@@ -11,6 +12,7 @@ GameState* state_new()
 	*newstate = (GameState) {
 		.map = map_new(v2_new(0, 0)),
 		.gfx = gfx_new(),
+		.inventory = ui_inventory_new(),
 	};
 	map_load_level(newstate->map, "../maps/test.tmp");
 	return newstate;
@@ -22,7 +24,7 @@ void state_tick(GameState* state)
 	MapCamera* cam = map->camera;
 	DynList* entities = map->entities;
 
-
+	ui_inventory_tick(state->inventory, state);
 	entities_tick(map->entities, state);
 	Entity* e = dynList_get(entities, 0);
 	cam_tick(map, Vector2Midpoint(e->pos, e->dim));
@@ -85,4 +87,9 @@ void state_tick(GameState* state)
 
 	EndBlendMode();
 #endif
+}
+
+void state_render(GameState* state)
+{
+	ui_render(state);
 }

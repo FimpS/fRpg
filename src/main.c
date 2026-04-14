@@ -22,6 +22,7 @@ int main(void) {
     InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "2D - TileMapEditor");
     SetTargetFPS(60);
 
+	HideCursor();
     Vector2 rectPos = { 400, 300 };
     float speed = 4.0f;
 	GameState* state = state_new();
@@ -32,7 +33,6 @@ int main(void) {
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 12.5} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 39.0} ));
 
-	Inventory* v = ui_inventory_new();
 	//dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER, (Vector2) {5.0, 5.0} ));
 
 	ToggleFullscreen();
@@ -40,8 +40,7 @@ int main(void) {
 	{
 		BeginDrawing();
 		state_tick(state);
-		ui_inventory_tick(v, state);
-		ui_inventory_render(v, state);
+		state_render(state);
 		DrawText(TextFormat("Sword of the Fallen\nNeutral"), 10, 10, 5, GREEN);
 		EndDrawing();
 	}
