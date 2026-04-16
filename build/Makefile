@@ -227,6 +227,30 @@ src/entity.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity.c.s
 .PHONY : src/entity.c.s
 
+src/entity_info.o: src/entity_info.c.o
+.PHONY : src/entity_info.o
+
+# target to build an object file
+src/entity_info.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_info.c.o
+.PHONY : src/entity_info.c.o
+
+src/entity_info.i: src/entity_info.c.i
+.PHONY : src/entity_info.i
+
+# target to preprocess a source file
+src/entity_info.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_info.c.i
+.PHONY : src/entity_info.c.i
+
+src/entity_info.s: src/entity_info.c.s
+.PHONY : src/entity_info.s
+
+# target to generate assembly for a file
+src/entity_info.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_info.c.s
+.PHONY : src/entity_info.c.s
+
 src/gfx.o: src/gfx.c.o
 .PHONY : src/gfx.o
 
@@ -415,6 +439,9 @@ help:
 	@echo "... src/entity.o"
 	@echo "... src/entity.i"
 	@echo "... src/entity.s"
+	@echo "... src/entity_info.o"
+	@echo "... src/entity_info.i"
+	@echo "... src/entity_info.s"
 	@echo "... src/gfx.o"
 	@echo "... src/gfx.i"
 	@echo "... src/gfx.s"

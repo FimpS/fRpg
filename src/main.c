@@ -33,6 +33,9 @@ int main(void) {
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 12.5} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 39.0} ));
 
+	state->player = entity_player_init(state);
+	dynList_push(state->map->entities, state->player);
+
 	//dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER, (Vector2) {5.0, 5.0} ));
 
 	ToggleFullscreen();

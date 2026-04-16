@@ -76,6 +76,8 @@ CMakeFiles/engine.dir/src/entity.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/item.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/state.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/entity.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/entity_info.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/entity.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
  /home/samuel/c/game/fRpgCrawler/lib/types.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/v2.h

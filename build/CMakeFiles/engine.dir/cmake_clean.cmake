@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/editor.c.o.d"
   "CMakeFiles/engine.dir/src/entity.c.o"
   "CMakeFiles/engine.dir/src/entity.c.o.d"
+  "CMakeFiles/engine.dir/src/entity_info.c.o"
+  "CMakeFiles/engine.dir/src/entity_info.c.o.d"
   "CMakeFiles/engine.dir/src/gfx.c.o"
   "CMakeFiles/engine.dir/src/gfx.c.o.d"
   "CMakeFiles/engine.dir/src/item.c.o"

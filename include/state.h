@@ -14,6 +14,7 @@
 
 typedef struct Map Map;
 typedef struct Gfx Gfx;
+typedef struct Entity Entity;
 typedef struct Inventory Inventory;
 
 typedef struct GameState
@@ -21,6 +22,8 @@ typedef struct GameState
 	Map* map;
 	Gfx* gfx;
 	Inventory* inventory;
+
+	Entity* player;
 } GameState;
 
 GameState* state_new();

@@ -82,4 +82,6 @@ CMakeFiles/engine.dir/src/ui.c.o: \
  /home/samuel/c/game/fRpgCrawler/include/../include/entity.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/v2.h \
  /home/samuel/c/game/fRpgCrawler/include/global.h \
- /home/samuel/c/game/fRpgCrawler/lib/types.h
+ /home/samuel/c/game/fRpgCrawler/lib/types.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/entity_info.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/entity.h

@@ -78,7 +78,7 @@ void temporary_text_render(DynList* ts)
 
 static const Rectangle mouse_render_table[][2] = {
 	{ {16, 64, 16, 16}, {0, 0, 24, 24} },
-	{ {0, 64, 16, 16}, {0, 0, 32, 32} },
+	{ {0, 64, 16, 16}, {0, 0, 48, 48} },
 	{ {0, 16, 16, 16}, {0, 0, 32, 32} },
 };
 

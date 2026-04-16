@@ -700,7 +700,9 @@ void editor_tick(Editor* editor)
 			break;
 	}
 }
-Rectangle entity_get_render_frame(Entity* self, Editor* editor)
+
+
+Rectangle editor_entity_get_render_frame(Entity* self, Editor* editor)
 {
 	EntityAnimation* animation = &self->state.animation;
 	return animation->frames[ ( (animation->timer ++ ) / animation->stop_timer ) % animation->amount_frames];
@@ -713,7 +715,7 @@ void editor_entity_render(Entity* self, Editor* editor)
 	const u32 rgb = 255;
 	Color color = { rgb_values, rgb_values, rgb_values, rgb};
 
-	Rectangle src_frame = entity_get_render_frame(self, editor);
+	Rectangle src_frame = editor_entity_get_render_frame(self, editor);
 
 	DrawTexturePro(editor->gfx->texs[TEXTURE_TILEMAP], 
 			src_frame, 

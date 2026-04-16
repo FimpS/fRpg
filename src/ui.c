@@ -4,6 +4,7 @@
 
 #include "ui.h"
 #include "global.h"
+#include "../include/entity_info.h"
 
 void ui_inventory_sort_cells(Inventory* inventory, GameState* state);
 

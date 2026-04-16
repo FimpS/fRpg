@@ -2,11 +2,12 @@
 #include <stdio.h>
 
 #include "../include/entity.h"
+#include "../include/entity_info.h"
 #include "../include/global.h"
 
 /* PRIVATE */
 
-void estate_placeholder_tick(Entity* self)
+void estate_placeholder_tick(Entity* self, GameState* state)
 {
 	if(IsKeyDown(KEY_I))
 	{
@@ -21,13 +22,21 @@ void estate_placeholder_tick(Entity* self)
 	}
 }
 
+void estate_player_tick(Entity* self, GameState* state)
+{
+	if(IsKeyDown(KEY_W))
+	{
+		self->pos.x += 1.0;
+	}
+}
+
 const EntityState entity_state_table[] = {
 	(EntityState) {
 		.type = ESTYPE_PLACEHOLDER, 
 		.tick = estate_placeholder_tick, 
 		.animation = {
 			.stop_timer = 8,
-			.amount_frames = 1,
+			.amount_frames = 2,
 			.frames = { {0, 0, 16, 16}, {0, 16, 16, 16}, },
 		},
 	},
@@ -40,8 +49,23 @@ const EntityState entity_state_table[] = {
 			.frames = { {0, 0, 16, 16}, {0, 16, 16, 16}, },
 		},
 	},
-
+	(EntityState) {
+		.type = ESTYPE_PLAYER_TICK,
+		.tick = estate_player_tick,
+		.animation = {
+			.stop_timer = 1,
+			.amount_frames = 1,
+			.frames = { {0, 0, 16, 16}, {0, 16, 16, 16}, },
+		},
+	},
 };
+
+Entity* entity_player_init(GameState* state)
+{
+	Entity* player = entity_new(ENTITY_PLAYER, (Vector2) {1.0, 1.0} );
+
+	return player;
+}
 
 /* PRIVATE */
 
@@ -82,7 +106,7 @@ void entities_tick(DynList* entities, GameState* state)
 			e->light.self = ( t.light * 2.0 ) + 0.25 ;
 			e->light.self = e->light.self >= 1.0 ? 1.0 : e->light.self;
 		}
-		if( e->state.tick != NULL ) e->state.tick(e);
+		if( e->state.tick != NULL ) e->state.tick(e, state);
 	}
 }
 
@@ -125,22 +149,21 @@ void entities_render(DynList* entities, GameState* state)
 
 Entity* entity_new_editor(EntityType type, Vector2 pos)
 {
+#if 0
 	Entity* newe = malloc(sizeof(Entity));
 	newe->type = type;
 	newe->state = entity_state_table[newe->type];
 	newe->pos = pos;
 	newe->light = (Light) {
 		.pos = newe->pos,
+			.
 			.distance = 1.0,
 			.tint = WHITE,
 			.value = 1.0,
 	};
 	newe->dim = (Vector2) {2.0, 2.0};
 	newe->id = 1;
-}
-
-Entity* entity_new(EntityType type, Vector2 pos)
-{
+#endif
 	Entity* newe = malloc(sizeof(Entity));
 	newe->type = type;
 	newe->state = entity_state_table[newe->type];
@@ -166,6 +189,16 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	if(type == ESTYPE_PLACEHOLDER) newe->dim = (Vector2) {1.0, 1.0};
 	else newe->dim = (Vector2) {0.5, 0.5};
 	newe->id = 1;
+}
+
+Entity* entity_new(EntityType type, Vector2 pos)
+{
+	Entity* newe = malloc(sizeof(Entity));
+	*newe = entity_type_table[type];
+	newe->type = type;
+	newe->pos = pos;
+	newe->state = entity_state_table[newe->state.type];
+
 }
 
 void entity_destroy(Entity* e)

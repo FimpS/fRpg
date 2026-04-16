@@ -15,6 +15,7 @@ typedef enum EntityType
 {
 	ENTITY_PLACEHOLDER,
 	ENTITY_PLACEHOLDER2,
+	ENTITY_PLAYER,
 	ENTITY_LAST,
 } EntityType;
 
@@ -22,6 +23,7 @@ typedef enum EntityStateType
 {
 	ESTYPE_PLACEHOLDER,
 	ESTYPE_PLACEHOLDER2,
+	ESTYPE_PLAYER_TICK,
 	ESTYPE_CLEAR,
 
 } EntityStateType;
@@ -42,7 +44,7 @@ typedef struct EntitySprite
 typedef struct EntityState
 {
 	EntityStateType type;
-	void (*tick)(Entity* self);
+	void (*tick)(Entity* self, GameState* state);
 	EntityAnimation animation;
 } EntityState;
 
@@ -71,5 +73,7 @@ void entity_destroy(Entity* e);
 
 void entities_tick(DynList* entities, GameState* state);
 void entities_render(DynList* entities, GameState* state);
+
+Entity* entity_player_init(GameState* state);
 
 #endif
