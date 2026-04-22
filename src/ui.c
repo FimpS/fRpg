@@ -18,6 +18,7 @@ void ui_inventory_init_cells(Inventory* inventory)
 	const u32 cap = ui_inventory_cap(inventory);
 
 	Vector2 dim = gfx_to_monitor_vector( (Vector2) {50, 50} );
+	P_LOG("%f\n", dim.x);
 	Vector2 pos = gfx_to_monitor_vector( (Vector2) { GetScreenWidth() - 0 - dim.x - 30, 100 + inventory->hitbox.height - dim.y * inventory->rows - 30} );
 
 	for(i32 i = 0; i < cap; i++)

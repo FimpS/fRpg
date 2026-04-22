@@ -26,7 +26,7 @@ const Entity entity_type_table[] = {
 		},
 	},
 	(Entity) {
-		.dim = {1.5, 1.5},
+		.dim = {1.0, 1.0},
 		.state = {
 			.type = ESTYPE_PLAYER_TICK,
 		},

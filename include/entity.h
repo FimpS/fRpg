@@ -2,14 +2,39 @@
 #define ENTITY_H
 
 #include "raylib.h"
+#include "raymath.h"
 #include "../lib/types.h"
 #include "../include/gfx.h"
 #include "../include/state.h"
+#include "../include/map.h"
 
 #define MAX_ENTITY_ANIMATION_FRAMES 8
 
 typedef struct GameState GameState;
 typedef struct Entity Entity;
+
+
+
+typedef struct AStarNode
+{
+	Vector2 pos;
+
+	f32 global_goal;
+	f32 local_goal;
+
+	bool walkable;
+	bool solid;
+	bool visited;
+
+	Vector2 parent;
+} AStarNode;
+#define MAX_WALK_PATH_LEN 64
+typedef struct WalkPath
+{
+	Vector2 pos[MAX_WALK_PATH_LEN];
+	u32 count;
+	u32 current;
+} WalkPath;
 
 typedef enum EntityType
 {
@@ -46,16 +71,22 @@ typedef struct EntityState
 	EntityStateType type;
 	void (*tick)(Entity* self, GameState* state);
 	EntityAnimation animation;
+	WalkPath path;
 } EntityState;
 
 typedef struct Entity
 {
 	Vector2 pos;
 	Vector2 dim;
+
+	WalkPath path;
+
 	Light light;
 	EntityType type;
 	EntityState state;
+
 	u32 id;
+
 } Entity;
 
 typedef struct PlayerEntity
@@ -76,4 +107,5 @@ void entities_render(DynList* entities, GameState* state);
 
 Entity* entity_player_init(GameState* state);
 
+WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state);
 #endif

@@ -68,6 +68,7 @@ bool map_load_level(Map* map, const char* filepath);
 Tile map_get_tile(Map* map, V2 pos);
 void map_set_tile(Map* map, V2 pos, Tile tile);
 void map_render(Map* map, Texture2D* texp);
+Tile map_get_tile(Map* map, V2 pos);
 
 void cam_tick(Map* map, Vector2 source);
 void cam_tick_editor(Map* map, Vector2 source);

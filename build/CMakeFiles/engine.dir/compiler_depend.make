@@ -61,6 +61,7 @@ CMakeFiles/engine.dir/src/editor.c.o: /home/samuel/c/game/fRpgCrawler/src/editor
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+  /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -166,6 +167,7 @@ CMakeFiles/engine.dir/src/entity.c.o: /home/samuel/c/game/fRpgCrawler/src/entity
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+  /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
@@ -237,7 +239,8 @@ CMakeFiles/engine.dir/src/entity.c.o: /home/samuel/c/game/fRpgCrawler/src/entity
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h \
-  /usr/local/include/raylib.h
+  /usr/local/include/raylib.h \
+  /usr/local/include/raymath.h
 
 CMakeFiles/engine.dir/src/entity_info.c.o: /home/samuel/c/game/fRpgCrawler/src/entity_info.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
@@ -253,6 +256,7 @@ CMakeFiles/engine.dir/src/entity_info.c.o: /home/samuel/c/game/fRpgCrawler/src/e
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+  /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -286,7 +290,8 @@ CMakeFiles/engine.dir/src/entity_info.c.o: /home/samuel/c/game/fRpgCrawler/src/e
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdarg.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h \
-  /usr/local/include/raylib.h
+  /usr/local/include/raylib.h \
+  /usr/local/include/raymath.h
 
 CMakeFiles/engine.dir/src/gfx.c.o: /home/samuel/c/game/fRpgCrawler/src/gfx.c \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
@@ -403,6 +408,7 @@ CMakeFiles/engine.dir/src/map.c.o: /home/samuel/c/game/fRpgCrawler/src/map.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+  /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -488,6 +494,7 @@ CMakeFiles/engine.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/state.c
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+  /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -570,12 +577,14 @@ CMakeFiles/engine.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/state.c
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h \
-  /usr/local/include/raylib.h
+  /usr/local/include/raylib.h \
+  /usr/local/include/raymath.h
 
 CMakeFiles/engine.dir/src/ui.c.o: /home/samuel/c/game/fRpgCrawler/src/ui.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+  /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -665,7 +674,8 @@ CMakeFiles/engine.dir/src/ui.c.o: /home/samuel/c/game/fRpgCrawler/src/ui.c \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h \
-  /usr/local/include/raylib.h
+  /usr/local/include/raylib.h \
+  /usr/local/include/raymath.h
 
 
 /home/samuel/c/game/fRpgCrawler/src/ui.c:

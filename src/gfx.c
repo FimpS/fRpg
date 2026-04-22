@@ -8,27 +8,60 @@
 #include "raylib.h"
 #include "raymath.h"
 
-u32 gfx_to_monitor(u32 pixels)
+
+#define IDK 1.35
+u32 gfx_to_monitor2(u32 pixels)
 {
 	Vector2 monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
-	return ceilf(monitor.x / ( DEFAULT_RES_X / pixels) );
+	return ceilf(monitor.y / ( DEFAULT_RES_Y / pixels) ) * IDK;
 }
 
-Vector2 gfx_to_monitor_vector(Vector2 pixels)
+u32 gfx_to_monitor(u32 pixels)
+{
+    float scale = fminf(
+        (float)GetMonitorWidth(0) / DEFAULT_RES_X,
+        (float)GetMonitorHeight(0) / DEFAULT_RES_Y
+    );
+
+    return (u32)ceilf(pixels * scale);
+}
+
+Vector2 gfx_to_monitor_vector2(Vector2 pixels)
 {
 	Vector2 monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
 	
-	return (Vector2) { ceilf(monitor.x / ( DEFAULT_RES_X / pixels.x) ), ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.y )) };
+	return (Vector2) { ceilf(monitor.x / ( DEFAULT_RES_X / pixels.x) * IDK), ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.y )) * IDK};
 }
+Vector2 gfx_to_monitor_vector(Vector2 pixels)
+{
+    float scaleX = (float)GetMonitorWidth(0) / DEFAULT_RES_X;
+    float scaleY = (float)GetMonitorHeight(0) / DEFAULT_RES_Y;
 
-Rectangle gfx_to_monitor_rectangle(Rectangle pixels)
+    return (Vector2){
+        pixels.x * scaleX,
+        pixels.y * scaleY
+    };
+}
+Rectangle gfx_to_monitor_rectangle(Rectangle r)
+{
+    float scaleX = (float)GetMonitorWidth(0) / DEFAULT_RES_X;
+    float scaleY = (float)GetMonitorHeight(0) / DEFAULT_RES_Y;
+
+    return (Rectangle){
+        r.x * scaleX,
+        r.y * scaleY,
+        r.width * scaleX,
+        r.height * scaleY
+    };
+}
+Rectangle gfx_to_monitor_rectangle2(Rectangle pixels)
 {
 	Rectangle monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
 	
-	return (Rectangle) { ceilf(monitor.x / ( DEFAULT_RES_X / pixels.x) ), 
-		ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.y )),
-		ceilf(monitor.x / ( DEFAULT_RES_X / pixels.width )),
-		ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.height )) 
+	return (Rectangle) { ceilf(monitor.x / ( DEFAULT_RES_X / pixels.x) * IDK), 
+		ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.y) * IDK),
+		ceilf(monitor.x / ( DEFAULT_RES_X / pixels.width ) * IDK),
+		ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.height ) * IDK) 
 	};
 }
 

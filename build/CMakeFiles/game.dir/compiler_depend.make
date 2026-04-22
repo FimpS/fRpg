@@ -102,8 +102,11 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h \
-  /usr/local/include/raylib.h
+  /usr/local/include/raylib.h \
+  /usr/local/include/raymath.h
 
+
+/usr/local/include/raymath.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h:
 

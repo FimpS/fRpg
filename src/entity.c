@@ -22,8 +22,44 @@ void estate_placeholder_tick(Entity* self, GameState* state)
 	}
 }
 
+
+bool entity_path_end_valid(Vector2 pos, GameState* state)
+{
+	Tile tile = map_get_tile(state->map, Vector2V2(pos));
+	if(tile.solid) return false;
+
+	return true;
+}
+
 void estate_player_tick(Entity* self, GameState* state)
 {
+	WalkPath* path = &self->path;
+	Vector2 target = path->pos[path->current];
+
+	Vector2 dir = Vector2Subtract(target, self->pos);
+
+	if(IsMouseButtonPressed(1))
+	{
+		Vector2 end = map_get_mouse_cords(state->map);
+		{
+			//Like 64 per is ok
+			if(entity_path_end_valid(end, state))
+			{
+				self->path = entity_find_path(self, end, state);
+			}
+		}
+		return;
+	}
+
+	if (Vector2Length(dir) > 0.1f && path->count > path->current)
+	{
+		dir = Vector2Normalize(dir);
+		self->pos = Vector2Add(self->pos, Vector2Scale(dir, 0.08));
+	}
+	else
+	{
+		path->current ++;
+	}
 	if(IsKeyDown(KEY_W))
 	{
 		self->pos.x += 1.0;
@@ -65,6 +101,160 @@ Entity* entity_player_init(GameState* state)
 	Entity* player = entity_new(ENTITY_PLAYER, (Vector2) {1.0, 1.0} );
 
 	return player;
+}
+
+u32 a_star_distance(Vector2 start, Vector2 end)
+{
+	return (u32) (abs(start.x - end.x) + abs(start.y - end.y));
+}
+
+void a_star_init_nodes(AStarNode* nodes, Map* map, V2 dim)
+{
+	//V2 dim = map->camera->visible_tiles;
+	for(i32 y = 0; y < dim.y; y++)
+	{
+		for(i32 x = 0; x < dim.x; x++)
+		{
+			nodes[vector2_to_vector_index(x, y, dim.x)] = (AStarNode) {
+				//offset this with camera if we doing the visible tiles version...
+				.pos = (Vector2) { x, y },
+					.global_goal = INF,
+					.local_goal = INF,
+					.parent = (Vector2) { -1.0, -1.0 },
+					.walkable = map_get_tile(map, (V2) {x, y} ).solid,
+					.visited = false,
+			};
+		}
+	}
+}
+
+void a_star_sort_not_tested(AStarNode** nodes, i32 left, i32 right)
+{
+	if(left >= right) return;
+
+	AStarNode* pivot = nodes[(left + right) / 2];
+	f32 pivot_value = pivot->global_goal;
+
+	i32 i = left;
+	i32 j = right;
+
+	while(i <= j)
+	{
+		while(nodes[i]->global_goal < pivot_value) i++;
+		while(nodes[j]->global_goal > pivot_value) j--;
+
+		if(i <= j)
+		{
+			AStarNode* tmp = nodes[i];
+			nodes[i] = nodes[j];
+			nodes[j] = tmp;
+			i++;
+			j--;
+		}
+	}
+
+	if(left < j)  a_star_sort_not_tested(nodes, left, j);
+	if(i < right) a_star_sort_not_tested(nodes, i, right);
+}
+
+
+#define DIMTMP 32
+WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
+{
+	Map* map = state->map;
+	MapCamera* cam = state->map->camera;
+	V2 dim = { DIMTMP, DIMTMP };//cam->visible_tiles;
+	Vector2 start_pos = Vector2Midpoint(self->pos, self->dim);
+
+	const V2 card_dirs[8] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+							  //{1,1}, {1,-1}, {-1,1}, {-1,-1} };
+
+	AStarNode nodes[dim.x * dim.y];
+	a_star_init_nodes(nodes, map, dim);	
+
+	AStarNode* current = &nodes[vector2_to_vector_index(start_pos.x, start_pos.y, dim.x)];	
+	current->local_goal = 0.0;
+	current->global_goal = a_star_distance(start_pos, end_pos);
+	AStarNode* end = &nodes[vector2_to_vector_index(end_pos.x, end_pos.y, dim.x)];
+
+	AStarNode* not_tested_nodes[dim.x * dim.y];
+	u32 not_tested_nodes_len = 0;
+	not_tested_nodes[not_tested_nodes_len ++] = current;
+
+	u32 panic = 0;
+	while(not_tested_nodes_len != 0 && current != end)
+	{
+		a_star_sort_not_tested(not_tested_nodes, 0, not_tested_nodes_len - 1);
+
+		//for(i32 i = 0; i < not_tested_nodes_len; i++) printf("%f, ", not_tested_nodes[i]->global_goal);
+		//printf("\n");
+
+		while(not_tested_nodes_len > 0 && not_tested_nodes[0]->visited)
+		{
+			for(i32 i = 0; i < not_tested_nodes_len - 1; i++)
+				not_tested_nodes[i] = not_tested_nodes[i + 1];
+
+			not_tested_nodes_len--;
+		}
+
+		if(not_tested_nodes_len == 0) 
+		{
+			P_ERROR("Path Impossible\n");
+			break;
+		}
+
+		current = not_tested_nodes[0];
+		current->visited = true;
+		for(i32 i = 0; i < sizeof(card_dirs) / sizeof(V2); i++)
+		{
+			V2 neighbor_pos = card_dirs[i];	
+			int nx = current->pos.x + neighbor_pos.x;
+			int ny = current->pos.y + neighbor_pos.y;
+
+			if (nx < 0 || ny < 0 || nx >= dim.x || ny >= dim.y)
+			{
+				continue;
+			}
+			AStarNode* neighbor = &nodes[vector2_to_vector_index(current->pos.x + neighbor_pos.x,
+					current->pos.y + neighbor_pos.y,
+					dim.x)];
+			if(!neighbor->visited && neighbor->walkable == false)
+			{
+				not_tested_nodes[not_tested_nodes_len ++] = neighbor;
+			}
+
+			f32 lower_goal = current->local_goal + a_star_distance(current->pos, neighbor->pos);
+
+			if(lower_goal < neighbor->local_goal)
+			{
+				neighbor->parent = current->pos;
+				neighbor->local_goal = lower_goal;
+				neighbor->global_goal = neighbor->local_goal + a_star_distance(neighbor->pos, end->pos);
+			}
+
+		}
+	}
+	WalkPath path = {0};
+	//current = &nodes[vector2_to_vector_index(start_pos.x, start_pos.y, dim.x)];
+#if 1
+	while (current->parent.x != -1.0)
+	{
+		path.pos[path.count].x = current->pos.x;
+		path.pos[path.count].y = current->pos.y;
+		path.count++;
+
+		current = &nodes[vector2_to_vector_index(current->parent.x, current->parent.y, dim.x)];
+	}
+	for(i32 i = 0; i < path.count / 2; i++)
+	{
+		Vector2 tmp = path.pos[i];
+		path.pos[i] = path.pos[path.count - 1 - i];
+		path.pos[path.count - 1 - i] = tmp;
+	}
+path.current = 1;
+#endif
+
+	return path;
 }
 
 /* PRIVATE */
@@ -157,7 +347,7 @@ Entity* entity_new_editor(EntityType type, Vector2 pos)
 	newe->light = (Light) {
 		.pos = newe->pos,
 			.
-			.distance = 1.0,
+				.distance = 1.0,
 			.tint = WHITE,
 			.value = 1.0,
 	};
@@ -199,6 +389,7 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	newe->pos = pos;
 	newe->state = entity_state_table[newe->state.type];
 
+	return newe;
 }
 
 void entity_destroy(Entity* e)
