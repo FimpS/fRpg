@@ -89,7 +89,7 @@ int main(void) {
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 39.0} ));
 
 	state->player = entity_player_init(state);
-	state->player->path = entity_find_path(state->player, (Vector2) {16.0, 16.0}, state);
+	//state->player->path = entity_find_path(state->player, (Vector2) {16.0, 16.0}, state);
 
 	ValidateAndPrintPath(state->player->path, state->map->content, 32, 32);
 

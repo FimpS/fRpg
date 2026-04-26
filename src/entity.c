@@ -31,6 +31,57 @@ bool entity_path_end_valid(Vector2 pos, GameState* state)
 	return true;
 }
 
+bool map_has_line_of_sight(Entity* self, Vector2 end, GameState* state)
+{
+	Map* map = state->map;
+	V2 dim = map->dim;
+	Vector2 start = self->pos;
+
+	int x0 = (int)start.x;
+	int y0 = (int)start.y;
+	int x1 = (int)end.x;
+	int y1 = (int)end.y;
+
+	int dx = abs(x1 - x0);
+	int dy = abs(y1 - y0);
+
+	int sx = (x0 < x1) ? 1 : -1;
+	int sy = (y0 < y1) ? 1 : -1;
+
+	int err = dx - dy;
+
+	while (true)
+	{
+		// bounds check (optional but safe)
+		if (x0 < 0 || y0 < 0 || x0 >= dim.x || y0 >= dim.y)
+			return false;
+
+		// check tile
+		if (map->content[vector2_to_vector_index(x0, y0, dim.x)].solid)
+			return false;
+
+		// reached end
+		if (x0 == x1 && y0 == y1)
+			break;
+
+		int e2 = 2 * err;
+
+		if (e2 > -dy)
+		{
+			err -= dy;
+			x0 += sx;
+		}
+
+		if (e2 < dx)
+		{
+			err += dx;
+			y0 += sy;
+		}
+	}
+
+	return true;
+}
+
 void estate_player_tick(Entity* self, GameState* state)
 {
 	WalkPath* path = &self->path;
@@ -41,10 +92,21 @@ void estate_player_tick(Entity* self, GameState* state)
 	if(IsMouseButtonPressed(1))
 	{
 		Vector2 end = map_get_mouse_cords(state->map);
+		//Like 64 per is ok
+		if(entity_path_end_valid(end, state))
 		{
-			//Like 64 per is ok
-			if(entity_path_end_valid(end, state))
+			if(map_has_line_of_sight(self, end, state))
 			{
+				WalkPath path = {0};
+				path.pos[0] = Vector2Midpoint(end, Vector2Scale(self->dim, -1.0));
+				path.count = 1;
+				path.current = 0;
+				self->path = path;
+			}
+			else
+			{
+				//end = Vector2Scale(GetMousePosition(), (f32) 1 / state->map->camera->tile_len);
+				P_LOG("Outside: %f %f\n", end.x, end.y);
 				self->path = entity_find_path(self, end, state);
 			}
 		}
@@ -98,7 +160,7 @@ const EntityState entity_state_table[] = {
 
 Entity* entity_player_init(GameState* state)
 {
-	Entity* player = entity_new(ENTITY_PLAYER, (Vector2) {1.0, 1.0} );
+	Entity* player = entity_new(ENTITY_PLAYER, (Vector2) {14.0, 14.0} );
 
 	return player;
 }
@@ -108,14 +170,19 @@ u32 a_star_distance(Vector2 start, Vector2 end)
 	return (u32) (abs(start.x - end.x) + abs(start.y - end.y));
 }
 
-void a_star_init_nodes(AStarNode* nodes, Map* map, V2 dim)
+void a_star_init_nodes(AStarNode* nodes, Map* map, Vector2 start, V2 len)
 {
 	//V2 dim = map->camera->visible_tiles;
-	for(i32 y = 0; y < dim.y; y++)
+	V2 start_half = Vector2V2(Vector2Subtract(start, V2Vector2(v2_scale(len, 0.5)) ) );
+	V2 dim = v2_add(len, start_half);
+
+	P_LOG("from: %d %d to %d %d\n", start_half.x, start_half.y, dim.x, dim.y);
+	P_LOG("start: %d %d\n", (i32) start.x, (i32) start.y);
+	for(i32 y = start_half.y, i = 0; y < dim.y; y++, i++)
 	{
-		for(i32 x = 0; x < dim.x; x++)
+		for(i32 x = start_half.x, j = 0; x < dim.x; x++, j++)
 		{
-			nodes[vector2_to_vector_index(x, y, dim.x)] = (AStarNode) {
+			nodes[vector2_to_vector_index(j, i, len.x)] = (AStarNode) {
 				//offset this with camera if we doing the visible tiles version...
 				.pos = (Vector2) { x, y },
 					.global_goal = INF,
@@ -158,24 +225,38 @@ void a_star_sort_not_tested(AStarNode** nodes, i32 left, i32 right)
 }
 
 
+
 #define DIMTMP 32
 WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 {
+
 	Map* map = state->map;
 	MapCamera* cam = state->map->camera;
 	V2 dim = { DIMTMP, DIMTMP };//cam->visible_tiles;
-	Vector2 start_pos = Vector2Midpoint(self->pos, self->dim);
-
-	const V2 card_dirs[8] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
-							  //{1,1}, {1,-1}, {-1,1}, {-1,-1} };
+	//Vector2 start_pos = Vector2Midpoint(self->pos, self->dim);
+	//Vector2 start_pos = start_pos;//Vector2V2(Vector2Subtract(start_pos, V2Vector2(v2_scale(dim, 0.5)) ) );
+	Vector2 start_pos = { dim.x / 2.0, dim.y / 2.0 };
+	//TODO fix so it the DMPTMP is relative to entity
+	const V2 card_dirs[4] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
 
 	AStarNode nodes[dim.x * dim.y];
-	a_star_init_nodes(nodes, map, dim);	
+	a_star_init_nodes(nodes, map, start_pos, dim);
+
+#if 0
+	for(i32 i = 0; i < dim.y; i++)
+	{
+		for(i32 j = 0; j < dim.x; j++)
+			printf("%d", nodes[vector2_to_vector_index(j, i, dim.x)].walkable);
+		printf("\n");
+	}
+#endif
 
 	AStarNode* current = &nodes[vector2_to_vector_index(start_pos.x, start_pos.y, dim.x)];	
 	current->local_goal = 0.0;
 	current->global_goal = a_star_distance(start_pos, end_pos);
 	AStarNode* end = &nodes[vector2_to_vector_index(end_pos.x, end_pos.y, dim.x)];
+	printf("StartNode - x: %f y: %f\n", current->pos.x, current->pos.y);
+	printf("EndNode   - x: %f y: %f\n", end->pos.x, end->pos.y);
 
 	AStarNode* not_tested_nodes[dim.x * dim.y];
 	u32 not_tested_nodes_len = 0;
@@ -251,7 +332,7 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 		path.pos[i] = path.pos[path.count - 1 - i];
 		path.pos[path.count - 1 - i] = tmp;
 	}
-path.current = 1;
+	path.current = 1;
 #endif
 
 	return path;

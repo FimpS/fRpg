@@ -43,7 +43,7 @@ static inline V2 v2_sign(const V2 p)
 	return (V2) {- p.x, - p.y};
 }
 
-static inline V2 v2_scale(const V2 p, const i32 scalar)
+static inline V2 v2_scale(const V2 p, const f32 scalar)
 {
 	return (V2) {p.x * scalar, p.y * scalar};
 }
