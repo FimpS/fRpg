@@ -7,6 +7,59 @@
 
 /* PRIVATE */
 
+bool ValidateAndPrintPath(WalkPath path, Tile *tiles, int width, int height)
+{
+    if (path.count == 0)
+    {
+        printf("Path is EMPTY\n");
+        return false;
+    }
+
+    printf("---- PATH DEBUG ----\n");
+
+    for (int i = path.count - 1; i >= 0; i--)
+    {
+        int x = path.pos[i].x;
+        int y = path.pos[i].y;
+
+        // Check bounds
+        if (x < 0 || y < 0 || x >= width || y >= height)
+        {
+            printf("❌ Out of bounds at (%d, %d)\n", x, y);
+            return false;
+        }
+
+        // Check solid
+        if (tiles[y * width + x].solid)
+        {
+            //printf("❌ Path goes through SOLID tile at (%d, %d)\n", x, y);
+            //return false;
+        }
+
+        printf("Step %d -> (%d, %d)\n", path.count - 1 - i, x, y);
+
+        // Check adjacency (skip first)
+        if (i < path.count - 1)
+        {
+            int px = path.pos[i + 1].x;
+            int py = path.pos[i + 1].y;
+
+            int dx = abs(px - x);
+            int dy = abs(py - y);
+
+            if (dx + dy > 1)
+            {
+                printf("❌ Invalid jump from (%d,%d) to (%d,%d)\n", px, py, x, y);
+            }
+        }
+    }
+
+    printf("✅ Path is VALID\n");
+    printf("--------------------\n");
+
+    return true;
+}
+
 void estate_placeholder_tick(Entity* self, GameState* state)
 {
 	if(IsKeyDown(KEY_I))
@@ -25,8 +78,10 @@ void estate_placeholder_tick(Entity* self, GameState* state)
 
 bool entity_path_end_valid(Vector2 pos, GameState* state)
 {
+	Map* map = state->map;
 	Tile tile = map_get_tile(state->map, Vector2V2(pos));
 	if(tile.solid) return false;
+	if(pos.x < 0 || pos.y < 0 || pos.x >= map->dim.x || pos.y >= map->dim.y) return false;
 
 	return true;
 }
@@ -84,6 +139,7 @@ bool map_has_line_of_sight(Entity* self, Vector2 end, GameState* state)
 
 void estate_player_tick(Entity* self, GameState* state)
 {
+	Map* map = state->map;
 	WalkPath* path = &self->path;
 	Vector2 target = path->pos[path->current];
 
@@ -105,9 +161,8 @@ void estate_player_tick(Entity* self, GameState* state)
 			}
 			else
 			{
-				//end = Vector2Scale(GetMousePosition(), (f32) 1 / state->map->camera->tile_len);
-				P_LOG("Outside: %f %f\n", end.x, end.y);
 				self->path = entity_find_path(self, end, state);
+				//ValidateAndPrintPath(self->path, map->content, 32, 32);
 			}
 		}
 		return;
@@ -124,7 +179,7 @@ void estate_player_tick(Entity* self, GameState* state)
 	}
 	if(IsKeyDown(KEY_W))
 	{
-		self->pos.x += 1.0;
+		//self->pos.x += 1.0;
 	}
 }
 
@@ -162,6 +217,7 @@ Entity* entity_player_init(GameState* state)
 {
 	Entity* player = entity_new(ENTITY_PLAYER, (Vector2) {14.0, 14.0} );
 
+	player->path = (WalkPath) {0};
 	return player;
 }
 
@@ -191,7 +247,10 @@ void a_star_init_nodes(AStarNode* nodes, Map* map, Vector2 start, V2 len)
 					.walkable = map_get_tile(map, (V2) {x, y} ).solid,
 					.visited = false,
 			};
+			AStarNode t = nodes[vector2_to_vector_index(j, i, len.x)];
+			//printf("(%.1f %.1f) ", t.pos.x, t.pos.y);
 		}
+		printf("\n");
 	}
 }
 
@@ -232,15 +291,22 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 
 	Map* map = state->map;
 	MapCamera* cam = state->map->camera;
+
+
+	// TODO THIS IS ALL WRONG
 	V2 dim = { DIMTMP, DIMTMP };//cam->visible_tiles;
-	//Vector2 start_pos = Vector2Midpoint(self->pos, self->dim);
-	//Vector2 start_pos = start_pos;//Vector2V2(Vector2Subtract(start_pos, V2Vector2(v2_scale(dim, 0.5)) ) );
+
+	Vector2 start_pos_in = Vector2Midpoint(self->pos, self->dim);
+
+	V2 start_half = Vector2V2(Vector2Subtract(start_pos_in, V2Vector2(v2_scale(dim, 0.5)) ) );
+
+	//V2 dim = v2_scale(dim1, 0.5);
 	Vector2 start_pos = { dim.x / 2.0, dim.y / 2.0 };
 	//TODO fix so it the DMPTMP is relative to entity
 	const V2 card_dirs[4] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
 
 	AStarNode nodes[dim.x * dim.y];
-	a_star_init_nodes(nodes, map, start_pos, dim);
+	a_star_init_nodes(nodes, map, start_pos_in, dim);
 
 #if 0
 	for(i32 i = 0; i < dim.y; i++)
@@ -254,15 +320,21 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 	AStarNode* current = &nodes[vector2_to_vector_index(start_pos.x, start_pos.y, dim.x)];	
 	current->local_goal = 0.0;
 	current->global_goal = a_star_distance(start_pos, end_pos);
-	AStarNode* end = &nodes[vector2_to_vector_index(end_pos.x, end_pos.y, dim.x)];
-	printf("StartNode - x: %f y: %f\n", current->pos.x, current->pos.y);
-	printf("EndNode   - x: %f y: %f\n", end->pos.x, end->pos.y);
+	printf("Mouse pos - x: %.2f y: %.2f\n", end_pos.x, end_pos.y);
+	end_pos = Vector2Subtract(end_pos, V2Vector2(start_half));
+	AStarNode* end = &nodes[vector2_to_vector_index((i32) end_pos.x, (i32) end_pos.y, dim.x)];
+	printf("StartHalf - x: %.2d y: %.2d\n", start_half.x, start_half.y);
+	printf("Entity    - x: %.2f y: %.2f\n", self->pos.x, self->pos.y);
+	printf("StartNode - x: %.2f y: %.2f\n", current->pos.x, current->pos.y);
+	printf("Mouse pos - x: %.2f y: %.2f\n", end_pos.x, end_pos.y);
+	printf("EndNode   - x: %.2f y: %.2f\n", end->pos.x, end->pos.y);
 
 	AStarNode* not_tested_nodes[dim.x * dim.y];
 	u32 not_tested_nodes_len = 0;
 	not_tested_nodes[not_tested_nodes_len ++] = current;
 
 	u32 panic = 0;
+	bool impossible = false;
 	while(not_tested_nodes_len != 0 && current != end)
 	{
 		a_star_sort_not_tested(not_tested_nodes, 0, not_tested_nodes_len - 1);
@@ -277,10 +349,10 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 
 			not_tested_nodes_len--;
 		}
-
 		if(not_tested_nodes_len == 0) 
 		{
 			P_ERROR("Path Impossible\n");
+			impossible = true;
 			break;
 		}
 
@@ -288,17 +360,24 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 		current->visited = true;
 		for(i32 i = 0; i < sizeof(card_dirs) / sizeof(V2); i++)
 		{
-			V2 neighbor_pos = card_dirs[i];	
-			int nx = current->pos.x + neighbor_pos.x;
-			int ny = current->pos.y + neighbor_pos.y;
+			V2 dir = card_dirs[i];	
+			V2 neighbor_pos_array = v2_add(v2_sub(Vector2V2(current->pos), start_half), dir);
+			//V2 neighbor_pos_raw = (V2) {current->pos.x};
+			P_LOG("current - x: %.2d y: %.2d\n", neighbor_pos_array.x, neighbor_pos_array.y);
 
-			if (nx < 0 || ny < 0 || nx >= dim.x || ny >= dim.y)
+			if (neighbor_pos_array.x < 0 || neighbor_pos_array.y < 0 || neighbor_pos_array.x >= dim.x || neighbor_pos_array.y >= dim.y)
 			{
 				continue;
 			}
-			AStarNode* neighbor = &nodes[vector2_to_vector_index(current->pos.x + neighbor_pos.x,
-					current->pos.y + neighbor_pos.y,
-					dim.x)];
+			//TODO ALL NODE ACCESSES MAKES NO SENSE
+			//V2 neighbor_pos = v2_sub(dir, start_half);
+			AStarNode* neighbor = &nodes[vector2_to_vector_index(neighbor_pos_array.x, neighbor_pos_array.y, dim.x)];
+			if(neighbor->pos.x < 0 || neighbor->pos.y < 0 || neighbor->pos.x >= map->dim.x || neighbor->pos.y >= map->dim.y)
+			{
+				continue;
+			}
+			P_LOG("Neighbor_pos - x: %.2d y: %.2d\n", neighbor_pos_array.x, neighbor_pos_array.y);
+			P_LOG("Neighbor_nod - x: %.2f y: %.2f\n", neighbor->pos.x, neighbor->pos.y);
 			if(!neighbor->visited && neighbor->walkable == false)
 			{
 				not_tested_nodes[not_tested_nodes_len ++] = neighbor;
@@ -316,15 +395,22 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 		}
 	}
 	WalkPath path = {0};
+	if(impossible) return path;
 	//current = &nodes[vector2_to_vector_index(start_pos.x, start_pos.y, dim.x)];
 #if 1
 	while (current->parent.x != -1.0)
 	{
 		path.pos[path.count].x = current->pos.x;
 		path.pos[path.count].y = current->pos.y;
+		Vector2 p = Vector2Subtract(current->parent, V2Vector2(start_half));
+#if 1
+		P_LOG("path: (%f %f)\n", path.pos[path.count].x, path.pos[path.count].y);
+		P_LOG("p: (%d %f)\n", start_half.x, V2Vector2(start_half).x);
+#endif 
 		path.count++;
 
-		current = &nodes[vector2_to_vector_index(current->parent.x, current->parent.y, dim.x)];
+//		current = &nodes[vector2_to_vector_index(current->parent.x, current->parent.y, dim.x)]; //This is problem i think?
+		current = &nodes[vector2_to_vector_index(p.x, p.y, dim.x)];
 	}
 	for(i32 i = 0; i < path.count / 2; i++)
 	{
