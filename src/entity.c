@@ -161,7 +161,8 @@ void estate_player_tick(Entity* self, GameState* state)
 			}
 			else
 			{
-				self->path = entity_find_path(self, end, state);
+				for(i32 i = 0; i < 1; i++)
+					self->path = entity_find_path(self, end, state);
 				//ValidateAndPrintPath(self->path, map->content, 32, 32);
 			}
 		}
@@ -221,6 +222,72 @@ Entity* entity_player_init(GameState* state)
 	return player;
 }
 
+
+#define ASTAR_MINHEAP_MAX_LEN 64
+typedef struct AStarMinHeap
+{
+	u32 max_len;
+	u32 len;
+	AStarNode nodes[ASTAR_MINHEAP_MAX_LEN];
+} AStarMinHeap;
+
+void a_star_min_heap_swap(AStarNode* n1, AStarNode* n2)
+{
+	AStarNode tmp = *n1;
+	*n1 = *n2;
+	*n2 = tmp;
+}
+
+void a_star_min_heap_push(AStarMinHeap* heap, AStarNode node)
+{
+	heap->nodes[heap->len++] = node;
+
+	i32 index = heap->len - 1;
+
+	while(index > 0)
+	{
+		i32 parent = (index - 1) >> 1;
+
+		if(heap->nodes[parent].local_goal <= heap->nodes[index].local_goal)
+		{
+			break;
+		}
+
+		a_star_min_heap_swap(&heap->nodes[index], &heap->nodes[parent]);
+		index = parent;
+	}
+}
+
+AStarNode a_star_min_heap_pop(AStarMinHeap* heap)
+{
+	if(heap->len == 0) return (AStarNode) {0};
+
+	AStarNode min_node = heap->nodes[0];
+
+	heap->nodes[0] = heap->nodes[heap->len - 1];
+	heap->len --;
+
+	i32 index = 0;
+
+	while(true)
+	{
+		i32 left_index = 2 * index + 1;
+		i32 right_index = 2 * index + 2;
+		i32 smallest_index = index;
+
+
+		if(left_index < heap->len && heap->nodes[left_index].local_goal < heap->nodes[smallest_index].local_goal)
+			smallest_index = left_index;
+		if(right_index < heap->len && heap->nodes[right_index].local_goal < heap->nodes[smallest_index].local_goal)
+			smallest_index = right_index;
+		if(smallest_index <= index) break;
+		a_star_min_heap_swap(&heap->nodes[index], &heap->nodes[smallest_index]);
+		index = smallest_index;
+	}
+
+	return min_node;
+}
+
 u32 a_star_distance(Vector2 start, Vector2 end)
 {
 	return (u32) (abs(start.x - end.x) + abs(start.y - end.y));
@@ -232,8 +299,6 @@ void a_star_init_nodes(AStarNode* nodes, Map* map, Vector2 start, V2 len)
 	V2 start_half = Vector2V2(Vector2Subtract(start, V2Vector2(v2_scale(len, 0.5)) ) );
 	V2 dim = v2_add(len, start_half);
 
-	P_LOG("from: %d %d to %d %d\n", start_half.x, start_half.y, dim.x, dim.y);
-	P_LOG("start: %d %d\n", (i32) start.x, (i32) start.y);
 	for(i32 y = start_half.y, i = 0; y < dim.y; y++, i++)
 	{
 		for(i32 x = start_half.x, j = 0; x < dim.x; x++, j++)
@@ -250,7 +315,6 @@ void a_star_init_nodes(AStarNode* nodes, Map* map, Vector2 start, V2 len)
 			AStarNode t = nodes[vector2_to_vector_index(j, i, len.x)];
 			//printf("(%.1f %.1f) ", t.pos.x, t.pos.y);
 		}
-		printf("\n");
 	}
 }
 
@@ -285,62 +349,49 @@ void a_star_sort_not_tested(AStarNode** nodes, i32 left, i32 right)
 
 
 
-#define DIMTMP 32
 WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 {
 
 	Map* map = state->map;
 	MapCamera* cam = state->map->camera;
 
-
-	// TODO THIS IS ALL WRONG
-	V2 dim = { DIMTMP, DIMTMP };//cam->visible_tiles;
-
-	Vector2 start_pos_in = Vector2Midpoint(self->pos, self->dim);
-
-	V2 start_half = Vector2V2(Vector2Subtract(start_pos_in, V2Vector2(v2_scale(dim, 0.5)) ) );
-
-	//V2 dim = v2_scale(dim1, 0.5);
-	Vector2 start_pos = { dim.x / 2.0, dim.y / 2.0 };
-	//TODO fix so it the DMPTMP is relative to entity
+	const V2 dim = { 32, 32 };
 	const V2 card_dirs[4] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
 
+	const Vector2 entity_midpoint = Vector2Midpoint(self->pos, self->dim);
+
+	const V2 array_offset = Vector2V2(Vector2Subtract(entity_midpoint, V2Vector2(v2_scale(dim, 0.5)) ) );
+
+	const Vector2 array_start_pos = V2Vector2(v2_scale(dim, 0.5));
+
+	const Vector2 array_end_pos = Vector2Subtract(end_pos, V2Vector2(array_offset));
+
 	AStarNode nodes[dim.x * dim.y];
-	a_star_init_nodes(nodes, map, start_pos_in, dim);
+	a_star_init_nodes(nodes, map, entity_midpoint, dim);
+
+	AStarNode* current = &nodes[vector2_to_vector_index(array_start_pos.x, array_start_pos.y, dim.x)];	
+	current->local_goal = 0.0;
+	current->global_goal = a_star_distance(array_start_pos, end_pos);
+	AStarNode* end = &nodes[vector2_to_vector_index((i32) array_end_pos.x, (i32) array_end_pos.y, dim.x)];
 
 #if 0
-	for(i32 i = 0; i < dim.y; i++)
-	{
-		for(i32 j = 0; j < dim.x; j++)
-			printf("%d", nodes[vector2_to_vector_index(j, i, dim.x)].walkable);
-		printf("\n");
-	}
-#endif
-
-	AStarNode* current = &nodes[vector2_to_vector_index(start_pos.x, start_pos.y, dim.x)];	
-	current->local_goal = 0.0;
-	current->global_goal = a_star_distance(start_pos, end_pos);
-	printf("Mouse pos - x: %.2f y: %.2f\n", end_pos.x, end_pos.y);
-	end_pos = Vector2Subtract(end_pos, V2Vector2(start_half));
-	AStarNode* end = &nodes[vector2_to_vector_index((i32) end_pos.x, (i32) end_pos.y, dim.x)];
-	printf("StartHalf - x: %.2d y: %.2d\n", start_half.x, start_half.y);
-	printf("Entity    - x: %.2f y: %.2f\n", self->pos.x, self->pos.y);
-	printf("StartNode - x: %.2f y: %.2f\n", current->pos.x, current->pos.y);
-	printf("Mouse pos - x: %.2f y: %.2f\n", end_pos.x, end_pos.y);
-	printf("EndNode   - x: %.2f y: %.2f\n", end->pos.x, end->pos.y);
-
 	AStarNode* not_tested_nodes[dim.x * dim.y];
 	u32 not_tested_nodes_len = 0;
-	not_tested_nodes[not_tested_nodes_len ++] = current;
+#endif
+	AStarMinHeap open = {
+		.max_len = ASTAR_MINHEAP_MAX_LEN,
+		.len = 0
+	};
 
-	u32 panic = 0;
+	a_star_min_heap_push(&open, *current);
+
+	//not_tested_nodes[not_tested_nodes_len ++] = current;
+
 	bool impossible = false;
 	while(not_tested_nodes_len != 0 && current != end)
 	{
 		a_star_sort_not_tested(not_tested_nodes, 0, not_tested_nodes_len - 1);
 
-		//for(i32 i = 0; i < not_tested_nodes_len; i++) printf("%f, ", not_tested_nodes[i]->global_goal);
-		//printf("\n");
 
 		while(not_tested_nodes_len > 0 && not_tested_nodes[0]->visited)
 		{
@@ -361,29 +412,26 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 		for(i32 i = 0; i < sizeof(card_dirs) / sizeof(V2); i++)
 		{
 			V2 dir = card_dirs[i];	
-			V2 neighbor_pos_array = v2_add(v2_sub(Vector2V2(current->pos), start_half), dir);
-			//V2 neighbor_pos_raw = (V2) {current->pos.x};
-			P_LOG("current - x: %.2d y: %.2d\n", neighbor_pos_array.x, neighbor_pos_array.y);
+			V2 neighbor_pos_array = v2_add(v2_sub(Vector2V2(current->pos), array_offset), dir);
 
 			if (neighbor_pos_array.x < 0 || neighbor_pos_array.y < 0 || neighbor_pos_array.x >= dim.x || neighbor_pos_array.y >= dim.y)
 			{
 				continue;
 			}
-			//TODO ALL NODE ACCESSES MAKES NO SENSE
-			//V2 neighbor_pos = v2_sub(dir, start_half);
+
 			AStarNode* neighbor = &nodes[vector2_to_vector_index(neighbor_pos_array.x, neighbor_pos_array.y, dim.x)];
+
 			if(neighbor->pos.x < 0 || neighbor->pos.y < 0 || neighbor->pos.x >= map->dim.x || neighbor->pos.y >= map->dim.y)
 			{
 				continue;
 			}
-			P_LOG("Neighbor_pos - x: %.2d y: %.2d\n", neighbor_pos_array.x, neighbor_pos_array.y);
-			P_LOG("Neighbor_nod - x: %.2f y: %.2f\n", neighbor->pos.x, neighbor->pos.y);
+
 			if(!neighbor->visited && neighbor->walkable == false)
 			{
 				not_tested_nodes[not_tested_nodes_len ++] = neighbor;
 			}
 
-			f32 lower_goal = current->local_goal + a_star_distance(current->pos, neighbor->pos);
+			const f32 lower_goal = current->local_goal + a_star_distance(current->pos, neighbor->pos);
 
 			if(lower_goal < neighbor->local_goal)
 			{
@@ -394,6 +442,9 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 
 		}
 	}
+
+
+
 	WalkPath path = {0};
 	if(impossible) return path;
 	//current = &nodes[vector2_to_vector_index(start_pos.x, start_pos.y, dim.x)];
@@ -402,14 +453,12 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 	{
 		path.pos[path.count].x = current->pos.x;
 		path.pos[path.count].y = current->pos.y;
-		Vector2 p = Vector2Subtract(current->parent, V2Vector2(start_half));
+		Vector2 p = Vector2Subtract(current->parent, V2Vector2(array_offset));
 #if 1
-		P_LOG("path: (%f %f)\n", path.pos[path.count].x, path.pos[path.count].y);
-		P_LOG("p: (%d %f)\n", start_half.x, V2Vector2(start_half).x);
 #endif 
 		path.count++;
 
-//		current = &nodes[vector2_to_vector_index(current->parent.x, current->parent.y, dim.x)]; //This is problem i think?
+		//		current = &nodes[vector2_to_vector_index(current->parent.x, current->parent.y, dim.x)]; //This is problem i think?
 		current = &nodes[vector2_to_vector_index(p.x, p.y, dim.x)];
 	}
 	for(i32 i = 0; i < path.count / 2; i++)
