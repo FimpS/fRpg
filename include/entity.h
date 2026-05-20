@@ -26,6 +26,8 @@ typedef struct AStarNode
 	bool solid;
 	bool visited;
 
+	u8 open;
+
 	Vector2 parent;
 } AStarNode;
 #define MAX_WALK_PATH_LEN 64

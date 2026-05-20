@@ -562,6 +562,7 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 
 void ui_render(GameState* state)
 {
+	if(IsKeyDown(KEY_I))
 	ui_inventory_render(state->inventory, state);
 	gfx_render_mouse(state->gfx);
 }

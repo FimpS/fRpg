@@ -145,9 +145,18 @@ void estate_player_tick(Entity* self, GameState* state)
 
 	Vector2 dir = Vector2Subtract(target, self->pos);
 
+#if 1
+	if(IsMouseButtonDown(0))
+	{
+	Vector2 end2 = map_get_mouse_cords(state->map);
+	for(i32 i = 0; i < 256; i++)
+		self->path = entity_find_path(self, end2, state);
+	}
+#endif
+				
 	if(IsMouseButtonPressed(1))
 	{
-		Vector2 end = map_get_mouse_cords(state->map);
+	Vector2 end = map_get_mouse_cords(state->map);
 		//Like 64 per is ok
 		if(entity_path_end_valid(end, state))
 		{
@@ -161,8 +170,7 @@ void estate_player_tick(Entity* self, GameState* state)
 			}
 			else
 			{
-				for(i32 i = 0; i < 1; i++)
-					self->path = entity_find_path(self, end, state);
+				self->path = entity_find_path(self, end, state);
 				//ValidateAndPrintPath(self->path, map->content, 32, 32);
 			}
 		}
@@ -222,23 +230,22 @@ Entity* entity_player_init(GameState* state)
 	return player;
 }
 
-
-#define ASTAR_MINHEAP_MAX_LEN 64
+#define ASTAR_MINHEAP_MAX_LEN 1024
 typedef struct AStarMinHeap
 {
 	u32 max_len;
 	u32 len;
-	AStarNode nodes[ASTAR_MINHEAP_MAX_LEN];
+	AStarNode* nodes[ASTAR_MINHEAP_MAX_LEN];
 } AStarMinHeap;
 
-void a_star_min_heap_swap(AStarNode* n1, AStarNode* n2)
+void a_star_min_heap_swap(AStarNode** n1, AStarNode** n2)
 {
-	AStarNode tmp = *n1;
+	AStarNode* tmp = *n1;
 	*n1 = *n2;
 	*n2 = tmp;
 }
 
-void a_star_min_heap_push(AStarMinHeap* heap, AStarNode node)
+void a_star_min_heap_push(AStarMinHeap* heap, AStarNode* node)
 {
 	heap->nodes[heap->len++] = node;
 
@@ -248,7 +255,7 @@ void a_star_min_heap_push(AStarMinHeap* heap, AStarNode node)
 	{
 		i32 parent = (index - 1) >> 1;
 
-		if(heap->nodes[parent].local_goal <= heap->nodes[index].local_goal)
+		if(heap->nodes[parent]->global_goal <= heap->nodes[index]->global_goal)
 		{
 			break;
 		}
@@ -258,11 +265,11 @@ void a_star_min_heap_push(AStarMinHeap* heap, AStarNode node)
 	}
 }
 
-AStarNode a_star_min_heap_pop(AStarMinHeap* heap)
+AStarNode* a_star_min_heap_pop(AStarMinHeap* heap)
 {
-	if(heap->len == 0) return (AStarNode) {0};
+	if(heap->len == 0) return NULL;
 
-	AStarNode min_node = heap->nodes[0];
+	AStarNode* min_node = heap->nodes[0];
 
 	heap->nodes[0] = heap->nodes[heap->len - 1];
 	heap->len --;
@@ -276,9 +283,9 @@ AStarNode a_star_min_heap_pop(AStarMinHeap* heap)
 		i32 smallest_index = index;
 
 
-		if(left_index < heap->len && heap->nodes[left_index].local_goal < heap->nodes[smallest_index].local_goal)
+		if(left_index < heap->len && heap->nodes[left_index]->global_goal < heap->nodes[smallest_index]->global_goal)
 			smallest_index = left_index;
-		if(right_index < heap->len && heap->nodes[right_index].local_goal < heap->nodes[smallest_index].local_goal)
+		if(right_index < heap->len && heap->nodes[right_index]->global_goal < heap->nodes[smallest_index]->global_goal)
 			smallest_index = right_index;
 		if(smallest_index <= index) break;
 		a_star_min_heap_swap(&heap->nodes[index], &heap->nodes[smallest_index]);
@@ -306,6 +313,7 @@ void a_star_init_nodes(AStarNode* nodes, Map* map, Vector2 start, V2 len)
 			nodes[vector2_to_vector_index(j, i, len.x)] = (AStarNode) {
 				//offset this with camera if we doing the visible tiles version...
 				.pos = (Vector2) { x, y },
+					.open = 0,
 					.global_goal = INF,
 					.local_goal = INF,
 					.parent = (Vector2) { -1.0, -1.0 },
@@ -318,36 +326,6 @@ void a_star_init_nodes(AStarNode* nodes, Map* map, Vector2 start, V2 len)
 	}
 }
 
-void a_star_sort_not_tested(AStarNode** nodes, i32 left, i32 right)
-{
-	if(left >= right) return;
-
-	AStarNode* pivot = nodes[(left + right) / 2];
-	f32 pivot_value = pivot->global_goal;
-
-	i32 i = left;
-	i32 j = right;
-
-	while(i <= j)
-	{
-		while(nodes[i]->global_goal < pivot_value) i++;
-		while(nodes[j]->global_goal > pivot_value) j--;
-
-		if(i <= j)
-		{
-			AStarNode* tmp = nodes[i];
-			nodes[i] = nodes[j];
-			nodes[j] = tmp;
-			i++;
-			j--;
-		}
-	}
-
-	if(left < j)  a_star_sort_not_tested(nodes, left, j);
-	if(i < right) a_star_sort_not_tested(nodes, i, right);
-}
-
-
 
 WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 {
@@ -355,8 +333,8 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 	Map* map = state->map;
 	MapCamera* cam = state->map->camera;
 
-	const V2 dim = { 32, 32 };
-	const V2 card_dirs[4] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+	const V2 dim = { 16, 16 };
+	const V2 card_dirs[] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
 
 	const Vector2 entity_midpoint = Vector2Midpoint(self->pos, self->dim);
 
@@ -371,7 +349,7 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 
 	AStarNode* current = &nodes[vector2_to_vector_index(array_start_pos.x, array_start_pos.y, dim.x)];	
 	current->local_goal = 0.0;
-	current->global_goal = a_star_distance(array_start_pos, end_pos);
+	current->global_goal = a_star_distance(self->pos, end_pos);
 	AStarNode* end = &nodes[vector2_to_vector_index((i32) array_end_pos.x, (i32) array_end_pos.y, dim.x)];
 
 #if 0
@@ -383,16 +361,17 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 		.len = 0
 	};
 
-	a_star_min_heap_push(&open, *current);
+	a_star_min_heap_push(&open, current);
+	current->open = 1;
 
 	//not_tested_nodes[not_tested_nodes_len ++] = current;
 
 	bool impossible = false;
-	while(not_tested_nodes_len != 0 && current != end)
+	while(open.len != 0 && current != end)
 	{
+
+#if 0
 		a_star_sort_not_tested(not_tested_nodes, 0, not_tested_nodes_len - 1);
-
-
 		while(not_tested_nodes_len > 0 && not_tested_nodes[0]->visited)
 		{
 			for(i32 i = 0; i < not_tested_nodes_len - 1; i++)
@@ -400,15 +379,21 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 
 			not_tested_nodes_len--;
 		}
-		if(not_tested_nodes_len == 0) 
+#endif 
+		if(open.len == 0) 
 		{
 			P_ERROR("Path Impossible\n");
 			impossible = true;
 			break;
 		}
+		current = a_star_min_heap_pop(&open);
+		if(current == NULL) 
+		{
+			P_ERROR("Path Impossible\n");
+			break;
+		}
+		//current->visited = true;
 
-		current = not_tested_nodes[0];
-		current->visited = true;
 		for(i32 i = 0; i < sizeof(card_dirs) / sizeof(V2); i++)
 		{
 			V2 dir = card_dirs[i];	
@@ -425,24 +410,40 @@ WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state)
 			{
 				continue;
 			}
+			if(neighbor->open == 2) continue;
+			neighbor->open = 2;
 
+#if 0
 			if(!neighbor->visited && neighbor->walkable == false)
 			{
-				not_tested_nodes[not_tested_nodes_len ++] = neighbor;
+				//not_tested_nodes[not_tested_nodes_len ++] = neighbor;
+				a_star_min_heap_push(&open, neighbor); // Todo: Check this in github guy
+			}
+#endif
+			if(neighbor->walkable == true)
+			{
+				neighbor->open = 2;
+				continue;
+			}
+			if(open.len >= open.max_len) 
+			{
+				P_ERROR("BAD\n");
+				break;
 			}
 
-			const f32 lower_goal = current->local_goal + a_star_distance(current->pos, neighbor->pos);
+			const f32 lower_goal = current->local_goal + 1.5 * a_star_distance(current->pos, neighbor->pos);
 
 			if(lower_goal < neighbor->local_goal)
 			{
 				neighbor->parent = current->pos;
 				neighbor->local_goal = lower_goal;
 				neighbor->global_goal = neighbor->local_goal + a_star_distance(neighbor->pos, end->pos);
+				neighbor->open = 1;
+				a_star_min_heap_push(&open, neighbor);
 			}
 
 		}
 	}
-
 
 
 	WalkPath path = {0};
@@ -519,8 +520,8 @@ void entities_tick(DynList* entities, GameState* state)
 Rectangle entity_get_render_frame(Entity* self, GameState* state)
 {
 	EntityAnimation* animation = &self->state.animation;
-	const u32 expression = ( (animation->timer ++ ) / animation->stop_timer ) % animation->amount_frames;
-	return animation->frames[ expression ];
+	const u32 frame_index = ( (animation->timer ++ ) / animation->stop_timer ) % animation->amount_frames;
+	return animation->frames[ frame_index ];
 }
 
 void entity_render(Entity* self, GameState* state)
@@ -614,3 +615,38 @@ void entity_destroy(Entity* e)
 }
 
 /* PUBLIC */
+
+
+
+
+void a_star_sort_not_tested(AStarNode** nodes, i32 left, i32 right)
+{
+	if(left >= right) return;
+
+	AStarNode* pivot = nodes[(left + right) / 2];
+	f32 pivot_value = pivot->global_goal;
+
+	i32 i = left;
+	i32 j = right;
+
+	while(i <= j)
+	{
+		while(nodes[i]->global_goal < pivot_value) i++;
+		while(nodes[j]->global_goal > pivot_value) j--;
+
+		if(i <= j)
+		{
+			AStarNode* tmp = nodes[i];
+			nodes[i] = nodes[j];
+			nodes[j] = tmp;
+			i++;
+			j--;
+		}
+	}
+
+	if(left < j)  a_star_sort_not_tested(nodes, left, j);
+	if(i < right) a_star_sort_not_tested(nodes, i, right);
+}
+
+
+

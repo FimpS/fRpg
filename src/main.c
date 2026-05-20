@@ -50,7 +50,7 @@ int main(void) {
 		BeginDrawing();
 		state_tick(state);
 		state_render(state);
-		DrawText(TextFormat("%d", GetFrameTime()), 10, 10, 5, GREEN);
+		DrawText(TextFormat("%d", GetFPS()), 10, 10, 5, GREEN);
 		EndDrawing();
 	}
 

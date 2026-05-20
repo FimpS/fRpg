@@ -1,13 +1,13 @@
 
 
 Fix:
-    - ...
+    - Maybe let them walk at you like stupid and then if they walk into a wall for some time then they pathmake
 
 Features:
     - Inventory for Tiles (DONE FOR NOW)
         - UI for hotbar and select (DONE)
         - UI for the Tiles inside the hotbar (DONE)
-        - Logic for hotbar: array of Tiles, copy tile to hotbar, maybe remove c or extend it (DONE)
+        - Logic for hotbar: array o Tiles, copy tile to hotbar, maybe remove c or extend it (DONE)
         - Fix alignment for fullscreen (DONE)
         - Lock hotbar logic (DONE)
         --------------------------

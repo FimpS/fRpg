@@ -24,7 +24,10 @@ void state_tick(GameState* state)
 	MapCamera* cam = map->camera;
 	DynList* entities = map->entities;
 
+	if(IsKeyDown(KEY_I))
+	{
 	ui_inventory_tick(state->inventory, state);
+	}
 	entities_tick(map->entities, state);
 	Entity* e = dynList_get(entities, 0);
 	cam_tick(map, Vector2Midpoint(e->pos, e->dim));
@@ -92,4 +95,5 @@ void state_tick(GameState* state)
 void state_render(GameState* state)
 {
 	ui_render(state);
+
 }

@@ -8,10 +8,10 @@ const Entity entity_type_table[] = {
 			.type = ESTYPE_PLACEHOLDER2,
 		},
 		.light = {
-			.distance = 9.0,
-			.self = 0.1,
+			.distance = 0.0,
+			.self = 1.0,
 			.tint = WHITE,
-			.value = 0.8,
+			.value = 0.0,
 			.flicker = {0.8, 0.1},
 			.light_source = false,
 		},
@@ -33,7 +33,7 @@ const Entity entity_type_table[] = {
 		.light = {
 			.self = 1.0,
 			.light_source = false,
-			.distance = 1.0,
+			.distance = 0.0,
 			.flicker = 0.0,
 		},
 	},
