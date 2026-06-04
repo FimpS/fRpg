@@ -371,6 +371,30 @@ src/map.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/map.c.s
 .PHONY : src/map.c.s
 
+src/path.o: src/path.c.o
+.PHONY : src/path.o
+
+# target to build an object file
+src/path.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/path.c.o
+.PHONY : src/path.c.o
+
+src/path.i: src/path.c.i
+.PHONY : src/path.i
+
+# target to preprocess a source file
+src/path.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/path.c.i
+.PHONY : src/path.c.i
+
+src/path.s: src/path.c.s
+.PHONY : src/path.s
+
+# target to generate assembly for a file
+src/path.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/path.c.s
+.PHONY : src/path.c.s
+
 src/state.o: src/state.c.o
 .PHONY : src/state.o
 
@@ -457,6 +481,9 @@ help:
 	@echo "... src/map.o"
 	@echo "... src/map.i"
 	@echo "... src/map.s"
+	@echo "... src/path.o"
+	@echo "... src/path.i"
+	@echo "... src/path.s"
 	@echo "... src/state.o"
 	@echo "... src/state.i"
 	@echo "... src/state.s"

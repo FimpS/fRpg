@@ -1,5 +1,4 @@
-#ifndef MAP_H
-#define MAP_H
+#pragma once
 
 #define CONTENT_SIZE 4096
 #define TILE_LEN 40
@@ -34,6 +33,7 @@ typedef struct MapCamera
 	Vector2 tile_offset;
 	u32 tile_len;
 	f32 zoom;
+	f32 speed;
 } MapCamera;
 
 typedef struct Tile
@@ -77,4 +77,3 @@ void map_populate_light(Map* map);
 void propagate(Map* map, i32 x, i32 y, f32 value);
 void map_add_entity_lights(Map* map);
 
-#endif

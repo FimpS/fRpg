@@ -1,5 +1,4 @@
-#ifndef DYNLIST_H
-#define DYNLIST_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -22,5 +21,3 @@ void dynList_del(DynList* l, unsigned index);
 void dynList_clear(DynList *l);
 void dynList_destroy(DynList *l);
 
-
-#endif

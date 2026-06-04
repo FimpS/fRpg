@@ -1,5 +1,4 @@
-#ifndef EDITOR_H
-#define EDITOR_H
+#pragma once
 
 #include <string.h>
 
@@ -74,4 +73,3 @@ void editor_parse_file_input(u8* file_buffer);
 // Argc, and Argv
 // selected Tile at bottom left
 // also add Mobjects for example if (button) is pressed you can now copy Entities
-#endif

@@ -1,2 +1,2 @@
-/usr/bin/ar qc libengine.a CMakeFiles/engine.dir/lib/dynList.c.o CMakeFiles/engine.dir/src/editor.c.o CMakeFiles/engine.dir/src/entity.c.o CMakeFiles/engine.dir/src/entity_info.c.o CMakeFiles/engine.dir/src/gfx.c.o CMakeFiles/engine.dir/src/item.c.o CMakeFiles/engine.dir/src/map.c.o CMakeFiles/engine.dir/src/state.c.o CMakeFiles/engine.dir/src/ui.c.o
+/usr/bin/ar qc libengine.a CMakeFiles/engine.dir/lib/dynList.c.o CMakeFiles/engine.dir/src/editor.c.o CMakeFiles/engine.dir/src/entity.c.o CMakeFiles/engine.dir/src/entity_info.c.o CMakeFiles/engine.dir/src/gfx.c.o CMakeFiles/engine.dir/src/item.c.o CMakeFiles/engine.dir/src/map.c.o CMakeFiles/engine.dir/src/path.c.o CMakeFiles/engine.dir/src/state.c.o CMakeFiles/engine.dir/src/ui.c.o
 /usr/bin/ranlib libengine.a

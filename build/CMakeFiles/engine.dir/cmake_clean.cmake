@@ -13,6 +13,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/item.c.o.d"
   "CMakeFiles/engine.dir/src/map.c.o"
   "CMakeFiles/engine.dir/src/map.c.o.d"
+  "CMakeFiles/engine.dir/src/path.c.o"
+  "CMakeFiles/engine.dir/src/path.c.o.d"
   "CMakeFiles/engine.dir/src/state.c.o"
   "CMakeFiles/engine.dir/src/state.c.o.d"
   "CMakeFiles/engine.dir/src/ui.c.o"

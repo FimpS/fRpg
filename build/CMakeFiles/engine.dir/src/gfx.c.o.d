@@ -66,7 +66,5 @@ CMakeFiles/engine.dir/src/gfx.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
- /home/samuel/c/game/fRpgCrawler/lib/types.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/v2.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../lib/types.h \
  /usr/local/include/raymath.h

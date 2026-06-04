@@ -1,5 +1,4 @@
-#ifndef UI_H
-#define UI_H
+#pragma once
 
 #include "dynList.h"
 #include "item.h"
@@ -66,4 +65,3 @@ void ui_inventory_render(Inventory* inventory, GameState* state);
 
 void ui_render(GameState* state);
 
-#endif

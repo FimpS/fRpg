@@ -1,7 +1,7 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#pragma once
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "raylib.h"
 #include "types.h"
@@ -29,4 +29,3 @@ static inline u32 vector2_to_vector_index(u32 x, u32 y, u32 width) { return x + 
 #define P_LOG(s, ...) { if(LOG_MODE) { printf("LOG: "); printf(s, ##__VA_ARGS__); } }
 
 
-#endif

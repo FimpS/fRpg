@@ -1,5 +1,4 @@
-#ifndef STATE_H
-#define STATE_H
+#pragma once
 
 #include "raylib.h"
 #include "../lib/dynList.h"
@@ -31,4 +30,3 @@ GameState* state_new();
 void state_tick(GameState* state);
 void state_render(GameState* state);
 
-#endif

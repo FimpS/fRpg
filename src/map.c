@@ -28,6 +28,7 @@ MapCamera* cam_new()
 		.tile_offset = (Vector2) {0, 0},
 		.tile_len = 40,
 		.zoom = 0.0,
+		.speed = 4.0,
 	};
 	return mc_new;
 }
@@ -69,15 +70,23 @@ void cam_tick(Map* map, Vector2 source)
 {
 	MapCamera* cam = map->camera;
 
-	const f32 t = 128.0*(4096.0)/(GetScreenHeight() + GetScreenWidth());
-	const f32 t2 = 128.0*(164.0)/(GetScreenHeight() + GetScreenWidth());
+	const f32 zoom_max = 128.0*(4096.0)/(GetScreenHeight() + GetScreenWidth());
+	const f32 zoom_low = 128.0*(164.0)/(GetScreenHeight() + GetScreenWidth());
 	cam->tile_len += GetMouseWheelMove() * 4;
-	if(cam->tile_len >= (i32)t) { cam->tile_len = (i32)t; }
-	else if(cam->tile_len <= t2) { cam->tile_len = t2; }
+	if(cam->tile_len >= (i32) zoom_max) { cam->tile_len = (i32) zoom_max; }
+	else if(cam->tile_len <=  zoom_low) { cam->tile_len =  zoom_low; }
 
+	const Vector2 target_pos = source;
+	const f32 dt = GetFrameTime();
+
+	const f32 t = 1.0 - expf(- cam->speed * dt);
+
+
+	cam->pos.x += (target_pos.x - cam->pos.x) * t;
+	cam->pos.y += (target_pos.y - cam->pos.y) * t;
 
 	Vector2 mouse_pos = GetMousePosition();
-	cam->pos = vector2(source.x, source.y);
+
 	cam->visible_tiles = v2_new(
 			(i32) ceilf(GetScreenWidth() / cam->tile_len) + 1,
 			(i32) ceilf(GetScreenHeight() / cam->tile_len) + 1);

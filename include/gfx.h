@@ -1,5 +1,4 @@
-#ifndef GFX_H
-#define GFX_H
+#pragma once
 
 #include "raylib.h"
 #include "../lib/types.h"
@@ -90,4 +89,3 @@ TemporaryText* temporary_text_new(const u8* text,
 void temporary_text_destroy(TemporaryText* t);
 void temporary_text_render(DynList* ts);
 
-#endif

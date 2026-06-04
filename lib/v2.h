@@ -1,5 +1,4 @@
-#ifndef V2_H
-#define V2_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -61,6 +60,11 @@ static inline V2 v2_sub(const V2 p, const V2 transform)
 static inline V2 v2_mul(const V2 p, const V2 transform)
 {
 	return (V2) {p.x * transform.x, p.y * transform.y};
+}
+
+static inline bool v2_eq(const V2 p, const V2 q)
+{
+	return ( p.x == q.x && p.y == q.y );
 }
 
 /* V2 REC */
@@ -158,5 +162,3 @@ static inline bool v2f_inrange(const V2f self, const V2f other, f32 dist)
 }
 
 /* IMPLEMENTATION */
-
-#endif

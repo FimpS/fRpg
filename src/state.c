@@ -26,11 +26,11 @@ void state_tick(GameState* state)
 
 	if(IsKeyDown(KEY_I))
 	{
-	ui_inventory_tick(state->inventory, state);
+		ui_inventory_tick(state->inventory, state);
 	}
 	entities_tick(map->entities, state);
 	Entity* e = dynList_get(entities, 0);
-	cam_tick(map, Vector2Midpoint(e->pos, e->dim));
+	cam_tick(map, Vector2Midpoint(state->player->pos, state->player->dim));
 
 	map_reset_light(map);
 	map_add_entity_lights(map);
@@ -44,11 +44,13 @@ void state_tick(GameState* state)
 		Entity* self = dynList_get(entities, i);
 		if( i == 0 )
 		{
-		const f32 f = 0.1;
-		if(IsKeyDown(KEY_D)) { self->pos.x += f; };
-		if(IsKeyDown(KEY_A)) { self->pos.x -= f; };
-		if(IsKeyDown(KEY_W)) { self->pos.y -= f; };
-		if(IsKeyDown(KEY_S)) { self->pos.y += f; };
+			const f32 f = 0.1;
+#if 0
+			if(IsKeyDown(KEY_D)) { self->pos.x += f; };
+			if(IsKeyDown(KEY_A)) { self->pos.x -= f; };
+			if(IsKeyDown(KEY_W)) { self->pos.y -= f; };
+			if(IsKeyDown(KEY_S)) { self->pos.y += f; };
+#endif
 		}
 #if 0
 		DrawTexturePro(state->gfx->texs[TEXTURE_TILEMAP], self->state.sprite.rec_bmap, 

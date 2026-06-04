@@ -1,5 +1,4 @@
-#ifndef ITEM_H
-#define ITEM_H
+#pragma once
 
 #include "../lib/types.h"
 
@@ -42,4 +41,3 @@ typedef struct Item
 
 extern const ItemInfo item_info_table[];
 
-#endif

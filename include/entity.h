@@ -1,5 +1,4 @@
-#ifndef ENTITY_H
-#define ENTITY_H
+#pragma once
 
 #include "raylib.h"
 #include "raymath.h"
@@ -7,36 +6,12 @@
 #include "../include/gfx.h"
 #include "../include/state.h"
 #include "../include/map.h"
+#include "../include/path.h"
 
 #define MAX_ENTITY_ANIMATION_FRAMES 8
 
 typedef struct GameState GameState;
 typedef struct Entity Entity;
-
-
-
-typedef struct AStarNode
-{
-	Vector2 pos;
-
-	f32 global_goal;
-	f32 local_goal;
-
-	bool walkable;
-	bool solid;
-	bool visited;
-
-	u8 open;
-
-	Vector2 parent;
-} AStarNode;
-#define MAX_WALK_PATH_LEN 64
-typedef struct WalkPath
-{
-	Vector2 pos[MAX_WALK_PATH_LEN];
-	u32 count;
-	u32 current;
-} WalkPath;
 
 typedef enum EntityType
 {
@@ -73,7 +48,7 @@ typedef struct EntityState
 	EntityStateType type;
 	void (*tick)(Entity* self, GameState* state);
 	EntityAnimation animation;
-	WalkPath path;
+	//WalkPath path;
 } EntityState;
 
 typedef struct Entity
@@ -86,6 +61,11 @@ typedef struct Entity
 	Light light;
 	EntityType type;
 	EntityState state;
+
+	f32 speed;
+	f32 theta;
+
+	f32 aggro_range;
 
 	u32 id;
 
@@ -106,8 +86,7 @@ void entity_destroy(Entity* e);
 
 void entities_tick(DynList* entities, GameState* state);
 void entities_render(DynList* entities, GameState* state);
+void entity_move(Entity* self, GameState* state);
 
 Entity* entity_player_init(GameState* state);
 
-WalkPath entity_find_path(Entity* self, Vector2 end_pos, GameState* state);
-#endif

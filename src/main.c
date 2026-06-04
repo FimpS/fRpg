@@ -22,7 +22,7 @@ int main(void) {
 	//HashMap* map = hmap_new(32);
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "2D - TileMapEditor");
-    SetTargetFPS(60);
+	SetTargetFPS(60);
 
 	HideCursor();
     Vector2 rectPos = { 400, 300 };
@@ -45,12 +45,18 @@ int main(void) {
 	//dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER, (Vector2) {5.0, 5.0} ));
 
 	ToggleFullscreen();
+	int i = 0;
+	float ft = 0.0;
     while (!WindowShouldClose()) 
 	{
-		BeginDrawing();
 		state_tick(state);
+		BeginDrawing();
 		state_render(state);
-		DrawText(TextFormat("%d", GetFPS()), 10, 10, 5, GREEN);
+		if(i++ % 60 == 0)
+		{
+			ft = GetFrameTime();
+		}
+		DrawText(TextFormat("%f", ft), 10, 10, 5, GREEN);
 		EndDrawing();
 	}
 
