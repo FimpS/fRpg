@@ -28,6 +28,12 @@ void state_tick(GameState* state)
 	{
 		ui_inventory_tick(state->inventory, state);
 	}
+	if(IsMouseButtonPressed(0))
+	{
+		Vector2 t = map_get_mouse_cords(map);
+		P_LOG("\n MPTile = (%d, %d)\n", (i32) t.x, (i32) t.y);
+	}
+			
 	entities_tick(map->entities, state);
 	Entity* e = dynList_get(entities, 0);
 	cam_tick(map, Vector2Midpoint(state->player->pos, state->player->dim));

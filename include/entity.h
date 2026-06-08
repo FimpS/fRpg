@@ -51,6 +51,26 @@ typedef struct EntityState
 	//WalkPath path;
 } EntityState;
 
+typedef struct EntityGearData
+{
+	//Defense defense_flat;
+	//Defense defense_mult;
+	f32 speed_flat;
+	f32 speed_mult;
+} EntityGearData;
+
+typedef struct EntityBuffs //calculate this before speed (very early in tick)
+{
+	f32 speed_flat;
+	f32 speed_mult;
+} EntityBuffs;
+
+typedef struct EntitySpeed
+{
+	f32 frame;
+	f32 base;
+} EntitySpeed;
+
 typedef struct Entity
 {
 	Vector2 pos;
@@ -62,8 +82,8 @@ typedef struct Entity
 	EntityType type;
 	EntityState state;
 
-	f32 speed;
-	f32 theta;
+	EntitySpeed speed;
+	f32 facing_angle;
 
 	f32 aggro_range;
 

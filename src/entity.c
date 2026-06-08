@@ -74,24 +74,61 @@ void entity_handle_standard_pathing(Entity* self, GameState* state, bool conditi
 	}
 }
 
+f32 entity_calculate_speed(Entity* self, GameState* state)
+{
+	f32 speed = self->speed.base;
+	f32 speed_multiplier = 1.0;
+	if(IsKeyDown(KEY_SPACE)) return self->speed.base * 1.5;
+	/*	A solution but I dont like that enemies cannot do anything wise with speed.base, only affect the multiplier variable
+		speed += self->gear.speed_flat; 
+		speed += self->buffs.speed_flat; 
+		speed_multiplier += self->buffs.speed_mult;
+		speed_multiplier += self->gear.speed_mult;
+		speed *= speed_multiplier
+
+	*/
+	return self->speed.base - 0.05;
+}
+
+
+//Speed multiplier for states which multiplied with self->speed.base?
+//
+//Better do maybe have a few fields that are multipliers which are addative
+//Say you have speed_mult = 1.0; then you just add to it speed_mult += amazing_gear.speed;
+//Then Just self->speed *= speed_mult; So never multiply something temporary
+//Perhaps only affect base_speed with lvls and keep a constant if you want to revert
+void estate_player_determine_movement_direction(Entity* self, GameState* state)
+{
+	f32 speed = entity_calculate_speed(self, state);
+	Vector2 dir = {
+		0.0,
+		0.0
+	};
+
+	if(IsKeyDown(KEY_D)) { dir.x += 1.0; };
+	if(IsKeyDown(KEY_A)) { dir.x -= 1.0; };
+	if(IsKeyDown(KEY_S)) { dir.y += 1.0; };
+	if(IsKeyDown(KEY_W)) { dir.y -= 1.0; };
+	dir = Vector2Normalize(dir);
+
+	if(dir.x != 0.0 || dir.y != 0.0) self->speed.frame = speed; else self->speed.frame = 0.0;
+
+	self->facing_angle = atan2(dir.y, dir.x);
+}
+
 void estate_player_tick(Entity* self, GameState* state)
 {
 	Map* map = state->map;
 	WalkPath* path = &self->path;
 	Vector2 target = path->pos[path->current];
 
-	Vector2 dir = Vector2Subtract(target, self->pos);
 	f32 speed = 0.05;
-	if(IsKeyDown(KEY_SPACE)) speed = 0.15;
-	if(IsKeyDown(KEY_D)) { self->theta = 0; self->speed = speed; };
-	if(IsKeyDown(KEY_A)) { self->theta = PI; self->speed = speed; };
-	if(IsKeyDown(KEY_S)) { self->theta = PI / 2; self->speed = speed; };
-	if(IsKeyDown(KEY_W)) { self->theta = 3 * PI / 2; self->speed = speed; };
-
+	
+	estate_player_determine_movement_direction(self, state);
 	entity_move(self, state);
 
-	self->speed = 0.0;
-	//entity_handle_standard_pathing(self, state, IsMouseButtonPressed(1));
+
+
 #if 0
 	if(IsMouseButtonDown(0))
 	{
@@ -101,10 +138,6 @@ void estate_player_tick(Entity* self, GameState* state)
 	}
 #endif
 
-	if(IsKeyDown(KEY_W))
-	{
-		//self->pos.x += 1.0;
-	}
 }
 
 const EntityState entity_state_table[] = {
@@ -139,68 +172,71 @@ const EntityState entity_state_table[] = {
 
 #define NEW_LINE() printf("\n");
 
+f32 entity_check_tile_bounds_horizontal(Vector2 new_pos, const Vector2 old_pos, Entity* self, GameState* state)
+{
+	Map* map = state->map;
+	const i32 first_tile = (i32) (new_pos.y);
+	const i32 last_tile = (i32) (new_pos.y + self->dim.y - 0.001f);
+	const i32 width = new_pos.x > old_pos.x ? (i32) (new_pos.x + self->dim.x) : new_pos.x;
+	bool collided = false;
+	for (i32 i = first_tile; i <= last_tile; i++)
+	{
+		Tile tile = map_get_tile(map, (V2) { width, i } );
+
+		if (tile.solid)
+		{
+			collided = true; break;
+		}
+	}
+
+	if (collided)
+	{
+		return new_pos.x > old_pos.x ? width - self->dim.x : width + 1.0;
+	}
+	return new_pos.x;
+
+}
+
+f32 entity_check_tile_bounds_vertical(Vector2 new_pos, const Vector2 old_pos, Entity* self, GameState* state)
+{
+	Map* map = state->map;
+	const i32 first_tile = (i32) (new_pos.x);
+	const i32 last_tile = (i32) (new_pos.x + self->dim.x - 0.001f);
+	const i32 height = new_pos.y > old_pos.y ? (i32) (new_pos.y + self->dim.y) : new_pos.y;
+	bool collided = false;
+	for (i32 i = first_tile; i <= last_tile; i++)
+	{
+		Tile tile = map_get_tile(map, (V2) { i, height } );
+
+		if (tile.solid)
+		{
+			collided = true; break;
+		}
+	}
+
+	if (collided)
+	{
+		return new_pos.y > old_pos.y ? height - self->dim.y : height + 1.0;
+	}
+	return new_pos.y;
+
+}
+
 void entity_move(Entity* self, GameState* state)
 {
 	Map* map = state->map;
 
-	const f32 angle = self->theta;
+	const f32 angle = self->facing_angle;
 	const Vector2 old_pos = self->pos;
-	Vector2 new_pos = Vector2Add(old_pos, Vector2Scale( (Vector2) { cos(angle), sin(angle) }, self->speed));
+	const const Vector2 velocity = Vector2Scale( (Vector2) { cos(angle), sin(angle) }, self->speed.frame);
 
+	const Vector2 candidate_horizontal = Vector2Add(old_pos, (Vector2) { velocity.x, 0.0 } );
+	const Vector2 candidate_vertical = Vector2Add(old_pos, (Vector2) { 0.0, velocity.y } );
 
-		NEW_LINE();
-	if( new_pos.x > old_pos.x )
-	{
-
-		const V2 tile_checks = { (i32) self->dim.x + 1, (i32) self->dim.y + 1};
-		bool collided_vertically = false;
-		for(i32 i = 0; i < tile_checks.y + 1; i++)
-		{
-			const f32 ti = tile_checks.y - (i + 1) >= 1.0 ? 1.0 : self->dim.y - (i32) self->dim.y;
-				//printf("%d: %f32\n", i, ti);
-			const Tile tile = map_get_tile(map, 
-					(V2) { (i32) (new_pos.x + self->dim.x), 
-					(i32) (old_pos.y + ti + i - 1) } );
-			P_LOG("Entity:\tpos = (%f, %f) | dim = (%f, %f)\n", self->pos.x, self->pos.y, self->dim.x, self->dim.y);
-			P_LOG("Tile Data:\tpos = (%d, %d) | dim = (%d, %d)\n", (i32) (new_pos.x + self->dim.x), (i32) (old_pos.y + ti), 1, 1);
-			P_LOG("TI:\t%f\n", ti);
-			if(tile.solid)
-			{
-				collided_vertically = true;
-			}
-		}
-		NEW_LINE();
-
-		if(collided_vertically) 
-		{
-			new_pos.x = old_pos.x ; //maybe this could be tile cordinates
-		}
-	}
-
-#if 0
-	else
-	{
-		const V2 tile_checks = { (i32) self->dim.x, (i32) self->dim.y };
-		bool collided_vertically = false;
-		for(i32 i = 0; i < tile_checks.y; i++)
-		{
-			const Tile tile = map_get_tile(map, (V2) {new_pos.x, old_pos.y - i} );
-			if(tile.solid)
-			{
-				collided_vertically = true;
-			}
-		}
-		if(collided_vertically) 
-		{
-			new_pos.x = (i32) new_pos.x + 1; 
-		}
-	}
-#endif 
-
-	if( new_pos.y > old_pos.y )
-	{
-
-	}
+	Vector2 new_pos = { 
+		new_pos.x = entity_check_tile_bounds_horizontal(candidate_horizontal, old_pos, self, state),
+		new_pos.y = entity_check_tile_bounds_vertical(candidate_vertical, old_pos, self, state)
+	};
 
 	self->pos = new_pos;
 
@@ -209,8 +245,6 @@ void entity_move(Entity* self, GameState* state)
 Entity* entity_player_init(GameState* state)
 {
 	Entity* player = entity_new(ENTITY_PLAYER, (Vector2) {14.0, 14.0} );
-	player->speed = 0.15f;
-
 	player->path = (WalkPath) {0};
 	return player;
 }
@@ -274,11 +308,11 @@ void entity_render(Entity* self, GameState* state)
 
 	Rectangle src_frame = entity_get_render_frame(self, state);
 	DrawRectangle((self->pos.x - cam->offset.x) * cam->tile_len,
-					(self->pos.y - cam->offset.y) * cam->tile_len,
-					self->dim.x * cam->tile_len, 
-					self->dim.y * cam->tile_len, (Color) {255, 255, 255, 255});
-		
-		
+			(self->pos.y - cam->offset.y) * cam->tile_len,
+			self->dim.x * cam->tile_len, 
+			self->dim.y * cam->tile_len, (Color) {255, 255, 255, 255});
+
+
 #if 0
 	DrawTexturePro(state->gfx->texs[TEXTURE_TILEMAP], 
 			src_frame, 

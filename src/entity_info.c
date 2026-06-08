@@ -26,10 +26,11 @@ const Entity entity_type_table[] = {
 		},
 	},
 	(Entity) {
-		.dim = {0.5, 2.65},
+		.dim = {1.5, 1.5},
 		.state = {
 			.type = ESTYPE_PLAYER_TICK,
 		},
+		.speed = { 0.0, 0.1 },
 		.light = {
 			.self = 1.0,
 			.light_source = false,

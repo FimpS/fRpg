@@ -95,7 +95,7 @@ void cam_tick(Map* map, Vector2 source)
 	f32 half_w = cam->visible_tiles.x * 0.5;
 	f32 half_h = cam->visible_tiles.y * 0.5;
 
-#if 0
+#if 1
 	if (cam->pos.x < half_w) cam->pos.x = half_w;
 	if (cam->pos.y < half_h) cam->pos.y = half_h;
 	if (cam->pos.x > map->dim.x - half_w) cam->pos.x = map->dim.x - half_w;
