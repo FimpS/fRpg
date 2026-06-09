@@ -67,30 +67,15 @@ CMakeFiles/editor.dir/src/main_editor.c.o: \
  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../lib/types.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/gfx.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/types.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/dynList.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/state.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/map.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../lib/types.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../lib/v2.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../lib/types.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../include/entity.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/ui.h \
- /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/item.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/state.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/entity.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/map.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/state.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
- /home/samuel/c/game/fRpgCrawler/lib/types.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../lib/v2.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/path.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/global.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/editor.h \
  /usr/include/string.h /usr/include/strings.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../lib/dynList.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/gfx.h \
- /home/samuel/c/game/fRpgCrawler/src/../lib/hashmap.h \
- /home/samuel/c/game/fRpgCrawler/src/../lib/types.h
+ /home/samuel/c/game/fRpgCrawler/src/../lib/hashmap.h

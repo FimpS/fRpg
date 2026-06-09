@@ -65,28 +65,47 @@ typedef struct EntityBuffs //calculate this before speed (very early in tick)
 	f32 speed_mult;
 } EntityBuffs;
 
-typedef struct EntitySpeed
+typedef struct EntityLight
 {
-	f32 frame;
-	f32 base;
-} EntitySpeed;
+	Vector2 pos;
+	f32 self;
+} EntityLight;
 
+typedef struct EntityLightData
+{
+	f32 value;
+	f32 distance;
+	bool light_source;
+	Vector2 flicker;
+	Color tint;
+} EntityLightData;
+
+typedef struct EntityData
+{
+	EntityType type;
+	EntityStateType start_state;
+
+	Vector2 dim;
+	f32 base_speed;
+	EntityLightData light;
+} EntityData;
+
+//Decent idea to have separate every Data/changing so you have LighData and Light
 typedef struct Entity
 {
 	Vector2 pos;
-	Vector2 dim;
 
 	WalkPath path;
 
-	Light light;
+	EntityLight light;
 	EntityType type;
 	EntityState state;
-
-	EntitySpeed speed;
+	f32 speed;
 	f32 facing_angle;
 
 	f32 aggro_range;
 
+	EntityData data;
 	u32 id;
 
 } Entity;

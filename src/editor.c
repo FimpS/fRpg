@@ -722,8 +722,8 @@ void editor_entity_render(Entity* self, Editor* editor)
 			(Rectangle) {
 			(self->pos.x - cam->offset.x) * cam->tile_len, 
 			(self->pos.y - cam->offset.y) * cam->tile_len, 
-			self->dim.x * cam->tile_len, 
-			self->dim.y * cam->tile_len
+			self->data.dim.x * cam->tile_len, 
+			self->data.dim.y * cam->tile_len
 			}, 
 			(Vector2) {0}, 
 			0.0, 

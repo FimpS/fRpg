@@ -209,27 +209,31 @@ f32 map_light_flicker(Vector2 flicker)
 void map_add_entity_lights(Map *map)
 {
 	tick ++;
+		printf("\n");
 	for(i32 i = 0; i < dynList_len(map->entities); i++)
 	{
 		Entity* e = dynList_get(map->entities, i);
-		Vector2 pos = Vector2Midpoint(e->pos, e->dim);
+		Vector2 pos = Vector2Midpoint(e->pos, e->data.dim);
 
 		Tile map_tile = map_get_tile(map, Vector2V2(pos));
-		if(e->light.value <= map->light_settings.ambient_light || map_tile.solid) 
+		if(e->data.light.value <= map->light_settings.ambient_light || map_tile.solid) 
 		{
 			continue;
 		}
-		e->light.self = 1.0;//e->light.value * 2.0;
+		e->light.self = 1.0;//e->data.light.value * 2.0;
 
 		V2 t = (V2) { (i32)floorf(pos.x), (i32)floorf(pos.y) };
 		V2 v = (V2) { (i32)ceilf(pos.x), (i32)ceilf(pos.y) };
 
 		if(t.x >= 0 && t.y >= 0 && t.x < map->dim.x && t.y < map->dim.y)
 		{
-			map->content[t.y * map->dim.x + t.x].light = e->light.value * map_light_flicker(e->light.flicker);
-			map->content[t.y * map->dim.x + t.x].light_level = e->light.distance;
+			map->content[t.y * map->dim.x + t.x].light = e->data.light.value * map_light_flicker(e->data.light.flicker);
+			map->content[t.y * map->dim.x + t.x].light_level = e->data.light.distance;
+			P_LOG("%d %f\n", e->type, map->content[t.y * map->dim.x + t.x].light);
 		}
+
 	}
+		printf("\n");
 }
 
 void map_populate_step(Map *map, Vector2 pos, f32 value, f32 v)
@@ -244,15 +248,32 @@ void map_populate_step(Map *map, Vector2 pos, f32 value, f32 v)
 		t->light = value;
 	}
 }
+void map_print_light(Map* map)
+{
+	for(i32 y = 1; y < map->dim.y-100; y++)
+	{
+		for(i32 x = 1; x < map->dim.x-100; x++)
+		{
+			Tile* t = &map->content[y * map->dim.x + x];
+			const f32 light = t->light;
+			const f32 energy = t->light_level;
+			printf("%f ", light);
+		}
+		printf("\n");
+	}
+	printf("\n");
+}
+
 
 void map_populate_light(Map *map)
 {
 	const f32 light_decay = 0.12;
 	const f32 energy_decay = 1.0;
 	const f32 epsilon = 0.01;
-	const u32 max_iterations = 16;
+	const u32 max_iterations = 12;
 	for(i32 iter = 0; iter < max_iterations; iter++)
 	{
+		//TODO this is gigaslow
 		for(i32 y = 1; y < map->dim.y-1; y++)
 		{
 			for(i32 x = 1; x < map->dim.x-1; x++)
@@ -313,7 +334,6 @@ void map_render(Map* map, Texture2D* texp)
 		(i32)floorf(mouse.x / tile + cam->offset.x),
 		(i32)floorf(mouse.y / tile + cam->offset.y)
 	};
-
 	for (i32 x = 0; x < cam->visible_tiles.x + 1; x++)
 	{
 		for (i32 y = 0; y < cam->visible_tiles.y + 1; y++)
@@ -333,7 +353,7 @@ void map_render(Map* map, Texture2D* texp)
 			const f32 light_level =  (sqrtf(tile_data.light)) * 1;// sqrtf(tile_data.light);	
 			Color diffuse = (Color) {255 * light_level, 255 * light_level, 255 * light_level, 255};
 
-			DrawTexturePro(tex, src, dst, (Vector2){0}, 0, diffuse);
+			DrawTexturePro(tex, src, dst, (Vector2) {0}, 0, diffuse);
 		}
 	}	
 }

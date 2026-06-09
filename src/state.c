@@ -24,7 +24,7 @@ void state_tick(GameState* state)
 	MapCamera* cam = map->camera;
 	DynList* entities = map->entities;
 
-	if(IsKeyDown(KEY_I))
+	if(IsKeyDown(KEY_K))
 	{
 		ui_inventory_tick(state->inventory, state);
 	}
@@ -36,7 +36,7 @@ void state_tick(GameState* state)
 			
 	entities_tick(map->entities, state);
 	Entity* e = dynList_get(entities, 0);
-	cam_tick(map, Vector2Midpoint(state->player->pos, state->player->dim));
+	cam_tick(map, Vector2Midpoint(state->player->pos, state->player->data.dim));
 
 	map_reset_light(map);
 	map_add_entity_lights(map);

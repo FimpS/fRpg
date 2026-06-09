@@ -1,4 +1,4 @@
 #pragma once
 
 #include "entity.h"
-extern const Entity entity_type_table[];
+extern const EntityData entity_data_table[];

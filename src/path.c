@@ -81,7 +81,7 @@ bool path_line_of_sight(Entity* self, Vector2 end, GameState* state)
 WalkPath path_get_line_path(Entity* self, Vector2 end)
 {
 	return (WalkPath) {
-		.pos[0] = Vector2Midpoint(end, Vector2Scale(self->dim, -1.0)),
+		.pos[0] = Vector2Midpoint(end, Vector2Scale(self->data.dim, -1.0)),
 		.count = 1,
 		.current = 0,
 	};
@@ -185,7 +185,7 @@ WalkPath path_get_any_path(Entity* self, Vector2 end_pos, GameState* state)
 	const V2 dim = { 28, 28 };
 	const V2 card_dirs[] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
 
-	const Vector2 entity_midpoint = Vector2Midpoint(self->pos, self->dim);
+	const Vector2 entity_midpoint = Vector2Midpoint(self->pos, self->data.dim);
 
 	const V2 array_offset = Vector2V2(Vector2Subtract(entity_midpoint, V2Vector2(v2_scale(dim, 0.5)) ) );
 

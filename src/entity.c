@@ -12,12 +12,12 @@ void estate_placeholder_tick(Entity* self, GameState* state)
 {
 	if(IsKeyDown(KEY_I))
 	{
-	//self->light.distance = (i32) ( self->light.distance + 1.0 ) % 25;
-	self->light.value = (f32) ( self->light.value + 0.1 );
-	if(self->light.value >= 1.0) self->light.value = 0.0;
+	//self->data.light.distance = (i32) ( self->light.distance + 1.0 ) % 25;
+	self->data.light.value = (f32) ( self->data.light.value + 0.1 );
+	if(self->data.light.value >= 1.0) self->data.light.value = 0.0;
 
 	// from 0.0 - 10.0 increase, 10.0 - 50.0 decrease and looks good
-	//printf("Light: %f\n", self->light.distance);
+	//printf("Light: %f\n", self->data.light.distance);
 	//self->pos.x += 0.25;
 	//self->pos.y += 0.15;
 	}
@@ -76,10 +76,11 @@ void entity_handle_standard_pathing(Entity* self, GameState* state, bool conditi
 
 f32 entity_calculate_speed(Entity* self, GameState* state)
 {
-	f32 speed = self->speed.base;
+	f32 speed = self->data.base_speed;
 	f32 speed_multiplier = 1.0;
-	if(IsKeyDown(KEY_SPACE)) return self->speed.base * 1.5;
+	if(IsKeyDown(KEY_SPACE)) return self->data.base_speed * 1.5;
 	/*	A solution but I dont like that enemies cannot do anything wise with speed.base, only affect the multiplier variable
+	 	Not perfect but VERY OKAY solution . . .
 		speed += self->gear.speed_flat; 
 		speed += self->buffs.speed_flat; 
 		speed_multiplier += self->buffs.speed_mult;
@@ -87,7 +88,7 @@ f32 entity_calculate_speed(Entity* self, GameState* state)
 		speed *= speed_multiplier
 
 	*/
-	return self->speed.base - 0.05;
+	return self->data.base_speed - 0.05;
 }
 
 
@@ -111,7 +112,7 @@ void estate_player_determine_movement_direction(Entity* self, GameState* state)
 	if(IsKeyDown(KEY_W)) { dir.y -= 1.0; };
 	dir = Vector2Normalize(dir);
 
-	if(dir.x != 0.0 || dir.y != 0.0) self->speed.frame = speed; else self->speed.frame = 0.0;
+	if(dir.x != 0.0 || dir.y != 0.0) self->speed = speed; else self->speed = 0.0;
 
 	self->facing_angle = atan2(dir.y, dir.x);
 }
@@ -176,8 +177,8 @@ f32 entity_check_tile_bounds_horizontal(Vector2 new_pos, const Vector2 old_pos, 
 {
 	Map* map = state->map;
 	const i32 first_tile = (i32) (new_pos.y);
-	const i32 last_tile = (i32) (new_pos.y + self->dim.y - 0.001f);
-	const i32 width = new_pos.x > old_pos.x ? (i32) (new_pos.x + self->dim.x) : new_pos.x;
+	const i32 last_tile = (i32) (new_pos.y + self->data.dim.y - 0.001f);
+	const i32 width = new_pos.x > old_pos.x ? (i32) (new_pos.x + self->data.dim.x) : new_pos.x;
 	bool collided = false;
 	for (i32 i = first_tile; i <= last_tile; i++)
 	{
@@ -191,7 +192,7 @@ f32 entity_check_tile_bounds_horizontal(Vector2 new_pos, const Vector2 old_pos, 
 
 	if (collided)
 	{
-		return new_pos.x > old_pos.x ? width - self->dim.x : width + 1.0;
+		return new_pos.x > old_pos.x ? width - self->data.dim.x : width + 1.0;
 	}
 	return new_pos.x;
 
@@ -201,8 +202,8 @@ f32 entity_check_tile_bounds_vertical(Vector2 new_pos, const Vector2 old_pos, En
 {
 	Map* map = state->map;
 	const i32 first_tile = (i32) (new_pos.x);
-	const i32 last_tile = (i32) (new_pos.x + self->dim.x - 0.001f);
-	const i32 height = new_pos.y > old_pos.y ? (i32) (new_pos.y + self->dim.y) : new_pos.y;
+	const i32 last_tile = (i32) (new_pos.x + self->data.dim.x - 0.001f);
+	const i32 height = new_pos.y > old_pos.y ? (i32) (new_pos.y + self->data.dim.y) : new_pos.y;
 	bool collided = false;
 	for (i32 i = first_tile; i <= last_tile; i++)
 	{
@@ -216,7 +217,7 @@ f32 entity_check_tile_bounds_vertical(Vector2 new_pos, const Vector2 old_pos, En
 
 	if (collided)
 	{
-		return new_pos.y > old_pos.y ? height - self->dim.y : height + 1.0;
+		return new_pos.y > old_pos.y ? height - self->data.dim.y : height + 1.0;
 	}
 	return new_pos.y;
 
@@ -228,7 +229,7 @@ void entity_move(Entity* self, GameState* state)
 
 	const f32 angle = self->facing_angle;
 	const Vector2 old_pos = self->pos;
-	const const Vector2 velocity = Vector2Scale( (Vector2) { cos(angle), sin(angle) }, self->speed.frame);
+	const const Vector2 velocity = Vector2Scale( (Vector2) { cos(angle), sin(angle) }, self->speed);
 
 	const Vector2 candidate_horizontal = Vector2Add(old_pos, (Vector2) { velocity.x, 0.0 } );
 	const Vector2 candidate_vertical = Vector2Add(old_pos, (Vector2) { 0.0, velocity.y } );
@@ -256,9 +257,9 @@ Entity* entity_player_init(GameState* state)
 bool entity_AAB(Entity* e, Vector2 p)
 {
 	return p.x >= e->pos.x 
-		&& p.x <= e->pos.x + e->dim.x 
+		&& p.x <= e->pos.x + e->data.dim.x 
 		&& p.y >= e->pos.y
-		&& p.y <= e->pos.y + e->dim.y;
+		&& p.y <= e->pos.y + e->data.dim.y;
 }
 
 bool AABB(Entity* s, Entity* t)
@@ -282,8 +283,8 @@ void entities_tick(DynList* entities, GameState* state)
 	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
 		Entity* e = dynList_get(entities, i);
-		Tile t = map_get_tile(state->map, Vector2V2(Vector2Midpoint(e->pos, e->dim)));
-		if(e->light.light_source)
+		Tile t = map_get_tile(state->map, Vector2V2(Vector2Midpoint(e->pos, e->data.dim)));
+		if(e->data.light.light_source)
 		{
 			e->light.self = ( t.light * 2.0 ) + 0.25 ;
 			e->light.self = e->light.self >= 1.0 ? 1.0 : e->light.self;
@@ -309,8 +310,8 @@ void entity_render(Entity* self, GameState* state)
 	Rectangle src_frame = entity_get_render_frame(self, state);
 	DrawRectangle((self->pos.x - cam->offset.x) * cam->tile_len,
 			(self->pos.y - cam->offset.y) * cam->tile_len,
-			self->dim.x * cam->tile_len, 
-			self->dim.y * cam->tile_len, (Color) {255, 255, 255, 255});
+			self->data.dim.x * cam->tile_len, 
+			self->data.dim.y * cam->tile_len, (Color) {255, 255, 255, 255});
 
 
 #if 0
@@ -319,8 +320,8 @@ void entity_render(Entity* self, GameState* state)
 			(Rectangle) {
 			(self->pos.x - cam->offset.x) * cam->tile_len, 
 			(self->pos.y - cam->offset.y) * cam->tile_len, 
-			self->dim.x * cam->tile_len, 
-			self->dim.y * cam->tile_len
+			self->data.dim.x * cam->tile_len, 
+			self->data.dim.y * cam->tile_len
 			}, 
 			(Vector2) {0}, 
 			0.0, 
@@ -339,55 +340,45 @@ void entities_render(DynList* entities, GameState* state)
 
 Entity* entity_new_editor(EntityType type, Vector2 pos)
 {
-#if 0
 	Entity* newe = malloc(sizeof(Entity));
-	newe->type = type;
-	newe->state = entity_state_table[newe->type];
-	newe->pos = pos;
-	newe->light = (Light) {
-		.pos = newe->pos,
-			.
-				.distance = 1.0,
-			.tint = WHITE,
-			.value = 1.0,
-	};
-	newe->dim = (Vector2) {2.0, 2.0};
-	newe->id = 1;
-#endif
-	Entity* newe = malloc(sizeof(Entity));
-	newe->type = type;
-	newe->state = entity_state_table[newe->type];
-	newe->pos = pos;
-	if(type == ESTYPE_PLACEHOLDER)
-	{
-		newe->light = (Light) {
-			.pos = newe->pos,
-				.distance = 9.0, //frand( (Vector2) {3.0, 4.0} ),
-				.self = 0.1,
-				.tint = WHITE,
-				.value = 0.8, //frand( (Vector2) {0.5, 0.45} ),
-				.flicker = (Vector2) {0.8, 0.1},
-				.light_source = false,
-		};
-	}
-	else
-	{
-		newe->light = (Light) { .self = 0.0, .light_source = true, };
-	}
 
-	if(newe->light.flicker.x + newe->light.flicker.y > 1.0) newe->light.flicker.y -= newe->light.flicker.x - 1.0;
-	if(type == ESTYPE_PLACEHOLDER) newe->dim = (Vector2) {1.0, 1.0};
-	else newe->dim = (Vector2) {0.5, 0.5};
-	newe->id = 1;
+	newe->data = entity_data_table[type];
+	newe->type = type;
+
+	newe->pos = pos;
+	newe->state = entity_state_table[newe->data.start_state];
+
+	newe->speed = 0.0;
+	newe->light = (EntityLight) { 0 };
+	newe->path = (WalkPath) { 0 };
+
+	// IDK Yet
+	newe->aggro_range = 0.0;
+	newe->facing_angle = 0.0;
+	newe->id = 0;
+
+	return newe;
+
 }
 
 Entity* entity_new(EntityType type, Vector2 pos)
 {
 	Entity* newe = malloc(sizeof(Entity));
-	*newe = entity_type_table[type];
+
+	newe->data = entity_data_table[type];
 	newe->type = type;
+
 	newe->pos = pos;
-	newe->state = entity_state_table[newe->state.type];
+	newe->state = entity_state_table[newe->data.start_state];
+
+	newe->speed = 0.0;
+	newe->light = (EntityLight) { 0 };
+	newe->path = (WalkPath) { 0 };
+
+	// IDK Yet
+	newe->aggro_range = 0.0;
+	newe->facing_angle = 0.0;
+	newe->id = 0;
 
 	return newe;
 }

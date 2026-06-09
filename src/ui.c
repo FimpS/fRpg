@@ -18,7 +18,6 @@ void ui_inventory_init_cells(Inventory* inventory)
 	const u32 cap = ui_inventory_cap(inventory);
 
 	Vector2 dim = gfx_to_monitor_vector( (Vector2) {50, 50} );
-	P_LOG("%f\n", dim.x);
 	Vector2 pos = gfx_to_monitor_vector( (Vector2) { GetScreenWidth() - 0 - dim.x - 30, 100 + inventory->hitbox.height - dim.y * inventory->rows - 30} );
 
 	for(i32 i = 0; i < cap; i++)
@@ -562,7 +561,7 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 
 void ui_render(GameState* state)
 {
-	if(IsKeyDown(KEY_I))
+	if(IsKeyDown(KEY_K))
 	ui_inventory_render(state->inventory, state);
 	gfx_render_mouse(state->gfx);
 }

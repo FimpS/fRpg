@@ -36,17 +36,6 @@ typedef struct Animation
 	u32 stop_timer;
 } Animation;
 
-typedef struct Light
-{
-	Vector2 pos;
-	f32 distance;
-	bool light_source;
-	f32 self;
-	Vector2 flicker;
-	Color tint;
-	f32 value;
-} Light;
-
 typedef struct LightGfx
 {
 	RenderTexture2D map;
@@ -82,10 +71,10 @@ u32 gfx_to_monitor(u32 pixels);
 void gfx_render_mouse(Gfx* gfx);
 
 TemporaryText* temporary_text_new(const u8* text,
-								  const Vector2 pos,
-								  const u32 dim,
-								  const u32 timer,
-								  const Color color);
+		const Vector2 pos,
+		const u32 dim,
+		const u32 timer,
+		const Color color);
 void temporary_text_destroy(TemporaryText* t);
 void temporary_text_render(DynList* ts);
 
