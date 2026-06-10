@@ -3,9 +3,9 @@
 
 const EntityData entity_data_table[] = {
 	//TYPE 						//StartState				//dim 			//bspeed	//Lightdata
-	{ENTITY_PLACEHOLDER,		ESTYPE_PLACEHOLDER,			{1.0, 1.0},		0.10,		{0.9, 0.0, false, {0.8, 0.1}, WHITE},		},
-	{ENTITY_PLACEHOLDER2,		ESTYPE_PLACEHOLDER2,		{0.5, 0.5},		0.10,		{0.0, 0.0, true, {1.0, 0.0}, WHITE},				},
-	{ENTITY_PLAYER,				ESTYPE_PLAYER_TICK,			{1.5, 1.5},		0.10,		{0.7, 8.0, true, {1.0, 0.0}, WHITE},				},
+	{ENTITY_PLACEHOLDER,		ESTYPE_PLACEHOLDER,			{1.0, 1.0},		0.10,		{0.9, 0.0, true, {0.8, 0.1}, WHITE},		},
+	{ENTITY_PLACEHOLDER2,		ESTYPE_PLACEHOLDER2,		{0.5, 0.5},		0.10,		{0.8, 5.0, true, {0.7, 0.3}, WHITE},				},
+	{ENTITY_PLAYER,				ESTYPE_PLAYER_TICK,			{0.5, 0.5},		0.10,		{1.0, 12.0, true, {1.0, 0.0}, WHITE},				},
 };
 
 #if 0

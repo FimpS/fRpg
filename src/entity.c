@@ -286,8 +286,10 @@ void entities_tick(DynList* entities, GameState* state)
 		Tile t = map_get_tile(state->map, Vector2V2(Vector2Midpoint(e->pos, e->data.dim)));
 		if(e->data.light.light_source)
 		{
+#if 0
 			e->light.self = ( t.light * 2.0 ) + 0.25 ;
 			e->light.self = e->light.self >= 1.0 ? 1.0 : e->light.self;
+#endif
 		}
 		if( e->state.tick != NULL ) e->state.tick(e, state);
 	}
@@ -303,7 +305,7 @@ Rectangle entity_get_render_frame(Entity* self, GameState* state)
 void entity_render(Entity* self, GameState* state)
 {
 	MapCamera* cam = state->map->camera;
-	const u32 rgb_values = 255 * self->light.self;
+	const u32 rgb_values = 255 * 1;
 	const u32 rgb = 255;
 	Color color = { rgb_values, rgb_values, rgb_values, rgb};
 
@@ -349,7 +351,7 @@ Entity* entity_new_editor(EntityType type, Vector2 pos)
 	newe->state = entity_state_table[newe->data.start_state];
 
 	newe->speed = 0.0;
-	newe->light = (EntityLight) { 0 };
+	//newe->light = (EntityLight) { 0 };
 	newe->path = (WalkPath) { 0 };
 
 	// IDK Yet
@@ -372,7 +374,7 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	newe->state = entity_state_table[newe->data.start_state];
 
 	newe->speed = 0.0;
-	newe->light = (EntityLight) { 0 };
+	//newe->light = (EntityLight) { 0 };
 	newe->path = (WalkPath) { 0 };
 
 	// IDK Yet

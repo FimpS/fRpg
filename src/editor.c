@@ -711,7 +711,7 @@ Rectangle editor_entity_get_render_frame(Entity* self, Editor* editor)
 void editor_entity_render(Entity* self, Editor* editor)
 {
 	MapCamera* cam = editor->map->camera;
-	const u32 rgb_values = 255 * self->light.self;
+	const u32 rgb_values = 255 ;
 	const u32 rgb = 255;
 	Color color = { rgb_values, rgb_values, rgb_values, rgb};
 

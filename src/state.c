@@ -33,14 +33,14 @@ void state_tick(GameState* state)
 		Vector2 t = map_get_mouse_cords(map);
 		P_LOG("\n MPTile = (%d, %d)\n", (i32) t.x, (i32) t.y);
 	}
-			
+
 	entities_tick(map->entities, state);
 	Entity* e = dynList_get(entities, 0);
 	cam_tick(map, Vector2Midpoint(state->player->pos, state->player->data.dim));
 
-	map_reset_light(map);
-	map_add_entity_lights(map);
-	map_populate_light(map);
+	//map_reset_light(map);
+	//map_add_entity_lights(map);
+	//map_populate_light(map);
 
 	map_render(map, &state->gfx->texs[TEXTURE_TILEMAP]); 
 
@@ -70,24 +70,52 @@ void state_tick(GameState* state)
 	}
 	entities_render(state->map->entities, state);
 
-#if 0
+	map_render_light(map, state);
+
+#if 1
 	BeginTextureMode(state->gfx->light_map->map);
 	//ClearBackground(BLACK);
-	Color color = (Color) {0, 0, 100, 255};
+	const u32 l1 = 255 * map->light_settings.ambient_light;
+	Color color = (Color) {l1, l1, l1, 255};
 	ClearBackground(color);
 
+	BeginBlendMode(BLEND_ADDITIVE);
 	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
 		Entity* self = dynList_get(entities, i);
-		DrawCircleGradient(
-				(self->pos.x - cam->offset.x) * cam->tile_len, 
-				(self->pos.y - cam->offset.y) * cam->tile_len, 
-				self->light.distance * cam->tile_len,
-				WHITE,
-				color );
+		Vector2 midpoint = Vector2Midpoint(self->pos, self->data.dim);
+		if(!self->data.light.light_source) break;
+
+#if 0
+		Color grad_color = {
+			self->data.light.tint.r * frand(self->data.light.flicker),
+			self->data.light.tint.g * frand(self->data.light.flicker),
+			self->data.light.tint.b * frand(self->data.light.flicker),
+			self->data.light.tint.a,
+		};
+#endif
+		Color grad_color = { self->data.light.value * self->data.light.tint.r,
+							 self->data.light.value * self->data.light.tint.g,
+							 self->data.light.value * self->data.light.tint.b,
+							 255
+		};
+		for(i32 i = 0; i < 1; i++)
+		{
+			DrawCircleGradient(
+					(midpoint.x - cam->offset.x) * cam->tile_len, 
+					(midpoint.y - cam->offset.y) * cam->tile_len, 
+					(self->data.light.distance * cam->tile_len / 2.0) * frand( (Vector2) {0.95, 0.05}),
+					grad_color,
+					BLACK );
+		}
+		const f32 tileSize = TILE_LEN;
+		Vector2 lightPos = Vector2Scale(Vector2Subtract(self->pos, cam->offset), tileSize);
 	}
+	EndBlendMode();
+
 	EndTextureMode();
 
+#if 1
 	BeginBlendMode(BLEND_MULTIPLIED);
 	DrawTextureRec(
 			state->gfx->light_map->map.texture,
@@ -97,6 +125,7 @@ void state_tick(GameState* state)
 			);
 
 	EndBlendMode();
+#endif
 #endif
 }
 

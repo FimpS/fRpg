@@ -68,12 +68,16 @@ bool map_load_level(Map* map, const char* filepath);
 Tile map_get_tile(Map* map, V2 pos);
 void map_set_tile(Map* map, V2 pos, Tile tile);
 void map_render(Map* map, Texture2D* texp);
+void map_render_light(Map* map, GameState* state);
 Tile map_get_tile(Map* map, V2 pos);
 
 void cam_tick(Map* map, Vector2 source);
 void cam_tick_editor(Map* map, Vector2 source);
+
+#if 0
 void map_reset_light(Map* map);
 void map_populate_light(Map* map);
 void propagate(Map* map, i32 x, i32 y, f32 value);
 void map_add_entity_lights(Map* map);
+#endif
 

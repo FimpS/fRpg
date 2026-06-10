@@ -97,7 +97,6 @@ typedef struct Entity
 
 	WalkPath path;
 
-	EntityLight light;
 	EntityType type;
 	EntityState state;
 	f32 speed;

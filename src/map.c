@@ -184,6 +184,9 @@ static Rectangle tilemap_textures[] =
 	[TILETYPE_TEST4] = {48, 0, 16, 16},
 };
 
+
+
+#if 0
 void map_reset_light(Map* map)
 {
 	const u32 len = map->dim.x * map->dim.y;
@@ -320,6 +323,8 @@ void map_populate_light(Map *map)
 	}
 }
 
+#endif
+
 void map_render(Map* map, Texture2D* texp)
 {
 	MapCamera* cam = map->camera;
@@ -350,7 +355,7 @@ void map_render(Map* map, Texture2D* texp)
 
 			Tile tile_data = map_get_tile(map, (V2){tx, ty});
 			Rectangle src = tilemap_textures[tile_data.type];
-			const f32 light_level =  (sqrtf(tile_data.light)) * 1;// sqrtf(tile_data.light);	
+			const f32 light_level =   1.0;// sqrtf(tile_data.light);	
 			Color diffuse = (Color) {255 * light_level, 255 * light_level, 255 * light_level, 255};
 
 			DrawTexturePro(tex, src, dst, (Vector2) {0}, 0, diffuse);
