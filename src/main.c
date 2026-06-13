@@ -30,17 +30,28 @@ int main(void) {
 	GameState* state = state_new();
 
 
-	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER, (Vector2) {1.0, 1.0} ));
+	state->player = entity_player_init(state);
+	dynList_push(state->map->entities, state->player);
+
+	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0} );
+	enemy->target = state->player;
+	dynList_push(state->map->entities, enemy);
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {5.0, 5.0} ));
+	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {6.0, 5.0} ));
+	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {10.0, 5.0} ));
+	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {13.0, 5.0} ));
+	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {5.0, 16.0} ));
+	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {10.0, 22.0} ));
+	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {22.0, 3.0} ));
+	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {23.0, 5.0} ));
+	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {33.0, 10.0} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 12.5} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 39.0} ));
 
-	state->player = entity_player_init(state);
 	//state->player->path = entity_find_path(state->player, (Vector2) {16.0, 16.0}, state);
 
 	//ValidateAndPrintPath(state->player->path, state->map->content, 32, 32);
 
-	dynList_push(state->map->entities, state->player);
 
 	//dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER, (Vector2) {5.0, 5.0} ));
 
@@ -56,6 +67,7 @@ int main(void) {
 		{
 			ft = GetFrameTime();
 		}
+		tick_tick();
 		DrawText(TextFormat("%f", ft), 10, 10, 5, GREEN);
 		EndDrawing();
 	}

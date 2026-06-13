@@ -227,29 +227,53 @@ src/entity.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity.c.s
 .PHONY : src/entity.c.s
 
-src/entity_info.o: src/entity_info.c.o
-.PHONY : src/entity_info.o
+src/entity_data.o: src/entity_data.c.o
+.PHONY : src/entity_data.o
 
 # target to build an object file
-src/entity_info.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_info.c.o
-.PHONY : src/entity_info.c.o
+src/entity_data.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_data.c.o
+.PHONY : src/entity_data.c.o
 
-src/entity_info.i: src/entity_info.c.i
-.PHONY : src/entity_info.i
+src/entity_data.i: src/entity_data.c.i
+.PHONY : src/entity_data.i
 
 # target to preprocess a source file
-src/entity_info.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_info.c.i
-.PHONY : src/entity_info.c.i
+src/entity_data.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_data.c.i
+.PHONY : src/entity_data.c.i
 
-src/entity_info.s: src/entity_info.c.s
-.PHONY : src/entity_info.s
+src/entity_data.s: src/entity_data.c.s
+.PHONY : src/entity_data.s
 
 # target to generate assembly for a file
-src/entity_info.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_info.c.s
-.PHONY : src/entity_info.c.s
+src/entity_data.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_data.c.s
+.PHONY : src/entity_data.c.s
+
+src/entity_states.o: src/entity_states.c.o
+.PHONY : src/entity_states.o
+
+# target to build an object file
+src/entity_states.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_states.c.o
+.PHONY : src/entity_states.c.o
+
+src/entity_states.i: src/entity_states.c.i
+.PHONY : src/entity_states.i
+
+# target to preprocess a source file
+src/entity_states.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_states.c.i
+.PHONY : src/entity_states.c.i
+
+src/entity_states.s: src/entity_states.c.s
+.PHONY : src/entity_states.s
+
+# target to generate assembly for a file
+src/entity_states.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/entity_states.c.s
+.PHONY : src/entity_states.c.s
 
 src/gfx.o: src/gfx.c.o
 .PHONY : src/gfx.o
@@ -274,6 +298,30 @@ src/gfx.s: src/gfx.c.s
 src/gfx.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/gfx.c.s
 .PHONY : src/gfx.c.s
+
+src/global.o: src/global.c.o
+.PHONY : src/global.o
+
+# target to build an object file
+src/global.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/global.c.o
+.PHONY : src/global.c.o
+
+src/global.i: src/global.c.i
+.PHONY : src/global.i
+
+# target to preprocess a source file
+src/global.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/global.c.i
+.PHONY : src/global.c.i
+
+src/global.s: src/global.c.s
+.PHONY : src/global.s
+
+# target to generate assembly for a file
+src/global.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/global.c.s
+.PHONY : src/global.c.s
 
 src/item.o: src/item.c.o
 .PHONY : src/item.o
@@ -463,12 +511,18 @@ help:
 	@echo "... src/entity.o"
 	@echo "... src/entity.i"
 	@echo "... src/entity.s"
-	@echo "... src/entity_info.o"
-	@echo "... src/entity_info.i"
-	@echo "... src/entity_info.s"
+	@echo "... src/entity_data.o"
+	@echo "... src/entity_data.i"
+	@echo "... src/entity_data.s"
+	@echo "... src/entity_states.o"
+	@echo "... src/entity_states.i"
+	@echo "... src/entity_states.s"
 	@echo "... src/gfx.o"
 	@echo "... src/gfx.i"
 	@echo "... src/gfx.s"
+	@echo "... src/global.o"
+	@echo "... src/global.i"
+	@echo "... src/global.s"
 	@echo "... src/item.o"
 	@echo "... src/item.i"
 	@echo "... src/item.s"

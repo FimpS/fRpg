@@ -57,20 +57,22 @@ CMakeFiles/engine.dir/src/ui.c.o: \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /home/samuel/c/game/fRpgCrawler/include/state.h \
+ /home/samuel/c/game/fRpgCrawler/include/enum.h \
+ /home/samuel/c/game/fRpgCrawler/include/struct.h \
+ /home/samuel/c/game/fRpgCrawler/include/global.h \
  /usr/local/include/raylib.h \
- /home/samuel/c/game/fRpgCrawler/include/../include/map.h \
- /home/samuel/c/game/fRpgCrawler/include/../include/../lib/v2.h \
- /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+ /home/samuel/c/game/fRpgCrawler/include/../lib/v2.h /usr/include/math.h \
+ /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
- /home/samuel/c/game/fRpgCrawler/include/../include/../include/entity.h \
+ /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+ /home/samuel/c/game/fRpgCrawler/include/state.h \
+ /home/samuel/c/game/fRpgCrawler/include/map.h \
+ /home/samuel/c/game/fRpgCrawler/include/entity.h \
  /usr/local/include/raymath.h \
- /home/samuel/c/game/fRpgCrawler/include/../include/../include/../include/gfx.h \
- /home/samuel/c/game/fRpgCrawler/include/../include/../include/../include/path.h \
- /home/samuel/c/game/fRpgCrawler/include/../include/../include/../include/../include/global.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/entity_info.h
+ /home/samuel/c/game/fRpgCrawler/include/path.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/entity_data.h

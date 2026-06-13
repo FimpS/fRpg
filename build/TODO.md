@@ -4,16 +4,14 @@ Fix:
     - Maybe let them walk at you like stupid and then if they walk into a wall for some time then they pathmake
 
 Features:
-    - Inventory for Tiles (DONE FOR NOW)
-        - UI for hotbar and select (DONE)
-        - UI for the Tiles inside the hotbar (DONE)
-        - Logic for hotbar: array o Tiles, copy tile to hotbar, maybe remove c or extend it (DONE)
-        - Fix alignment for fullscreen (DONE)
-        - Lock hotbar logic (DONE)
-        --------------------------
-        - Do the same for entity (DONE)
     - proper file management for maps (name input)
         - filename new and reopne existing, map dimensions
+            - Ingame file management
+    - player attacking:
+        - Move Towards Player
+            - if in range: start_attack
+            - if attack->finished && still in range
+                - deal damage
 
 
 
@@ -34,3 +32,8 @@ Game:
     - Sound System:
         - ?
             
+
+
+
+Ideas:
+    - Fulghor boss, which run through the arena casting holy light beneath him

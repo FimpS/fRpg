@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 #include "../include/editor.h"
-#include "../include/global.h"
+//#include "../include/global.h"
 #include "raylib.h"
 #include "raymath.h"
 

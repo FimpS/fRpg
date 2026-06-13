@@ -7,57 +7,9 @@
 
 #include "../lib/types.h"
 #include "../lib/v2.h"
-#include "../include/entity.h"
+#include "entity.h"
+#include "struct.h"
 #include "raylib.h"
-
-typedef enum TileType //Not needed probably, But some kind of list of what A tile should look like idk last part to think about...
-					  //
-{
-	TILETYPE_TEST1 = 1,
-	TILETYPE_TEST2,
-	TILETYPE_TEST3,
-	TILETYPE_TEST4,
-} TileType;
-
-typedef enum EntityClass
-{
-	ENTITYCLASS_NONE,
-	ENTITYCLASS_PLACEHOLDER,
-} EntityClass;
-
-typedef struct MapCamera
-{
-	Vector2 pos;
-	V2 visible_tiles;
-	Vector2 offset;
-	Vector2 tile_offset;
-	u32 tile_len;
-	f32 zoom;
-	f32 speed;
-} MapCamera;
-
-typedef struct Tile
-{
-	i32 type;
-	f32 light;
-	f32 light_level;
-	bool animated;
-	bool solid;
-} Tile;
-
-typedef struct LightSettings
-{
-	f32 ambient_light;
-} LightSettings;
-
-typedef struct Map
-{
-	MapCamera* camera;
-	Tile* content;
-	DynList* entities;
-	LightSettings light_settings;
-	V2 dim;	
-} Map;
 
 
 Vector2 map_get_mouse_cords(Map* map);

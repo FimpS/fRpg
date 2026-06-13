@@ -2,118 +2,21 @@
 
 #include "raylib.h"
 #include "raymath.h"
-#include "../lib/types.h"
-#include "../include/gfx.h"
-#include "../include/state.h"
-#include "../include/map.h"
-#include "../include/path.h"
+#include "types.h"
+#include "gfx.h"
+#include "state.h"
+#include "map.h"
+#include "path.h"
+#include "struct.h"
 
-#define MAX_ENTITY_ANIMATION_FRAMES 8
-
-typedef struct GameState GameState;
-typedef struct Entity Entity;
-
-typedef enum EntityType
-{
-	ENTITY_PLACEHOLDER,
-	ENTITY_PLACEHOLDER2,
-	ENTITY_PLAYER,
-	ENTITY_LAST,
-} EntityType;
-
-typedef enum EntityStateType
-{
-	ESTYPE_PLACEHOLDER,
-	ESTYPE_PLACEHOLDER2,
-	ESTYPE_PLAYER_TICK,
-	ESTYPE_CLEAR,
-
-} EntityStateType;
-
-typedef struct EntityAnimation
-{
-	Rectangle frames[MAX_ENTITY_ANIMATION_FRAMES];
-	u32 amount_frames;
-	u32 timer;
-	u32 stop_timer;
-} EntityAnimation;
-
-typedef struct EntitySprite
-{
-	Rectangle rec_bmap;
-} EntitySprite;
-
-typedef struct EntityState
-{
-	EntityStateType type;
-	void (*tick)(Entity* self, GameState* state);
-	EntityAnimation animation;
-	//WalkPath path;
-} EntityState;
-
-typedef struct EntityGearData
-{
-	//Defense defense_flat;
-	//Defense defense_mult;
-	f32 speed_flat;
-	f32 speed_mult;
-} EntityGearData;
-
-typedef struct EntityBuffs //calculate this before speed (very early in tick)
-{
-	f32 speed_flat;
-	f32 speed_mult;
-} EntityBuffs;
-
-typedef struct EntityLight
-{
-	Vector2 pos;
-	f32 self;
-} EntityLight;
-
-typedef struct EntityLightData
-{
-	f32 value;
-	f32 distance;
-	bool light_source;
-	Vector2 flicker;
-	Color tint;
-} EntityLightData;
-
-typedef struct EntityData
-{
-	EntityType type;
-	EntityStateType start_state;
-
-	Vector2 dim;
-	f32 base_speed;
-	EntityLightData light;
-} EntityData;
-
-//Decent idea to have separate every Data/changing so you have LighData and Light
-typedef struct Entity
-{
-	Vector2 pos;
-
-	WalkPath path;
-
-	EntityType type;
-	EntityState state;
-	f32 speed;
-	f32 facing_angle;
-
-	f32 aggro_range;
-
-	EntityData data;
-	u32 id;
-
-} Entity;
 
 typedef struct PlayerEntity
 {
 	Entity entity;
 	
 } PlayerEntity;
+
+const EntityState entity_state_table[ESTYPE_CLEAR];
 
 bool entity_AAB(Entity* e, Vector2 p);
 
@@ -125,6 +28,16 @@ void entity_destroy(Entity* e);
 void entities_tick(DynList* entities, GameState* state);
 void entities_render(DynList* entities, GameState* state);
 void entity_move(Entity* self, GameState* state);
+
+WalkPath entity_get_path(Entity* self, GameState* state, const Vector2 end);
+void entity_move_along_path(Entity* self, GameState* state);
+void entity_handle_standard_pathing(Entity* self, GameState* state, bool condition);
+f32 entity_calculate_speed(Entity* self, GameState* state);
+void entity_player_determine_movement_direction(Entity* self, GameState* state);
+Vector2 entity_get_midpoint(Entity* self);
+bool entity_in_range(Vector2 p, Vector2 u, f32 range);
+void entity_move(Entity* self, GameState* state);
+f32 entity_calculate_speed(Entity* self, GameState* state);
 
 Entity* entity_player_init(GameState* state);
 

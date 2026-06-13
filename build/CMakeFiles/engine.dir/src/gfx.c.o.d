@@ -52,6 +52,7 @@ CMakeFiles/engine.dir/src/gfx.c.o: \
  /usr/local/include/raylib.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdarg.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/enum.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/types.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
@@ -67,4 +68,5 @@ CMakeFiles/engine.dir/src/gfx.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/v2.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/struct.h \
  /usr/local/include/raymath.h

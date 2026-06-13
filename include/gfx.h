@@ -1,6 +1,7 @@
 #pragma once
 
 #include "raylib.h"
+#include "enum.h"
 #include "../lib/types.h"
 #include "../lib/dynList.h"
 
@@ -20,13 +21,6 @@ typedef struct TemporaryText
 	u32 time;
 	u32 timer;
 } TemporaryText;
-
-typedef enum TextureIndex
-{
-	TEXTURE_TILEMAP,
-	TEXTURE_EDITOR_UI,
-	TEXTURE_GAME_UI,
-} TextureIndex;
 
 typedef struct Animation
 {

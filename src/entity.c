@@ -2,36 +2,54 @@
 #include <stdio.h>
 
 #include "../include/entity.h"
-#include "../include/entity_info.h"
+#include "../include/entity_data.h"
 #include "../include/global.h"
 
 /* PRIVATE */
 
 
-void estate_placeholder_tick(Entity* self, GameState* state)
-{
-	if(IsKeyDown(KEY_I))
-	{
-	//self->data.light.distance = (i32) ( self->light.distance + 1.0 ) % 25;
-	self->data.light.value = (f32) ( self->data.light.value + 0.1 );
-	if(self->data.light.value >= 1.0) self->data.light.value = 0.0;
-
-	// from 0.0 - 10.0 increase, 10.0 - 50.0 decrease and looks good
-	//printf("Light: %f\n", self->data.light.distance);
-	//self->pos.x += 0.25;
-	//self->pos.y += 0.15;
-	}
-}
-
-
-bool entity_path_end_valid(Vector2 pos, GameState* state)
+bool entity_path_blocked(Vector2 pos, GameState* state)
 {
 	Map* map = state->map;
 	Tile tile = map_get_tile(state->map, Vector2V2(pos));
-	if(tile.solid) return false;
+	if(tile.solid) return true;
 	if(pos.x < 0 || pos.y < 0 || pos.x >= map->dim.x || pos.y >= map->dim.y) return false;
 
-	return true;
+	return false;
+}
+
+WalkPath entity_get_path(Entity* self, GameState* state, const Vector2 end)
+{
+	if(entity_path_blocked(end, state)) return (WalkPath) { 0 };
+
+	if(path_line_of_sight(self, end, state))
+	{
+		return path_get_line_path(self, end);
+	}
+	else
+	{
+		return path_get_any_path(self, end, state);
+	}
+	return (WalkPath) { 0 };
+}
+
+void entity_move_along_path(Entity* self, GameState* state)
+{
+	Map* map = state->map;
+	WalkPath* path = &self->path;
+	const Vector2 target = path->pos[path->current];
+	Vector2 dir = Vector2Subtract(target, self->pos);
+
+	self->speed = entity_calculate_speed(self, state); //Should be done in common update
+	if (Vector2Length(dir) > 0.1f && path->count > path->current)
+	{
+		dir = Vector2Normalize(dir);
+		self->pos = Vector2Add(self->pos, Vector2Scale(dir, self->speed));
+	}
+	else
+	{
+		path->current ++;
+	}
 }
 
 void entity_handle_standard_pathing(Entity* self, GameState* state, bool condition)
@@ -45,33 +63,12 @@ void entity_handle_standard_pathing(Entity* self, GameState* state, bool conditi
 
 	if(condition)
 	{
+		self->path = entity_get_path(self, state, self->target->pos);
+	}
 
-		Vector2 end = map_get_mouse_cords(state->map);
+	entity_move_along_path(self, state);
+
 	
-		if(entity_path_end_valid(end, state))
-		{
-			if(path_line_of_sight(self, end, state))
-			{
-				self->path = path_get_line_path(self, end);
-			}
-			else
-			{
-				self->path = path_get_any_path(self, end, state);
-				//ValidateAndPrintPath(self->path, map->content, 32, 32);
-			}
-		}
-		return;
-	}
-
-	if (Vector2Length(dir) > 0.1f && path->count > path->current)
-	{
-		dir = Vector2Normalize(dir);
-		self->pos = Vector2Add(self->pos, Vector2Scale(dir, 0.18));
-	}
-	else
-	{
-		path->current ++;
-	}
 }
 
 f32 entity_calculate_speed(Entity* self, GameState* state)
@@ -79,16 +76,17 @@ f32 entity_calculate_speed(Entity* self, GameState* state)
 	f32 speed = self->data.base_speed;
 	f32 speed_multiplier = 1.0;
 	if(IsKeyDown(KEY_SPACE)) return self->data.base_speed * 1.5;
-	/*	A solution but I dont like that enemies cannot do anything wise with speed.base, only affect the multiplier variable
-	 	Not perfect but VERY OKAY solution . . .
+	/*	
+		A solution but I dont like that enemies cannot do anything wise with speed.base, only affect the multiplier variable
+		Not perfect but VERY OKAY solution . . .
 		speed += self->gear.speed_flat; 
 		speed += self->buffs.speed_flat; 
 		speed_multiplier += self->buffs.speed_mult;
 		speed_multiplier += self->gear.speed_mult;
 		speed *= speed_multiplier
 
-	*/
-	return self->data.base_speed - 0.05;
+*/
+	return self->data.base_speed;
 }
 
 
@@ -98,7 +96,7 @@ f32 entity_calculate_speed(Entity* self, GameState* state)
 //Say you have speed_mult = 1.0; then you just add to it speed_mult += amazing_gear.speed;
 //Then Just self->speed *= speed_mult; So never multiply something temporary
 //Perhaps only affect base_speed with lvls and keep a constant if you want to revert
-void estate_player_determine_movement_direction(Entity* self, GameState* state)
+void entity_player_determine_movement_direction(Entity* self, GameState* state)
 {
 	f32 speed = entity_calculate_speed(self, state);
 	Vector2 dir = {
@@ -117,59 +115,17 @@ void estate_player_determine_movement_direction(Entity* self, GameState* state)
 	self->facing_angle = atan2(dir.y, dir.x);
 }
 
-void estate_player_tick(Entity* self, GameState* state)
+Vector2 entity_get_midpoint(Entity* self)
 {
-	Map* map = state->map;
-	WalkPath* path = &self->path;
-	Vector2 target = path->pos[path->current];
-
-	f32 speed = 0.05;
-	
-	estate_player_determine_movement_direction(self, state);
-	entity_move(self, state);
-
-
-
-#if 0
-	if(IsMouseButtonDown(0))
-	{
-		Vector2 end2 = map_get_mouse_cords(state->map);
-		for(i32 i = 0; i < 800; i++)
-			self->path = path_get_line_path(self, end2, state);
-	}
-#endif
-
+	return Vector2Midpoint(self->pos, self->data.dim);
 }
 
-const EntityState entity_state_table[] = {
-	(EntityState) {
-		.type = ESTYPE_PLACEHOLDER, 
-		.tick = estate_placeholder_tick, 
-		.animation = {
-			.stop_timer = 8,
-			.amount_frames = 2,
-			.frames = { {0, 0, 16, 16}, {0, 16, 16, 16}, },
-		},
-	},
-	(EntityState) {
-		.type = ESTYPE_PLACEHOLDER2, 
-		.tick = estate_placeholder_tick, 
-		.animation = {
-			.stop_timer = 8,
-			.amount_frames = 1,
-			.frames = { {0, 0, 16, 16}, {0, 16, 16, 16}, },
-		},
-	},
-	(EntityState) {
-		.type = ESTYPE_PLAYER_TICK,
-		.tick = estate_player_tick,
-		.animation = {
-			.stop_timer = 1,
-			.amount_frames = 1,
-			.frames = { {0, 0, 16, 16}, {0, 16, 16, 16}, },
-		},
-	},
-};
+bool entity_in_range(Vector2 p, Vector2 u, f32 range)
+{
+	const f32 dist = Vector2Distance(p, u);
+	return dist <= range;
+}
+
 
 #define NEW_LINE() printf("\n");
 
@@ -278,19 +234,27 @@ Entity* entity_get_vector(GameState* state, Vector2 pos)
 	}
 }
 
+void entity_handle_target(Entity* self)
+{
+	Entity* target = self->target;
+	if(target != NULL)
+	{
+		if(target->state.type == ESTYPE_CLEAR) self->target = NULL;
+	}
+}
+
+void entity_pre_tick(Entity* self, GameState* state)
+{
+	entity_handle_target(self);	
+}
+
 void entities_tick(DynList* entities, GameState* state)
 {
 	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
 		Entity* e = dynList_get(entities, i);
-		Tile t = map_get_tile(state->map, Vector2V2(Vector2Midpoint(e->pos, e->data.dim)));
-		if(e->data.light.light_source)
-		{
-#if 0
-			e->light.self = ( t.light * 2.0 ) + 0.25 ;
-			e->light.self = e->light.self >= 1.0 ? 1.0 : e->light.self;
-#endif
-		}
+
+		entity_pre_tick(e, state);
 		if( e->state.tick != NULL ) e->state.tick(e, state);
 	}
 }
@@ -298,6 +262,7 @@ void entities_tick(DynList* entities, GameState* state)
 Rectangle entity_get_render_frame(Entity* self, GameState* state)
 {
 	EntityAnimation* animation = &self->state.animation;
+	if(animation->stop_timer == 0) return animation->frames[0];
 	const u32 frame_index = ( (animation->timer ++ ) / animation->stop_timer ) % animation->amount_frames;
 	return animation->frames[ frame_index ];
 }
@@ -310,14 +275,8 @@ void entity_render(Entity* self, GameState* state)
 	Color color = { rgb_values, rgb_values, rgb_values, rgb};
 
 	Rectangle src_frame = entity_get_render_frame(self, state);
-	DrawRectangle((self->pos.x - cam->offset.x) * cam->tile_len,
-			(self->pos.y - cam->offset.y) * cam->tile_len,
-			self->data.dim.x * cam->tile_len, 
-			self->data.dim.y * cam->tile_len, (Color) {255, 255, 255, 255});
 
-
-#if 0
-	DrawTexturePro(state->gfx->texs[TEXTURE_TILEMAP], 
+	DrawTexturePro(state->gfx->texs[self->data.spritesheet_index], 
 			src_frame, 
 			(Rectangle) {
 			(self->pos.x - cam->offset.x) * cam->tile_len, 
@@ -328,7 +287,6 @@ void entity_render(Entity* self, GameState* state)
 			(Vector2) {0}, 
 			0.0, 
 			color);
-#endif
 }
 
 void entities_render(DynList* entities, GameState* state)
@@ -353,6 +311,7 @@ Entity* entity_new_editor(EntityType type, Vector2 pos)
 	newe->speed = 0.0;
 	//newe->light = (EntityLight) { 0 };
 	newe->path = (WalkPath) { 0 };
+	newe->target = NULL;
 
 	// IDK Yet
 	newe->aggro_range = 0.0;
@@ -374,8 +333,9 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	newe->state = entity_state_table[newe->data.start_state];
 
 	newe->speed = 0.0;
-	//newe->light = (EntityLight) { 0 };
+	newe->light_frequency = rand() % 40;
 	newe->path = (WalkPath) { 0 };
+	newe->target = NULL;
 
 	// IDK Yet
 	newe->aggro_range = 0.0;

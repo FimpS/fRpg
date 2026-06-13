@@ -118,6 +118,7 @@ Map* map_new(V2 dim)
 	//new_map->dim = v2_new(0, 0);
 	new_map->light_settings = (LightSettings) {
 		.ambient_light = 0.15,
+		.fade = WHITE,
 	};
 	new_map->camera = cam_new();
 	return new_map;
@@ -184,146 +185,109 @@ static Rectangle tilemap_textures[] =
 	[TILETYPE_TEST4] = {48, 0, 16, 16},
 };
 
-
-
-#if 0
-void map_reset_light(Map* map)
+void map_render_ambient_light(Map* map)
 {
-	const u32 len = map->dim.x * map->dim.y;
-	for(i32 i = 0; i < len; i++)
-	{
-		map->content[i].light = map->light_settings.ambient_light;
-		map->content[i].light_level = 0.0;
-	}
+	const f32 ambience = map->light_settings.ambient_light;
+	Color fade = map->light_settings.fade;
+	const Color ambience_color = (Color) { 
+		ambience * fade.r, 
+		ambience * fade.g, 
+		ambience * fade.b, 
+		255
+	};
+	ClearBackground(ambience_color);
 }
 
-static i32 tick = 0;
-
-f32 map_light_flicker(Vector2 flicker)
+f32 map_entity_light_pulse(Entity* self)
 {
-	if(tick % (rand() % 4 + 4) == 0)
-	{
-		return frand(flicker);
-	}
-	else return flicker.x;
+	LightPulse* pulse = &self->data.light.pulse;
+	if(!pulse->enable) return 1.0;
+	const f32 pulse_depth = self->data.light.distance * (1.0 - pulse->depth);
+	const f32 pulse_speed = 100.0 * pulse->speed;
+	return self->data.light.distance - fabsf(sin( (f32) self->light_frequency / pulse_speed ) * pulse_depth);
 }
 
-
-void map_add_entity_lights(Map *map)
+f32 map_entity_light_flicker(Entity* self)
 {
-	tick ++;
-		printf("\n");
-	for(i32 i = 0; i < dynList_len(map->entities); i++)
-	{
-		Entity* e = dynList_get(map->entities, i);
-		Vector2 pos = Vector2Midpoint(e->pos, e->data.dim);
-
-		Tile map_tile = map_get_tile(map, Vector2V2(pos));
-		if(e->data.light.value <= map->light_settings.ambient_light || map_tile.solid) 
-		{
-			continue;
-		}
-		e->light.self = 1.0;//e->data.light.value * 2.0;
-
-		V2 t = (V2) { (i32)floorf(pos.x), (i32)floorf(pos.y) };
-		V2 v = (V2) { (i32)ceilf(pos.x), (i32)ceilf(pos.y) };
-
-		if(t.x >= 0 && t.y >= 0 && t.x < map->dim.x && t.y < map->dim.y)
-		{
-			map->content[t.y * map->dim.x + t.x].light = e->data.light.value * map_light_flicker(e->data.light.flicker);
-			map->content[t.y * map->dim.x + t.x].light_level = e->data.light.distance;
-			P_LOG("%d %f\n", e->type, map->content[t.y * map->dim.x + t.x].light);
-		}
-
-	}
-		printf("\n");
+	if(!self->data.light.flicker.enable || self->data.light.flicker.frequency == 0) return 1.0;
+	return self->light_frequency % self->data.light.flicker.frequency == rand() % 4 ? 
+		frand(self->data.light.flicker.min, self->data.light.flicker.max) :
+		self->data.light.flicker.max;
 }
 
-void map_populate_step(Map *map, Vector2 pos, f32 value, f32 v)
+void map_render_entity_light(Entity* self, Map* map)
 {
-	Tile *t = &map->content[(i32)pos.y * map->dim.x + (i32)pos.x];
+	MapCamera* cam = map->camera;
+	const Vector2 midpoint = Vector2Midpoint(self->pos, self->data.dim);
 
-	if(t->solid) value *= 0.4;
+	if(!self->data.light.light_source) return;
 
-	if(value > t->light)
-	{
-		t->light_level = v;
-		t->light = value;
-	}
-}
-void map_print_light(Map* map)
-{
-	for(i32 y = 1; y < map->dim.y-100; y++)
-	{
-		for(i32 x = 1; x < map->dim.x-100; x++)
-		{
-			Tile* t = &map->content[y * map->dim.x + x];
-			const f32 light = t->light;
-			const f32 energy = t->light_level;
-			printf("%f ", light);
-		}
-		printf("\n");
-	}
-	printf("\n");
-}
+	const f32 light_intensity_flicker = map_entity_light_flicker(self);
+	const f32 frame_light = self->data.light.value * light_intensity_flicker;
+	const Color inner_color = { 
+		frame_light * self->data.light.tint.r,
+		frame_light * self->data.light.tint.g,
+		frame_light * self->data.light.tint.b,
+		255
+	};
+	const Color outer_color = {
+		0,
+		0,
+		0,
+		255	 //Diffuse can be changed for interesting effects, It effects how fast the light level decreases, Can maybe be a parameter
+	};
 
+	const f32 light_radius = map_entity_light_pulse(self);
+	DrawCircleGradient(
+			(midpoint.x - cam->offset.x) * cam->tile_len, 
+			(midpoint.y - cam->offset.y) * cam->tile_len, 
+			(light_radius * cam->tile_len) * light_intensity_flicker,
+			inner_color,
+			outer_color);
 
-void map_populate_light(Map *map)
-{
-	const f32 light_decay = 0.12;
-	const f32 energy_decay = 1.0;
-	const f32 epsilon = 0.01;
-	const u32 max_iterations = 12;
-	for(i32 iter = 0; iter < max_iterations; iter++)
-	{
-		//TODO this is gigaslow
-		for(i32 y = 1; y < map->dim.y-1; y++)
-		{
-			for(i32 x = 1; x < map->dim.x-1; x++)
-			{
-				Tile* t = &map->content[y * map->dim.x + x];
-				const f32 light = t->light;
-				const f32 energy = t->light_level;
+	self->light_frequency ++;
 
-				if(light <= epsilon) continue;
-				const f32 spread = light - (energy) / 100.0;
-				f32 loss = energy - energy_decay;
-
-				if(energy <= 0) continue;
-				//if(loss <= 0) continue;
-				//if(spread <= 0) continue;
-
-				map_populate_step(map, (Vector2) {x + 1, y}, spread, loss);
-				map_populate_step(map, (Vector2) {x - 1, y}, spread, loss);
-				map_populate_step(map, (Vector2) {x, y + 1}, spread, loss);
-				map_populate_step(map, (Vector2) {x, y - 1}, spread, loss);
-				const f32 diag = spread - loss * 1/sqrtf(2.0);
-				loss *= sqrtf(2.0);
-				if(diag > 0 && 1)
-				{
-					Tile *t_right = &map->content[y * map->dim.x + (x + 1)];
-					Tile *t_left  = &map->content[y * map->dim.x + (x - 1)];
-					Tile *t_up    = &map->content[(y - 1) * map->dim.x + x];
-					Tile *t_down  = &map->content[(y + 1) * map->dim.x + x];
-
-					if(!(t_right->solid && t_down->solid))
-						map_populate_step(map, (Vector2) {x + 1, y + 1}, diag, loss);
-
-					if(!(t_left->solid && t_up->solid))
-						map_populate_step(map, (Vector2) {x - 1, y - 1}, diag, loss);
-
-					if(!(t_right->solid && t_up->solid))
-						map_populate_step(map, (Vector2) {x + 1, y - 1}, diag, loss);
-
-					if(!(t_left->solid && t_down->solid))
-						map_populate_step(map, (Vector2) {x - 1, y + 1}, diag, loss);
-				}
-			}
-		}
-	}
 }
 
-#endif
+void map_render_add_entity_lights(Map* map)
+{
+	MapCamera* cam = map->camera;
+	DynList* entities = map->entities;
+	BeginBlendMode(BLEND_ADDITIVE);
+	for(i32 i = 0; i < dynList_len(entities); i++)
+	{
+		Entity* self = dynList_get(entities, i);
+		map_render_entity_light(self, map);
+	}
+	EndBlendMode();
+
+}
+
+void map_render_apply_light_map(Map* map, GameState* state)
+{
+	DrawTextureRec(
+			state->gfx->light_map->map.texture,
+			(Rectangle){0, 0, GetScreenWidth(), -GetScreenHeight()},
+			(Vector2){0, 0},
+			WHITE
+			);
+
+}
+
+void map_render_light(Map* map, GameState* state)
+{
+	MapCamera* cam = map->camera;
+	DynList* entities = map->entities;
+
+	BeginTextureMode(state->gfx->light_map->map);
+	map_render_ambient_light(map);
+	map_render_add_entity_lights(map);
+	EndTextureMode();
+
+	BeginBlendMode(BLEND_MULTIPLIED);
+	map_render_apply_light_map(map, state);
+	EndBlendMode();
+}
 
 void map_render(Map* map, Texture2D* texp)
 {

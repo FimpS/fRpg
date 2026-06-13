@@ -2,8 +2,10 @@
 
 #include <string.h>
 
-#include "../include/map.h"
-#include "../include/gfx.h"
+#include "map.h"
+#include "gfx.h"
+#include "enum.h"
+#include "struct.h"
 #include "../lib/dynList.h"
 
 #define EDITORSTATEMAXSIZE 2

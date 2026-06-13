@@ -1,7 +1,7 @@
 CMakeFiles/engine.dir/src/path.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/path.c /usr/include/stdc-predef.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/path.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/global.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
  /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -55,7 +55,7 @@ CMakeFiles/engine.dir/src/path.c.o: \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../lib/v2.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/v2.h \
  /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
@@ -63,12 +63,14 @@ CMakeFiles/engine.dir/src/path.c.o: \
  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/enum.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/struct.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/gfx.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/dynList.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/map.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/entity.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/entity.h \
  /usr/local/include/raymath.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/gfx.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../lib/dynList.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/state.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../include/ui.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../include/../include/../include/item.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/state.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/ui.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/item.h \
  /usr/include/assert.h
