@@ -18,12 +18,22 @@ void estate_player_tick(Entity* self, GameState* state)
 {
 	Map* map = state->map;
 	WalkPath* path = &self->path;
-	Vector2 target = path->pos[path->current];
+	const Vector2 target = path->pos[path->current];
 
-	f32 speed = 0.05;
+	if(IsKeyPressed(KEY_H)) play_sound_multi(&map->sound->sounds[0]);
 
+
+#if 0
 	entity_player_determine_movement_direction(self, state);
-	entity_move(self, state);
+#endif
+	if(IsMouseButtonPressed(1))
+	{
+		Vector2 end = map_get_mouse_cords(map);
+		for(i32 i = 0; i < 1; i++)
+		self->path = path_get_any_path(self, end, state);
+	}
+	entity_move_along_path(self, state);
+	//entity_move(self, state);
 }
 
 void estate_entity_move_attack(Entity* self, GameState* state)

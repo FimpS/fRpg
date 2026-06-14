@@ -61,6 +61,12 @@
 },
 {
   "directory": "/home/samuel/c/game/fRpgCrawler/build",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/src/sound.c.o -c /home/samuel/c/game/fRpgCrawler/src/sound.c",
+  "file": "/home/samuel/c/game/fRpgCrawler/src/sound.c",
+  "output": "CMakeFiles/engine.dir/src/sound.c.o"
+},
+{
+  "directory": "/home/samuel/c/game/fRpgCrawler/build",
   "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/src/state.c.o -c /home/samuel/c/game/fRpgCrawler/src/state.c",
   "file": "/home/samuel/c/game/fRpgCrawler/src/state.c",
   "output": "CMakeFiles/engine.dir/src/state.c.o"

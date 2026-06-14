@@ -173,11 +173,24 @@ typedef struct LightSettings
 	Color fade;
 } LightSettings;
 
+#define MAX_SOUNDS 124
+#define MAX_SNIPPET 8
+typedef struct SoundSnippet
+{
+	Sound sound[MAX_SNIPPET];
+	u32 index;
+} SoundSnippet; //Make your own PlaySound as the soundsnippet as your bannermen
+typedef struct MapSound
+{
+	SoundSnippet sounds[MAX_SOUNDS];
+	u32 len;
+} MapSound;
 typedef struct Map
 {
 	MapCamera* camera;
 	Tile* content;
 	DynList* entities;
+	MapSound* sound;
 	LightSettings light_settings;
 	V2 dim;	
 } Map;

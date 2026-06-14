@@ -5,35 +5,19 @@ Fix:
 
 Features:
     - proper file management for maps (name input)
-        - filename new and reopne existing, map dimensions
-            - Ingame file management
-    - player attacking:
-        - Move Towards Player
-            - if in range: start_attack
-            - if attack->finished && still in range
-                - deal damage
+         
+Long Term:
+    - Cinematic view/Scripted events
+    - Proper map loading
+    - Saving
+    - UI 
+    - NPC, Questlines
+    - Asset manager - map should have a asset enum which tells it what to loadmak
+    - Audio
 
-
-
-Game:
-    - Finish Entity System:
-        - Setup good as function pointer?
-    - Inventory and items:
-        - Items:
-            - Struct
-            - Functions
-        - Inventory:
-            - Struct
-            - Functions
-    - Player:
-        - Separate or Entity? (Prob sep)
-    Font and Text:
-        - Raylib font or my own?
-    - Sound System:
-        - ?
-            
 
 
 
 Ideas:
     - Fulghor boss, which run through the arena casting holy light beneath him
+

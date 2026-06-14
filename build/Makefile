@@ -443,6 +443,30 @@ src/path.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/path.c.s
 .PHONY : src/path.c.s
 
+src/sound.o: src/sound.c.o
+.PHONY : src/sound.o
+
+# target to build an object file
+src/sound.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/sound.c.o
+.PHONY : src/sound.c.o
+
+src/sound.i: src/sound.c.i
+.PHONY : src/sound.i
+
+# target to preprocess a source file
+src/sound.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/sound.c.i
+.PHONY : src/sound.c.i
+
+src/sound.s: src/sound.c.s
+.PHONY : src/sound.s
+
+# target to generate assembly for a file
+src/sound.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/sound.c.s
+.PHONY : src/sound.c.s
+
 src/state.o: src/state.c.o
 .PHONY : src/state.o
 
@@ -538,6 +562,9 @@ help:
 	@echo "... src/path.o"
 	@echo "... src/path.i"
 	@echo "... src/path.s"
+	@echo "... src/sound.o"
+	@echo "... src/sound.i"
+	@echo "... src/sound.s"
 	@echo "... src/state.o"
 	@echo "... src/state.i"
 	@echo "... src/state.s"

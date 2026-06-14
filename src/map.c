@@ -8,6 +8,7 @@
 
 #include "../include/map.h"
 #include "../include/global.h"
+#include "../include/sound.h"
 
 #define MAX_SCROLL_UP 128
 #define MAX_SCROLL_DOWN 20
@@ -107,11 +108,14 @@ void cam_tick(Map* map, Vector2 source)
 	cam->tile_offset = (Vector2) { (cam->offset.x - ((i32) cam->offset.x)) * cam->tile_len, (cam->offset.y - ((i32) cam->offset.y)) * cam->tile_len };
 }
 
+
+
 // Now we have reason to save map so loading in map_new is not bad option...
 Map* map_new(V2 dim)
 {
 	Map* new_map = malloc(sizeof(Map));
 	new_map->content = malloc(sizeof(Tile) * dim.x * dim.y);
+	new_map->sound = map_sound_new();
 	new_map->entities = dynList_new();
 	new_map->dim = dim;
 	//memset(new_map, 0, sizeof(new_map->content));	
@@ -127,6 +131,7 @@ Map* map_new(V2 dim)
 void map_destroy(Map* map)
 {
 	free(map->camera);
+	free(map->sound);
 	free(map->content);
 	free(map->camera);
 	free(map);

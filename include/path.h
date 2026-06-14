@@ -14,6 +14,25 @@ typedef struct AStarNode
 	f32 global_goal;
 	f32 local_goal;
 
+	bool visited;
+	bool closed;
+
+	u8 open;
+
+	Vector2 parent;
+
+	struct AStarNode* next;
+} AStarNode;
+
+
+#if 0
+typedef struct AStarNode
+{
+	Vector2 pos;
+
+	f32 global_goal;
+	f32 local_goal;
+
 	bool solid;
 	bool visited;
 
@@ -22,6 +41,7 @@ typedef struct AStarNode
 	Vector2 parent;
 } AStarNode;
 
+#endif 
 typedef struct AStarMinHeap
 {
 	u32 max_len;

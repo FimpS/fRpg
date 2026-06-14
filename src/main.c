@@ -22,6 +22,7 @@ int main(void) {
 	//HashMap* map = hmap_new(32);
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "2D - TileMapEditor");
+	InitAudioDevice();
 	SetTargetFPS(60);
 
 	HideCursor();
@@ -33,9 +34,11 @@ int main(void) {
 	state->player = entity_player_init(state);
 	dynList_push(state->map->entities, state->player);
 
+#if 0
 	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0} );
 	enemy->target = state->player;
 	dynList_push(state->map->entities, enemy);
+#endif
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {5.0, 5.0} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {6.0, 5.0} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {10.0, 5.0} ));

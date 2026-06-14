@@ -116,6 +116,72 @@ void a_star_min_heap_push(AStarMinHeap* heap, AStarNode* node)
 	}
 }
 
+#define ASTAR_MAP_CAPACITY 512
+
+typedef struct
+{
+    bool occupied;
+    V2 key;
+    AStarNode* value;
+} AStarMapEntry;
+
+typedef struct
+{
+    AStarMapEntry entries[ASTAR_MAP_CAPACITY];
+} AStarMap;
+
+u32 a_star_hash(V2 p)
+{
+    return
+        (u32)(p.x * 73856093u) ^
+        (u32)(p.y * 19349663u);
+}
+
+void a_star_map_insert(
+    AStarMap* map,
+    V2 key,
+    AStarNode* value)
+{
+    u32 index =
+        a_star_hash(key) %
+        ASTAR_MAP_CAPACITY;
+
+    while (map->entries[index].occupied)
+    {
+        index =
+            (index + 1) %
+            ASTAR_MAP_CAPACITY;
+    }
+
+    map->entries[index].occupied = true;
+    map->entries[index].key = key;
+    map->entries[index].value = value;
+}
+
+AStarNode* a_star_map_get(
+    AStarMap* map,
+    V2 key)
+{
+    u32 index =
+        a_star_hash(key) %
+        ASTAR_MAP_CAPACITY;
+
+    while (map->entries[index].occupied)
+    {
+        if (map->entries[index].key.x == key.x &&
+            map->entries[index].key.y == key.y)
+        {
+            return map->entries[index].value;
+        }
+
+        index =
+            (index + 1) %
+            ASTAR_MAP_CAPACITY;
+    }
+
+    return NULL;
+}
+
 AStarNode* a_star_min_heap_pop(AStarMinHeap* heap)
 {
 	if(heap->len == 0) return NULL;
@@ -146,10 +212,208 @@ AStarNode* a_star_min_heap_pop(AStarMinHeap* heap)
 	return min_node;
 }
 
-u32 a_star_distance(Vector2 start, Vector2 end)
+u32 a_star_distance(Vector2 startf, Vector2 endf)
 {
+	V2 start = Vector2V2(startf);
+	V2 end = Vector2V2(endf);
+	
 	return (u32) (abs(start.x - end.x) + abs(start.y - end.y));
 }
+
+#define MAX_NODES 300
+AStarNode* a_star_node_new(AStarNode* nodes, i32* len)
+{
+	if( (*len) >= MAX_NODES )
+	{
+		return NULL;
+	}
+
+	return &nodes[ (*len) ++ ];
+}
+
+AStarNode* a_star_find_node(AStarNode* open, i32 open_len, V2 key)
+{
+	for(i32 i = 0; i < open_len; i++)
+	{
+		AStarNode* node = &open[i];
+		V2 pos = Vector2V2(node->pos);
+		if(pos.x == key.x && pos.y == key.y)
+		{
+			return node;
+		}
+	}
+	return NULL;
+}
+
+WalkPath path_get_any_path(Entity* self, Vector2 end_pos, GameState* state)
+{
+	Map* map = state->map;
+	MapCamera* cam = state->map->camera;
+
+	const V2 card_dirs[] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+
+	const Vector2 start_pos = self->pos;
+	const Vector2 entity_midpoint = Vector2Midpoint(self->pos, self->data.dim);
+
+	AStarNode node_pool[MAX_NODES];
+	AStarMap node_map;
+	i32 pool_len = 0;
+
+	AStarNode* current = &node_pool[pool_len ++];
+	*current = (AStarNode) {
+		.pos = start_pos,
+		.local_goal = 0.0f,
+		.global_goal = a_star_distance(start_pos, end_pos),
+		.parent = { -1.0, -1.0 },
+		.closed = false,
+	};
+
+	a_star_map_insert(&node_map, Vector2V2(current->pos), current);
+
+	AStarMinHeap open = {
+		.max_len = ASTAR_MINHEAP_MAX_LEN,
+		.len = 0,
+	};
+	a_star_min_heap_push(&open, current);
+	//P_LOG("Start: (%d,%d), End: (%d,%d)\n", (i32) start_pos.x, (i32) start_pos.y, (i32) end_pos.x, (i32) end_pos.y);
+
+	while((i32) current->pos.x != (i32) end_pos.x || (i32) current->pos.y != (i32) end_pos.y)
+	{
+		if(open.len == 0) 
+		{
+			P_LOG("Path Impossible1\n");
+			return (WalkPath) { 0 };
+		}
+
+		current = a_star_min_heap_pop(&open);
+#if 0
+		P_LOG(
+				"POP (%d,%d) g=%f h=%d f=%f\n",
+				(int)current->pos.x,
+				(int)current->pos.y,
+				current->local_goal,
+				a_star_distance(current->pos, end_pos),
+				current->global_goal
+			 );
+#endif
+
+		if(current == NULL)
+		{
+			P_ERROR("Path Impossible2\n");
+			return (WalkPath) { 0 };
+		}
+		if(current->closed) continue;
+		current->closed = true;
+
+		for(i32 i = 0; i < sizeof(card_dirs) / sizeof(V2); i++)
+		{
+			V2 dir = card_dirs[i];
+			V2 neighbor_pos = v2_add(Vector2V2(current->pos), dir);
+
+			Tile tile = map_get_tile(map, neighbor_pos);
+			if(tile.solid) continue;
+
+			AStarNode* neighbor = a_star_map_get(&node_map, neighbor_pos);
+			//if(neighbor != NULL) P_LOG("%f %f\n", neighbor->pos.x, neighbor->pos.y);
+#if 0
+			if(neighbor == NULL)
+			{
+				neighbor = a_star_node_new(node_pool, &pool_len);
+				if(neighbor == NULL) 
+				{
+					//P_LOG("Out of space\n");
+					return (WalkPath) { 0 };
+				}
+#if 0
+				P_LOG("len: %d, x: %f, y: %f, end: (x,y) = (%d,%d)\n", pool_len, 
+						node_pool[pool_len].pos.x, 
+						node_pool[pool_len].pos.y,
+						(i32) end_pos.x, (i32) end_pos.y);
+#endif
+
+				*neighbor = (AStarNode) {
+					.global_goal = INF,
+						.local_goal = INF,
+						.pos = V2Vector2(neighbor_pos),
+						.closed = false,
+						.parent = (Vector2) {-1.0, -1.0},
+				};
+			}
+#endif
+
+			if (neighbor == NULL)
+			{
+				neighbor =
+					a_star_node_new(
+							node_pool,
+							&pool_len);
+
+				if (!neighbor)
+					return (WalkPath){0};
+
+				*neighbor = (AStarNode){
+					.global_goal = INF,
+						.local_goal = INF,
+						.pos = V2Vector2(neighbor_pos),
+						.closed = false,
+						.parent = {-1,-1},
+				};
+
+				a_star_map_insert(
+						&node_map,
+						neighbor_pos,
+						neighbor);
+			}
+
+			if(neighbor->closed) continue;
+
+			const f32 lower_goal = current->local_goal + 1.01 * a_star_distance(current->pos, neighbor->pos);
+
+			if(lower_goal < neighbor->local_goal)
+			{
+				//P_LOG("%f\n", neighbor->pos.x);
+				neighbor->parent = current->pos;
+				neighbor->local_goal = lower_goal;
+				neighbor->global_goal = neighbor->local_goal + a_star_distance(neighbor->pos, end_pos);
+				neighbor->closed = false;
+#if 0
+				P_LOG("%d |Node: (x,y) : (%f,%f) | start: (%d,%d) | end: (%d,%d)\n", pool_len, neighbor->pos.x, neighbor->pos.y,
+						(i32) start_pos.x, (i32) start_pos.y, (i32) end_pos.x, (i32) end_pos.y);
+#endif
+				a_star_min_heap_push(&open, neighbor);
+			}
+		}	
+
+	}
+
+	//P_LOG("Finished Algorithm\n");
+
+	WalkPath path = {0};
+
+	while (current->parent.x != -1.0)
+	{
+		path.pos[path.count].x = current->pos.x;
+		path.pos[path.count].y = current->pos.y;
+		Vector2 p = current->parent;
+		path.count++;
+		current = a_star_map_get(&node_map, Vector2V2(p));
+	}
+	for(i32 i = 0; i < path.count / 2; i++)
+	{
+		Vector2 tmp = path.pos[i];
+		path.pos[i] = path.pos[path.count - 1 - i];
+		path.pos[path.count - 1 - i] = tmp;
+	}
+	path.current = 1;
+
+	return path;
+
+
+
+	return (WalkPath) { 0 };
+}
+
+#if 0
 
 void a_star_init_nodes(AStarNode* nodes, Map* map, Vector2 start, V2 len)
 {
@@ -176,6 +440,7 @@ void a_star_init_nodes(AStarNode* nodes, Map* map, Vector2 start, V2 len)
 }
 
 
+//TODO Redo this to the Diablo 1 algorithm with nodes instead of grid
 WalkPath path_get_any_path(Entity* self, Vector2 end_pos, GameState* state)
 {
 
@@ -220,7 +485,7 @@ WalkPath path_get_any_path(Entity* self, Vector2 end_pos, GameState* state)
 	bool impossible = false;
 	while(current != end)
 	{
-	
+
 		if(open.len == 0) return (WalkPath) { 0 };
 
 		if(open.len == 0) 
@@ -299,3 +564,5 @@ WalkPath path_get_any_path(Entity* self, Vector2 end_pos, GameState* state)
 
 	return path;
 }
+
+#endif
