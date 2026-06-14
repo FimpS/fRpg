@@ -34,7 +34,7 @@ int main(void) {
 	state->player = entity_player_init(state);
 	dynList_push(state->map->entities, state->player);
 
-#if 0
+#if 1
 	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0} );
 	enemy->target = state->player;
 	dynList_push(state->map->entities, enemy);
