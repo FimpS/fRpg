@@ -73,4 +73,5 @@ CMakeFiles/engine.dir/src/entity_states.c.o: \
  /usr/local/include/raymath.h \
  /home/samuel/c/game/fRpgCrawler/include/path.h \
  /home/samuel/c/game/fRpgCrawler/include/ui.h \
- /home/samuel/c/game/fRpgCrawler/include/item.h
+ /home/samuel/c/game/fRpgCrawler/include/item.h \
+ /home/samuel/c/game/fRpgCrawler/include/sound.h

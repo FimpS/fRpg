@@ -1,5 +1,11 @@
 #pragma once
 
+typedef enum MapSoundIndex
+{
+	MAPSOUND_DEFAULT,
+	MAPSOUND_LAVA,
+} MapSoundIndex;
+
 typedef enum TextureIndex
 {
 	TEXTURE_TILEMAP,

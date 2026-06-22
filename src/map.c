@@ -115,7 +115,7 @@ Map* map_new(V2 dim)
 {
 	Map* new_map = malloc(sizeof(Map));
 	new_map->content = malloc(sizeof(Tile) * dim.x * dim.y);
-	new_map->sound = map_sound_new();
+	new_map->sound = map_sound_new(1);
 	new_map->entities = dynList_new();
 	new_map->dim = dim;
 	//memset(new_map, 0, sizeof(new_map->content));	

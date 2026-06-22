@@ -125,6 +125,7 @@ typedef struct EntityData
 typedef struct Entity
 {
 	Vector2 pos;
+	Vector2 mid_pos;
 
 	WalkPath path;
 
@@ -174,17 +175,19 @@ typedef struct LightSettings
 } LightSettings;
 
 #define MAX_SOUNDS 124
-#define MAX_SNIPPET 8
-typedef struct SoundSnippet
+#define MAX_SOUND_MULTIPLE 8
+
+typedef struct SoundMultiple
 {
-	Sound sound[MAX_SNIPPET];
-	u32 index;
-} SoundSnippet; //Make your own PlaySound as the soundsnippet as your bannermen
+	Sound sound[MAX_SOUND_MULTIPLE];
+	u32 counter;
+} SoundMultiple; 
 typedef struct MapSound
 {
-	SoundSnippet sounds[MAX_SOUNDS];
+	SoundMultiple sound_pool[MAX_SOUNDS];
 	u32 len;
 } MapSound;
+
 typedef struct Map
 {
 	MapCamera* camera;

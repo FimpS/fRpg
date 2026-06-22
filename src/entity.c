@@ -245,6 +245,8 @@ void entity_handle_target(Entity* self)
 
 void entity_pre_tick(Entity* self, GameState* state)
 {
+	self->mid_pos = Vector2Midpoint(self->pos, self->data.dim);
+	self->state.timer ++;
 	entity_handle_target(self);	
 }
 
@@ -306,6 +308,7 @@ Entity* entity_new_editor(EntityType type, Vector2 pos)
 	newe->type = type;
 
 	newe->pos = pos;
+	newe->mid_pos = Vector2Midpoint(pos, newe->data.dim);
 	newe->state = entity_state_table[newe->data.start_state];
 
 	newe->speed = 0.0;
@@ -330,6 +333,7 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	newe->type = type;
 
 	newe->pos = pos;
+	newe->mid_pos = Vector2Midpoint(pos, newe->data.dim);
 	newe->state = entity_state_table[newe->data.start_state];
 
 	newe->speed = 0.0;

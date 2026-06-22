@@ -23,8 +23,6 @@ void map_render(Map* map, Texture2D* texp);
 void map_render_light(Map* map, GameState* state);
 Tile map_get_tile(Map* map, V2 pos);
 
-void play_sound_multi(SoundSnippet* sound);
-
 void cam_tick(Map* map, Vector2 source);
 void cam_tick_editor(Map* map, Vector2 source);
 
