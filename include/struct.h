@@ -174,7 +174,7 @@ typedef struct LightSettings
 	Color fade;
 } LightSettings;
 
-#define MAX_SOUNDS 124
+#define MAX_SOUNDS 192
 #define MAX_SOUND_MULTIPLE 8
 
 typedef struct SoundMultiple
@@ -182,18 +182,18 @@ typedef struct SoundMultiple
 	Sound sound[MAX_SOUND_MULTIPLE];
 	u32 counter;
 } SoundMultiple; 
-typedef struct MapSound
+typedef struct SoundManager
 {
-	SoundMultiple sound_pool[MAX_SOUNDS];
+	SoundMultiple* sound_pool;
 	u32 len;
-} MapSound;
+} SoundManager;
 
 typedef struct Map
 {
 	MapCamera* camera;
 	Tile* content;
 	DynList* entities;
-	MapSound* sound;
+	//SoundManager* sound;
 	LightSettings light_settings;
 	V2 dim;	
 } Map;
@@ -246,6 +246,7 @@ typedef struct Inventory
 typedef struct GameState
 {
 	Map* map;
+	SoundManager* global_sound_manager;
 	Gfx* gfx;
 	Inventory* inventory;
 

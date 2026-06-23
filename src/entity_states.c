@@ -20,7 +20,7 @@ void estate_player_tick(Entity* self, GameState* state)
 	WalkPath* path = &self->path;
 	const Vector2 target = path->pos[path->current];
 
-	if(IsKeyPressed(KEY_H)) play_sound_multiple(&map->sound->sound_pool[1]);
+	if(IsKeyPressed(KEY_H)) play_global_sound(state, SOUND_GLOBAL_WOOSH2);
 
 
 	entity_player_determine_movement_direction(self, state);
@@ -52,6 +52,7 @@ void estate_entity_perform_melee(Entity* self, GameState* state)
 		//find new target
 		if(entity_in_range(entity_get_midpoint(self), entity_get_midpoint(self->target), 2.0) )
 		{
+			play_global_sound(state, SOUND_GLOBAL_WOOSH2);
 			P_LOG("Damage Dealt\n");
 		} else P_LOG("Missed Attack\n");
 		self->path = entity_get_path(self, state, entity_get_midpoint(self->target));

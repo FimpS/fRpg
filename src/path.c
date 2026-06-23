@@ -20,7 +20,7 @@ bool path_validate(WalkPath path, Tile *tiles, int width, int height)
         int x = path.pos[i].x;
         int y = path.pos[i].y;
 
-       printf("Step %d -> (%d, %d)\n", path.count - 1 - i, x, y);
+       P_LOG("Step %d -> (%d, %d)\n", path.count - 1 - i, x, y);
     }
 
     return true;

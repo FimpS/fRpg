@@ -67,5 +67,9 @@ typedef enum
 	INVENTORY_MODE_DELETE,
 } InventoryMode;
 
-
+typedef enum SoundTypeGlobal
+{
+	SOUND_GLOBAL_WOOSH,
+	SOUND_GLOBAL_WOOSH2,
+} SoundTypeGlobal;
 

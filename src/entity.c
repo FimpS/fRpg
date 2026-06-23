@@ -37,6 +37,7 @@ void entity_move_along_path(Entity* self, GameState* state)
 {
 	Map* map = state->map;
 	WalkPath* path = &self->path;
+
 	const Vector2 target = path->pos[path->current];
 	Vector2 dir = Vector2Subtract(target, self->pos);
 
@@ -185,7 +186,7 @@ void entity_move(Entity* self, GameState* state)
 
 	const f32 angle = self->facing_angle;
 	const Vector2 old_pos = self->pos;
-	const const Vector2 velocity = Vector2Scale( (Vector2) { cos(angle), sin(angle) }, self->speed);
+	const const const const Vector2 velocity = Vector2Scale( (Vector2) { cos(angle), sin(angle) }, self->speed);
 
 	const Vector2 candidate_horizontal = Vector2Add(old_pos, (Vector2) { velocity.x, 0.0 } );
 	const Vector2 candidate_vertical = Vector2Add(old_pos, (Vector2) { 0.0, velocity.y } );

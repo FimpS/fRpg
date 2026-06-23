@@ -1,5 +1,6 @@
 
 #include "sound.h"
+#include "fstring.h"
 #include <dirent.h>
 #include <string.h>
 
@@ -33,40 +34,69 @@ void sound_load_map_multiple(SoundMultiple* sound_multiple)
 	}
 }
 
-void sound_load_map_sound_pool(MapSound* map_sound, MapSoundIndex index)
+static String sound_get_path_to_sound_file(String file_name, const char* directory_path_name)
+{
+	String path = string_new(directory_path_name);
+	strcat(path.body, file_name.body);
+	strcat(path.body, ".mp3");
+
+	return path;
+}
+
+void sound_load_global_sound_pool(SoundManager* map_sound)
 {
 	const u8* directory_path_name = "../soundassets/";
 	DIR* directory = opendir(directory_path_name);
+	String* path_strings = malloc(sizeof(String) * MAX_SOUNDS);
 
 	struct dirent* entry;
 	for(i32 i = 0; ( entry = readdir(directory)) != NULL; i++)
 	{
 		if(entry->d_name[0] == '.') { i--; continue; }
 
-		strcpy(path_to_sound, directory_path_name);
-		strcat(path_to_sound, entry->d_name);
-
-		P_LOG("%s\n", path_to_sound);
-
-		map_sound->sound_pool[i] = (SoundMultiple) {
-			.sound = LoadSound(path_to_sound), //Load first sound out of the total 8 in the array
-			.counter = 0,
-		};
+		strcpy(path_to_sound, entry->d_name);
+		path_strings[i] = string_new(path_to_sound);
+		path_strings[i].body[strlen(path_strings[i].body) - 4] = '\0'; //Remove ".mp3"
+		path_strings[i].len -= 4;
 		map_sound->len ++;
+	}
+
+	string_sort(path_strings, map_sound->len);
+
+	for(i32 i = 0; i < map_sound->len; i++)
+	{
+		String full_path = sound_get_path_to_sound_file(
+				path_strings[i], 
+				directory_path_name);
+		//P_LOG("Order: %s\n", full_path.body);
+		map_sound->sound_pool[i] = (SoundMultiple) {
+			.sound = LoadSound(full_path.body), //Load first sound out of the total 8 in the array
+			.counter = 0,
+
+		};
 		sound_load_map_multiple(&map_sound->sound_pool[i]);
 	}
+
+	free(path_strings);
 	closedir(directory);
 }
 
-MapSound* map_sound_new(MapSoundIndex index)
+void sound_manager_global_init(SoundManager* sound_manager)
 {
-	MapSound* map_sound = malloc(sizeof(MapSound));
-	SoundStrings strings = sound_string_table[index];
-
-	sound_load_map_sound_pool(map_sound, index);
-
-
-	return map_sound;
+	sound_load_global_sound_pool(sound_manager);
 }
 
+SoundManager* sound_manager_new()
+{
+	SoundManager* sound_manager = malloc(sizeof(SoundManager));
+	sound_manager->sound_pool = malloc(sizeof(SoundManager) * MAX_SOUNDS);
+
+	return sound_manager;
+}
+
+void sound_manager_destroy(SoundManager* sound_manager)
+{
+	free(sound_manager->sound_pool);
+	free(sound_manager);
+}
 

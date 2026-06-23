@@ -72,4 +72,5 @@ CMakeFiles/engine.dir/src/state.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/struct.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/ui.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/item.h
+ /home/samuel/c/game/fRpgCrawler/src/../include/item.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/sound.h

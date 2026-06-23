@@ -2,8 +2,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../include/state.h"
+#include "../include/sound.h"
 #include "../include/ui.h"
 #include "../include/global.h"
+
+static SoundMultiple* state_get_global_sound(GameState* state, SoundTypeGlobal type)
+{
+	return &state->global_sound_manager->sound_pool[type];
+}
+
+void play_global_sound(GameState* state, SoundTypeGlobal type)
+{
+	play_sound_multiple(state_get_global_sound(state, type));
+}
 
 GameState* state_new()
 {
@@ -13,7 +24,10 @@ GameState* state_new()
 		.map = map_new(v2_new(0, 0)),
 		.gfx = gfx_new(),
 		.inventory = ui_inventory_new(),
+		.global_sound_manager = sound_manager_new(),
 	};
+
+	sound_manager_global_init(newstate->global_sound_manager);
 	map_load_level(newstate->map, "../maps/test.tmp");
 	return newstate;
 }

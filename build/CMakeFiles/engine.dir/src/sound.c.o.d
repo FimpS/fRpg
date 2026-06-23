@@ -66,11 +66,12 @@ CMakeFiles/engine.dir/src/sound.c.o: \
  /home/samuel/c/game/fRpgCrawler/include/enum.h \
  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/dynList.h \
- /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /home/samuel/c/game/fRpgCrawler/lib/fstring.h /usr/include/string.h \
+ /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+ /usr/include/strings.h /usr/include/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/dirent.h \
  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
  /usr/include/linux/limits.h \
- /usr/include/x86_64-linux-gnu/bits/dirent_ext.h /usr/include/string.h \
- /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /usr/include/strings.h
+ /usr/include/x86_64-linux-gnu/bits/dirent_ext.h

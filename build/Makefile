@@ -179,6 +179,30 @@ lib/dynList.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/lib/dynList.c.s
 .PHONY : lib/dynList.c.s
 
+lib/fstring.o: lib/fstring.c.o
+.PHONY : lib/fstring.o
+
+# target to build an object file
+lib/fstring.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/lib/fstring.c.o
+.PHONY : lib/fstring.c.o
+
+lib/fstring.i: lib/fstring.c.i
+.PHONY : lib/fstring.i
+
+# target to preprocess a source file
+lib/fstring.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/lib/fstring.c.i
+.PHONY : lib/fstring.c.i
+
+lib/fstring.s: lib/fstring.c.s
+.PHONY : lib/fstring.s
+
+# target to generate assembly for a file
+lib/fstring.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/lib/fstring.c.s
+.PHONY : lib/fstring.c.s
+
 src/editor.o: src/editor.c.o
 .PHONY : src/editor.o
 
@@ -529,6 +553,9 @@ help:
 	@echo "... lib/dynList.o"
 	@echo "... lib/dynList.i"
 	@echo "... lib/dynList.s"
+	@echo "... lib/fstring.o"
+	@echo "... lib/fstring.i"
+	@echo "... lib/fstring.s"
 	@echo "... src/editor.o"
 	@echo "... src/editor.i"
 	@echo "... src/editor.s"

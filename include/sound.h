@@ -13,5 +13,6 @@ typedef struct SoundStrings
 
 void play_sound_multiple(SoundMultiple* sound);
 void play_sound(SoundMultiple* sound);
-MapSound* map_sound_new();
+void sound_manager_global_init(SoundManager* sound_manager);
+SoundManager* sound_manager_new();
 
