@@ -17,7 +17,7 @@ typedef struct StringView
 } StringView;
 
 
-
+void string_cut_right(String* str, const u32 amount);
 void string_sort(String* string_array, const u32 len);
 StringView string_view_new(const u8* str);
 String string_new(const u8* str);

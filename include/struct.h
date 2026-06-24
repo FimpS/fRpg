@@ -235,6 +235,7 @@ typedef struct Inventory
 	i32 focus_id;
 	i32 moved_id;
 	InventoryMode mode;
+	bool active;
 
 	InventoryButton buttons[TOTAL_INVENTORY_BUTTONS];
 } Inventory;
@@ -249,6 +250,7 @@ typedef struct GameState
 	SoundManager* global_sound_manager;
 	Gfx* gfx;
 	Inventory* inventory;
+	Inventory* shop_inventory;
 
 	Entity* player;
 } GameState;

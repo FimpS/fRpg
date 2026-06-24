@@ -7,7 +7,7 @@
 
 void estate_placeholder_tick(Entity* self, GameState* state)
 {
-	if(IsKeyPressed(KEY_I))
+	if(IsKeyPressed(KEY_F1))
 	{
 		P_LOG("%d %d\n", self->type, self->state.type);
 	}
@@ -53,8 +53,8 @@ void estate_entity_perform_melee(Entity* self, GameState* state)
 		if(entity_in_range(entity_get_midpoint(self), entity_get_midpoint(self->target), 2.0) )
 		{
 			play_global_sound(state, SOUND_GLOBAL_WOOSH2);
-			P_LOG("Damage Dealt\n");
-		} else P_LOG("Missed Attack\n");
+			//P_LOG("Damage Dealt\n");
+		} else 1;//P_LOG("Missed Attack\n");
 		self->path = entity_get_path(self, state, entity_get_midpoint(self->target));
 		self->state = entity_state_table[ESTYPE_ENTITY_MOVE_ATTACK];
 	}

@@ -63,6 +63,24 @@ static void string_quick_sort(String* string_array, i32 low, i32 high)
 	}
 }
 
+
+
+/* Lib Functions */
+
+void string_cut_right(String* str, const u32 amount)
+{
+	if(amount >= str->len)
+	{
+		str->body[0] = '\0';
+		str->len = 0;
+	} 
+	else
+	{
+		str->body[str->len - amount - 1] = '\0';
+		str->len -= amount - 1;
+	}
+}
+
 void string_sort(String* string_array, const u32 len)
 {
 	string_quick_sort(string_array, 0, (i32) (len - 1));	

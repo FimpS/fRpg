@@ -23,7 +23,16 @@ GameState* state_new()
 	*newstate = (GameState) {
 		.map = map_new(v2_new(0, 0)),
 		.gfx = gfx_new(),
-		.inventory = ui_inventory_new(),
+		.inventory = ui_inventory_new( 
+				(Rectangle) {GetScreenWidth() - 100,100,400,800},
+				10,
+				6),
+
+		.shop_inventory = ui_inventory_new( 
+				(Rectangle) {500,100,300,400},
+				5,
+				6),
+
 		.global_sound_manager = sound_manager_new(),
 	};
 
@@ -38,10 +47,8 @@ void state_tick(GameState* state)
 	MapCamera* cam = map->camera;
 	DynList* entities = map->entities;
 
-	if(IsKeyDown(KEY_K))
-	{
-		ui_inventory_tick(state->inventory, state);
-	}
+	ui_inventory_tick(state->inventory, state);
+	ui_shop_tick(state->shop_inventory, state);
 	if(IsMouseButtonPressed(0))
 	{
 		Vector2 t = map_get_mouse_cords(map);

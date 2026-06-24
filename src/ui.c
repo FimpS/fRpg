@@ -18,7 +18,10 @@ void ui_inventory_init_cells(Inventory* inventory)
 	const u32 cap = ui_inventory_cap(inventory);
 
 	Vector2 dim = gfx_to_monitor_vector( (Vector2) {50, 50} );
-	Vector2 pos = gfx_to_monitor_vector( (Vector2) { GetScreenWidth() - 0 - dim.x - 30, 100 + inventory->hitbox.height - dim.y * inventory->rows - 30} );
+	Vector2 pos = gfx_to_monitor_vector( (Vector2) { 
+			inventory->hitbox.x - dim.x + inventory->hitbox.width + 100, 
+			inventory->hitbox.y + inventory->hitbox.height - dim.y * inventory->rows - 30
+			} );
 
 	for(i32 i = 0; i < cap; i++)
 	{
@@ -81,19 +84,24 @@ Item ui_inventory_get_empty_cell()
 	};
 }
 
-Inventory* ui_inventory_new()
+Inventory* ui_inventory_new(Rectangle box,
+							const u32 rows,
+							const u32 cols)
 {
 	Inventory* inv_new = malloc(sizeof(Inventory));
-	Vector2 dim = gfx_to_monitor_vector( (Vector2) {400, 800} );
-	Vector2 screen_pos = gfx_to_monitor_vector( (Vector2) { GetScreenWidth() - 100 - dim.x, 100 } );
+	Vector2 pos = { box.x, box.y };
+	Vector2 dim = { box.width, box.height };
+	//Vector2 dim = gfx_to_monitor_vector( (Vector2) {400, 800} );
+	Vector2 screen_pos = gfx_to_monitor_vector( (Vector2) { pos.x - dim.x, pos.y } );
 	*inv_new = (Inventory) {
-		.cols = 6,
-			.rows = 10,
+		.cols = cols,
+			.rows = rows,
 			.hitbox = { screen_pos.x, screen_pos.y, dim.x, dim.y },
 			.mode = INVENTORY_MODE_NONE,
 			.moved_id = -1,
 			.focus_id = -1,
 			.buttons = {0},
+			.active = false,
 	};
 	ui_inventory_init_cells(inv_new);
 	ui_inventory_init_buttons(inv_new);
@@ -269,10 +277,19 @@ void ui_inventory_buttons_tick(Inventory* inventory, GameState* state, Vector2 m
 	}
 }
 
+static void ui_inventory_toggle(Inventory* inventory, GameState* state)
+{
+	if(IsKeyPressed(KEY_I)) inventory->active = !inventory->active;
+}
+
 void ui_inventory_tick(Inventory* inventory, GameState* state)
 {
+	ui_inventory_toggle(inventory, state);
+	if(!inventory->active) return;
+
 	const Vector2 mp = GetMousePosition();
 	const u32 cap = ui_inventory_cap(inventory);
+
 	for(i32 i = 0; i < cap; i++)
 	{
 		ui_inventory_cell_tick(&inventory->cells[i], inventory, state);
@@ -280,6 +297,25 @@ void ui_inventory_tick(Inventory* inventory, GameState* state)
 	ui_inventory_buttons_tick(inventory, state, mp);
 	ui_inventory_move_mode(inventory, state);
 }
+
+//TODO money logic
+void ui_shop_buy_item(InventoryCell* cell, Inventory* shop_inventory, GameState* state)
+{
+	Item item_to_buy = cell->item;
+	const Vector2 mouse_cords = GetMousePosition();
+	Inventory* player_inventory = state->inventory;
+	Entity* p = state->player;
+
+	//P_LOG("%f %f\n", cell->hitbox.x, cell->hitbox.y);
+	if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && 
+	   AAB(cell->hitbox, mouse_cords) )
+	{
+		P_LOG("Added\n");
+		ui_inventory_add_item(player_inventory, item_to_buy);
+	}
+}
+
+
 
 static const Color enchant_to_color_table[] =
 {
@@ -561,8 +597,41 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 
 void ui_render(GameState* state)
 {
-	if(IsKeyDown(KEY_K))
-	ui_inventory_render(state->inventory, state);
+	Inventory* inventory = state->inventory;
+	if(inventory->active) 
+	{
+		ui_inventory_render(state->inventory, state);
+		ui_inventory_render(state->shop_inventory, state);
+	}
+	
 	gfx_render_mouse(state->gfx);
 }
 
+void ui_shop_cell_tick(InventoryCell* cell, Inventory* shop_inventory, GameState* state)
+{
+	const Vector2 mouse_cords = GetMousePosition();
+	if(AAB(cell->hitbox, mouse_cords))
+	{
+		cell->focused = cell->id;
+	} 
+	else 
+	{
+		cell->focused = -1;
+	}
+
+	ui_shop_buy_item(cell, shop_inventory, state);
+
+}
+
+void ui_shop_tick(Inventory* shop_inventory, GameState* state)
+{
+	if(!state->inventory->active) return;
+
+	const Vector2 mp = GetMousePosition();
+	const u32 cap = ui_inventory_cap(shop_inventory);
+
+	for(i32 i = 0; i < cap; i++)
+	{
+		ui_shop_cell_tick(&shop_inventory->cells[i], shop_inventory, state);
+	}
+}

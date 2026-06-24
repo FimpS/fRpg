@@ -43,26 +43,13 @@ static String sound_get_path_to_sound_file(String file_name, const char* directo
 	return path;
 }
 
-void sound_load_global_sound_pool(SoundManager* map_sound)
+static void sound_cut_file_extension(String* str)
 {
-	const u8* directory_path_name = "../soundassets/";
-	DIR* directory = opendir(directory_path_name);
-	String* path_strings = malloc(sizeof(String) * MAX_SOUNDS);
+	string_cut_right(str, 3);
+}
 
-	struct dirent* entry;
-	for(i32 i = 0; ( entry = readdir(directory)) != NULL; i++)
-	{
-		if(entry->d_name[0] == '.') { i--; continue; }
-
-		strcpy(path_to_sound, entry->d_name);
-		path_strings[i] = string_new(path_to_sound);
-		path_strings[i].body[strlen(path_strings[i].body) - 4] = '\0'; //Remove ".mp3"
-		path_strings[i].len -= 4;
-		map_sound->len ++;
-	}
-
-	string_sort(path_strings, map_sound->len);
-
+static void sound_load_sorted_strings(SoundManager* map_sound, String* path_strings, const u8* directory_path_name)
+{
 	for(i32 i = 0; i < map_sound->len; i++)
 	{
 		String full_path = sound_get_path_to_sound_file(
@@ -76,6 +63,27 @@ void sound_load_global_sound_pool(SoundManager* map_sound)
 		};
 		sound_load_map_multiple(&map_sound->sound_pool[i]);
 	}
+}
+
+void sound_load_global_sound_pool(SoundManager* map_sound)
+{
+	const u8* directory_path_name = "../soundassets/";
+	DIR* directory = opendir(directory_path_name);
+	String* path_strings = malloc(sizeof(String) * MAX_SOUNDS);
+
+	struct dirent* entry;
+	for(i32 i = 0; ( entry = readdir(directory)) != NULL; i++)
+	{
+		if(entry->d_name[0] == '.') { i--; continue; }
+
+		strcpy(path_to_sound, entry->d_name);
+		path_strings[i] = string_new(path_to_sound);
+		sound_cut_file_extension(&path_strings[i]);
+		map_sound->len ++;
+	}
+
+	string_sort(path_strings, map_sound->len);
+	sound_load_sorted_strings(map_sound, path_strings, directory_path_name);
 
 	free(path_strings);
 	closedir(directory);
