@@ -20,7 +20,9 @@ CMakeFiles/game.dir/src/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/bits/sys_errlist.h /usr/include/stdlib.h \
+ /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
@@ -41,12 +43,15 @@ CMakeFiles/game.dir/src/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
+ /usr/include/x86_64-linux-gnu/bits/select2.h \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-float.h /usr/include/time.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib.h /usr/include/time.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
@@ -67,6 +72,7 @@ CMakeFiles/game.dir/src/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+ /usr/include/x86_64-linux-gnu/bits/mathinline.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/enum.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/dynList.h \
@@ -75,9 +81,13 @@ CMakeFiles/game.dir/src/main.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/v2.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/struct.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/npc.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/ui.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/item.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/path.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/editor.h \
  /usr/include/string.h /usr/include/strings.h \
+ /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/player.h \
  /home/samuel/c/game/fRpgCrawler/src/../lib/hashmap.h

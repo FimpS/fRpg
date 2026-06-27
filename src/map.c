@@ -117,6 +117,7 @@ Map* map_new(V2 dim)
 	new_map->content = malloc(sizeof(Tile) * dim.x * dim.y);
 	//new_map->sound = sound_manager_new(1);
 	new_map->entities = dynList_new();
+	new_map->npcs = dynList_new();
 	new_map->dim = dim;
 	//memset(new_map, 0, sizeof(new_map->content));	
 	//new_map->dim = v2_new(0, 0);
@@ -140,6 +141,8 @@ void map_destroy(Map* map)
 bool map_load_level(Map* map, const char* filepath)
 {
 	FILE* fp = NULL;
+	u32 read; //Tmp to silence compiler
+
 	fp = fopen(filepath, "rb");
 	if(!fp)
 	{
@@ -147,7 +150,7 @@ bool map_load_level(Map* map, const char* filepath)
 		return false;
 	}
 
-	fread(&map->dim, sizeof(V2), 1, fp);
+	read =fread(&map->dim, sizeof(V2), 1, fp);
 	map->content = realloc(map->content, sizeof(Tile) * map->dim.x * map->dim.y);
 
 	u32 c = 0;
@@ -156,12 +159,12 @@ bool map_load_level(Map* map, const char* filepath)
 		P_ERROR("File failed to read appropriate bytes\n");
 	}
 	u32 entity_list_len = 0;
-	fread(&entity_list_len, sizeof(unsigned), 1, fp);
+	read = fread(&entity_list_len, sizeof(unsigned), 1, fp);
 
 	for (u32 i = 0; i < entity_list_len; i++)
 	{
 		Entity* allocated_entity = malloc(sizeof(Entity));
-		fread(allocated_entity, sizeof(Entity), 1, fp);
+		read = fread(allocated_entity, sizeof(Entity), 1, fp);
 		dynList_push(map->entities, allocated_entity);
 	}
 	fclose(fp);
@@ -206,7 +209,7 @@ void map_render_ambient_light(Map* map)
 f32 map_entity_light_pulse(Entity* self)
 {
 	LightPulse* pulse = &self->data.light.pulse;
-	if(!pulse->enable) return 1.0;
+	if(!pulse->enable) return self->data.light.distance;
 	const f32 pulse_depth = self->data.light.distance * (1.0 - pulse->depth);
 	const f32 pulse_speed = 100.0 * pulse->speed;
 	return self->data.light.distance - fabsf(sin( (f32) self->light_frequency / pulse_speed ) * pulse_depth);
@@ -254,16 +257,26 @@ void map_render_entity_light(Entity* self, Map* map)
 
 }
 
-void map_render_add_entity_lights(Map* map)
+void map_render_add_entity_lights(Map* map, GameState* state)
 {
 	MapCamera* cam = map->camera;
 	DynList* entities = map->entities;
+	DynList* npcs = map->npcs;
 	BeginBlendMode(BLEND_ADDITIVE);
 	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
 		Entity* self = dynList_get(entities, i);
 		map_render_entity_light(self, map);
 	}
+
+	for(i32 i = 0; i < dynList_len(map->npcs); i++)
+	{
+		NPC* self = dynList_get(npcs, i);
+		map_render_entity_light(self->entity, map);
+	}
+
+	map_render_entity_light(state->player->entity, map);
+
 	EndBlendMode();
 
 }
@@ -286,7 +299,7 @@ void map_render_light(Map* map, GameState* state)
 
 	BeginTextureMode(state->gfx->light_map->map);
 	map_render_ambient_light(map);
-	map_render_add_entity_lights(map);
+	map_render_add_entity_lights(map, state);
 	EndTextureMode();
 
 	BeginBlendMode(BLEND_MULTIPLIED);

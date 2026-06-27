@@ -10,13 +10,7 @@
 #include "struct.h"
 
 
-typedef struct PlayerEntity
-{
-	Entity entity;
-	
-} PlayerEntity;
-
-const EntityState entity_state_table[ESTYPE_CLEAR];
+extern const EntityState entity_state_table[];
 
 bool entity_AAB(Entity* e, Vector2 p);
 
@@ -26,6 +20,7 @@ Entity* entity_new_editor(EntityType type, Vector2 pos);
 void entity_destroy(Entity* e);
 
 void entities_tick(DynList* entities, GameState* state);
+void entity_render(Entity* self, GameState* state);
 void entities_render(DynList* entities, GameState* state);
 void entity_move(Entity* self, GameState* state);
 

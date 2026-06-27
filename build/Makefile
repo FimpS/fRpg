@@ -443,6 +443,30 @@ src/map.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/map.c.s
 .PHONY : src/map.c.s
 
+src/npc.o: src/npc.c.o
+.PHONY : src/npc.o
+
+# target to build an object file
+src/npc.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/npc.c.o
+.PHONY : src/npc.c.o
+
+src/npc.i: src/npc.c.i
+.PHONY : src/npc.i
+
+# target to preprocess a source file
+src/npc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/npc.c.i
+.PHONY : src/npc.c.i
+
+src/npc.s: src/npc.c.s
+.PHONY : src/npc.s
+
+# target to generate assembly for a file
+src/npc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/npc.c.s
+.PHONY : src/npc.c.s
+
 src/path.o: src/path.c.o
 .PHONY : src/path.o
 
@@ -466,6 +490,30 @@ src/path.s: src/path.c.s
 src/path.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/path.c.s
 .PHONY : src/path.c.s
+
+src/player.o: src/player.c.o
+.PHONY : src/player.o
+
+# target to build an object file
+src/player.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/player.c.o
+.PHONY : src/player.c.o
+
+src/player.i: src/player.c.i
+.PHONY : src/player.i
+
+# target to preprocess a source file
+src/player.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/player.c.i
+.PHONY : src/player.c.i
+
+src/player.s: src/player.c.s
+.PHONY : src/player.s
+
+# target to generate assembly for a file
+src/player.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/player.c.s
+.PHONY : src/player.c.s
 
 src/sound.o: src/sound.c.o
 .PHONY : src/sound.o
@@ -539,6 +587,30 @@ src/ui.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/ui.c.s
 .PHONY : src/ui.c.s
 
+src/ui_data.o: src/ui_data.c.o
+.PHONY : src/ui_data.o
+
+# target to build an object file
+src/ui_data.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/ui_data.c.o
+.PHONY : src/ui_data.c.o
+
+src/ui_data.i: src/ui_data.c.i
+.PHONY : src/ui_data.i
+
+# target to preprocess a source file
+src/ui_data.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/ui_data.c.i
+.PHONY : src/ui_data.c.i
+
+src/ui_data.s: src/ui_data.c.s
+.PHONY : src/ui_data.s
+
+# target to generate assembly for a file
+src/ui_data.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/ui_data.c.s
+.PHONY : src/ui_data.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -586,9 +658,15 @@ help:
 	@echo "... src/map.o"
 	@echo "... src/map.i"
 	@echo "... src/map.s"
+	@echo "... src/npc.o"
+	@echo "... src/npc.i"
+	@echo "... src/npc.s"
 	@echo "... src/path.o"
 	@echo "... src/path.i"
 	@echo "... src/path.s"
+	@echo "... src/player.o"
+	@echo "... src/player.i"
+	@echo "... src/player.s"
 	@echo "... src/sound.o"
 	@echo "... src/sound.i"
 	@echo "... src/sound.s"
@@ -598,6 +676,9 @@ help:
 	@echo "... src/ui.o"
 	@echo "... src/ui.i"
 	@echo "... src/ui.s"
+	@echo "... src/ui_data.o"
+	@echo "... src/ui_data.i"
+	@echo "... src/ui_data.s"
 .PHONY : help
 
 

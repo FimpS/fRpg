@@ -1,1 +1,1 @@
-/usr/bin/cc CMakeFiles/game.dir/src/main.c.o -o game  libengine.a /usr/local/lib/libraylib.a -L/usr/local/lib -lraylib -lm -ldl -lpthread
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/game.dir/src/main.c.o -o game  libengine.a /usr/local/lib/libraylib.a -L/usr/local/lib -lraylib -lm -ldl -lpthread

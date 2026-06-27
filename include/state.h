@@ -5,6 +5,7 @@
 #include "../lib/types.h"
 
 #include "map.h"
+#include "npc.h"
 #include "gfx.h"
 #include "ui.h"
 #include "entity.h"

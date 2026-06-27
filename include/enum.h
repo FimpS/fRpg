@@ -18,8 +18,14 @@ typedef enum EntityType
 	ENTITY_PLACEHOLDER,
 	ENTITY_PLACEHOLDER2,
 	ENTITY_PLAYER,
+	ENTITY_SHOP_NPC,
 	ENTITY_LAST,
 } EntityType;
+
+typedef enum NPCType
+{
+	NPC_TYPE_SHOP,
+} NPCType;
 
 typedef enum EntityStateType
 {
@@ -59,6 +65,13 @@ typedef enum EntityClass
 	ENTITYCLASS_NONE,
 	ENTITYCLASS_PLACEHOLDER,
 } EntityClass;
+
+typedef enum 
+{
+	INVENTORY_TYPE_PLAYER,
+	INVENTORY_TYPE_SHOP,
+	INVENTORY_TYPE_SMITH,
+} InventoryType;
 
 typedef enum
 {

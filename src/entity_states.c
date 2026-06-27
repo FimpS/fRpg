@@ -31,7 +31,7 @@ void estate_entity_move_attack(Entity* self, GameState* state)
 {
 	if(self->state.timer >= self->state.stop_timer)
 	{
-		self->target = state->player;
+		self->target = state->player->entity;
 		self->path = entity_get_path(self, state, Vector2Midpoint(self->target->pos, self->target->data.dim));
 		self->state = entity_state_table[ESTYPE_ENTITY_MOVE_ATTACK];
 		return;

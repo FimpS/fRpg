@@ -9,6 +9,8 @@
 #include "../include/editor.h"
 #include "../include/ui.h"
 #include "../include/gfx.h"
+#include "../include/npc.h"
+#include "../include/player.h"
 #include "../lib/hashmap.h"
 #include "raylib.h"
 
@@ -31,13 +33,16 @@ int main(void) {
 	GameState* state = state_new();
 
 
-	state->player = entity_player_init(state);
-	dynList_push(state->map->entities, state->player);
-
+	state->player = player_new();
+	//dynList_push(state->map->entities, state->player->entity); //This won't work later
 #if 1
-	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0} );
-	enemy->target = state->player;
+	dynList_push(state->map->npcs, npc_new(NPC_TYPE_SHOP, (Vector2) { 17.0, 4.0 } ));
+	for(i32 i = 0; i < 0; i++)
+	{
+	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0 + i} );
+	enemy->target = state->player->entity;
 	dynList_push(state->map->entities, enemy);
+	}
 #endif
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {5.0, 5.0} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {6.0, 5.0} ));
@@ -71,7 +76,7 @@ int main(void) {
 			ft = GetFrameTime();
 		}
 		tick_tick();
-		DrawText(TextFormat("%f", ft), 10, 10, 5, GREEN);
+		DrawText(TextFormat("%d", GetFPS()), 10, 10, 5, GREEN);
 		EndDrawing();
 	}
 

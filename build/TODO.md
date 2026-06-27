@@ -16,7 +16,9 @@ Long Term:
     - Audio
 
 
-
+Important Notes/Plans for future structure:
+    - Instead of having Inventory in GameState, I add them to the future Player/NPC struct, and the inventory loads as part of the NPC, Not on-interact
+    - For shops, Inventory should maybe have a InventoryData where INVENTORY_TYPE/Dimensions/CellCount/Items(maybe...) are all located, this way it can be used for other things
 
 Ideas:
     - Fulghor boss, which run through the arena casting holy light beneath him

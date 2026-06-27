@@ -8,6 +8,7 @@
 typedef struct Map Map;
 typedef struct Entity Entity;
 typedef struct GameState GameState;
+typedef struct Inventory Inventory;
 
 /* ITEM */
 
@@ -144,6 +145,18 @@ typedef struct Entity
 
 } Entity;
 
+typedef struct Player
+{
+	Entity* entity;
+	Inventory* inventory;
+} Player;
+
+typedef struct NPC
+{
+	Entity* entity;
+	Inventory* inventory;
+} NPC;
+
 /* ENTITY */
 
 /* MAP */
@@ -193,6 +206,7 @@ typedef struct Map
 	MapCamera* camera;
 	Tile* content;
 	DynList* entities;
+	DynList* npcs;
 	//SoundManager* sound;
 	LightSettings light_settings;
 	V2 dim;	
@@ -204,6 +218,16 @@ typedef struct Map
 
 #define TOTAL_INVENTORY_CELLS 60
 #define TOTAL_INVENTORY_BUTTONS 2
+
+typedef struct InventoryData 
+{
+	void (*tick)(Inventory* inventory, GameState* state);
+	Rectangle hitbox;
+	u32 rows;
+	u32 cols;
+	V2 cell_offset;
+} InventoryData;
+
 typedef struct InventoryCell
 {
 	Item item;
@@ -214,7 +238,6 @@ typedef struct InventoryCell
 	u32 amount;
 } InventoryCell;
 
-typedef struct Inventory Inventory;
 
 typedef struct InventoryButton
 {
@@ -222,22 +245,26 @@ typedef struct InventoryButton
 	Rectangle src_rec;
 	Rectangle hover_src_rec;
 	bool hovered;
-	void (*on_click)(Inventory* inventroy, GameState* state);
+	void (*on_click)(Inventory* inventory, GameState* state);
 } InventoryButton;
 
 typedef struct Inventory
 {
-	InventoryCell cells[TOTAL_INVENTORY_CELLS];
+	InventoryCell cells[TOTAL_INVENTORY_CELLS]; //TODO malloc these instead
 	Rectangle hitbox;
 	u32 cols;
 	u32 rows;
+	V2 cell_offset;
+
 
 	i32 focus_id;
 	i32 moved_id;
 	InventoryMode mode;
 	bool active;
 
-	InventoryButton buttons[TOTAL_INVENTORY_BUTTONS];
+	void (*tick)(Inventory* inventory, GameState* state);
+
+	InventoryButton buttons[TOTAL_INVENTORY_BUTTONS]; //Same here
 } Inventory;
 
 /* UI */
@@ -249,10 +276,9 @@ typedef struct GameState
 	Map* map;
 	SoundManager* global_sound_manager;
 	Gfx* gfx;
-	Inventory* inventory;
-	Inventory* shop_inventory;
 
-	Entity* player;
+
+	Player* player;
 } GameState;
 
 /* State */

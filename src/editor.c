@@ -26,6 +26,7 @@ void editor_parse_file_input(u8* file_buffer)
 bool editor_load_level(Map* map, const char* filepath)
 {
 	FILE* fp = NULL;
+	u32 read; //Tmp to silence compiler
 
 	fp = fopen(filepath, "rb");
 	if(!fp)
@@ -34,7 +35,7 @@ bool editor_load_level(Map* map, const char* filepath)
 		return false;
 	}
 
-	fread(&map->dim, sizeof(V2), 1, fp);
+	read = fread(&map->dim, sizeof(V2), 1, fp);
 	map->content = realloc(map->content, sizeof(Tile) * map->dim.x * map->dim.y);
 	u32 c = 0;
 	if((c = fread(map->content, sizeof(Tile), map->dim.x * map->dim.y, fp)) != map->dim.x * map->dim.y)
@@ -42,12 +43,12 @@ bool editor_load_level(Map* map, const char* filepath)
 		P_ERROR("File failed to read appropriate bytes Read: %d | Expected: %d\n", c, map->dim.x * map->dim.y);
 	}
 	u32 entity_list_len = 0;
-	fread(&entity_list_len, sizeof(u32), 1, fp);
+	read = fread(&entity_list_len, sizeof(u32), 1, fp);
 
 	for (u32 i = 0; i < entity_list_len; i++)
 	{
 		Entity* allocated_entity = malloc(sizeof(Entity));
-		fread(allocated_entity, sizeof(Entity), 1, fp);
+		read = fread(allocated_entity, sizeof(Entity), 1, fp);
 		dynList_push(map->entities, allocated_entity);
 	}
 	fclose(fp);

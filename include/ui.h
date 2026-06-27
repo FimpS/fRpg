@@ -9,12 +9,18 @@
 void ui_wrap_text_render(const u8* text, Vector2 pos, const i32 max_width, const u32 padding, const u32 font_size, GameState* state);
 void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState* state);
 
-Inventory* ui_inventory_new(Rectangle box, const u32 rows, const u32 cols);
+Inventory* ui_inventory_new(InventoryType type);
 
 void ui_inventory_add_item(Inventory* inventroy, Item item);
 void ui_inventory_tick(Inventory* inventory, GameState* state);
 void ui_shop_tick(Inventory* shop_inventory, GameState* state);
+void ui_smith_tick(Inventory* smith_inventory, GameState* state);
 void ui_inventory_render(Inventory* inventory, GameState* state);
 
 void ui_render(GameState* state);
 
+
+
+
+void ui_inventory_toggle_fire(Inventory* inventory, GameState* state);
+void ui_inventory_sort_cells(Inventory* inventory, GameState* state);

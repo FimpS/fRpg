@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib
 
-C_FLAGS = -std=gnu99 -I/usr/local/include
+C_FLAGS = -O3 -DNDEBUG -std=gnu99 -I/usr/local/include
 
