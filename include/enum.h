@@ -24,8 +24,16 @@ typedef enum EntityType
 
 typedef enum NPCType
 {
-	NPC_TYPE_SHOP,
+	NPC_TYPE_TOWN_MERCHANT,
+	NPC_TYPE_CAVE_MERCHANT,
+	NPC_TYPE_TOWN_SMITH,
 } NPCType;
+
+typedef enum NPCShopType
+{
+	NPC_SHOP_TOWN,
+	NPC_SHOP_CAVE,
+} NPCShopType;
 
 typedef enum EntityStateType
 {

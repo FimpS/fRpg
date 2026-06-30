@@ -7,10 +7,7 @@
 
 void estate_placeholder_tick(Entity* self, GameState* state)
 {
-	if(IsKeyPressed(KEY_F1))
-	{
-		P_LOG("%d %d\n", self->type, self->state.type);
-	}
+	return;
 }
 
 

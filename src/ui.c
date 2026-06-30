@@ -4,6 +4,7 @@
 
 #include "ui.h"
 #include "ui_data.h"
+#include "shop_data.h"
 #include "global.h"
 #include "../include/entity_data.h"
 
@@ -254,7 +255,7 @@ Inventory* ui_inventory_new(InventoryType type)
 		ui_inventory_init_buttons(inv_new);
 
 
-	if(type != INVENTORY_TYPE_SMITH)
+	if(type == INVENTORY_TYPE_PLAYER)
 	{
 		ui_inventory_add_item(inv_new, (Item) {
 				.type = ITEM_TYPE_PLACEHOLDER,
@@ -272,7 +273,6 @@ Inventory* ui_inventory_new(InventoryType type)
 			};
 		}
 	}
-
 
 	return inv_new;
 }
@@ -385,14 +385,13 @@ void ui_inventory_buttons_tick(Inventory* inventory, GameState* state, Vector2 m
 	}
 }
 
-static void ui_inventory_toggle(Inventory* inventory, GameState* state)
+void ui_inventory_player_toggle(Inventory* inventory, GameState* state)
 {
 	if(IsKeyPressed(KEY_I)) inventory->active = !inventory->active;
 }
 
 void ui_inventory_tick(Inventory* inventory, GameState* state)
 {
-	ui_inventory_toggle(inventory, state);
 	if(!inventory->active) return;
 
 	const Vector2 mp = GetMousePosition();
@@ -668,7 +667,6 @@ void ui_smith_tick(Inventory* smith_inventory, GameState* state)
 	{
 		ui_smith_cell_tick(&smith_inventory->cells[i], smith_inventory, state);
 	}
-	//if right_lcik in normal inv, add to smithtablecell
 	ui_smith_select_item(smith_inventory, state);
 }
 

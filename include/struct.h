@@ -151,8 +151,16 @@ typedef struct Player
 	Inventory* inventory;
 } Player;
 
+#define MAX_SHOP_ITEMS 64
+typedef struct ShopData
+{
+	u32 total_item;
+	ItemType shop_item_types[MAX_SHOP_ITEMS];
+} ShopData;
+
 typedef struct NPC
 {
+	NPCType type;
 	Entity* entity;
 	Inventory* inventory;
 } NPC;

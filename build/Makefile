@@ -515,6 +515,30 @@ src/player.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/player.c.s
 .PHONY : src/player.c.s
 
+src/shop_data.o: src/shop_data.c.o
+.PHONY : src/shop_data.o
+
+# target to build an object file
+src/shop_data.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/shop_data.c.o
+.PHONY : src/shop_data.c.o
+
+src/shop_data.i: src/shop_data.c.i
+.PHONY : src/shop_data.i
+
+# target to preprocess a source file
+src/shop_data.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/shop_data.c.i
+.PHONY : src/shop_data.c.i
+
+src/shop_data.s: src/shop_data.c.s
+.PHONY : src/shop_data.s
+
+# target to generate assembly for a file
+src/shop_data.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/shop_data.c.s
+.PHONY : src/shop_data.c.s
+
 src/sound.o: src/sound.c.o
 .PHONY : src/sound.o
 
@@ -667,6 +691,9 @@ help:
 	@echo "... src/player.o"
 	@echo "... src/player.i"
 	@echo "... src/player.s"
+	@echo "... src/shop_data.o"
+	@echo "... src/shop_data.i"
+	@echo "... src/shop_data.s"
 	@echo "... src/sound.o"
 	@echo "... src/sound.i"
 	@echo "... src/sound.s"

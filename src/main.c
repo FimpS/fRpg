@@ -36,7 +36,7 @@ int main(void) {
 	state->player = player_new();
 	//dynList_push(state->map->entities, state->player->entity); //This won't work later
 #if 1
-	dynList_push(state->map->npcs, npc_new(NPC_TYPE_SHOP, (Vector2) { 17.0, 4.0 } ));
+	dynList_push(state->map->npcs, npc_new(NPC_TYPE_TOWN_MERCHANT, (Vector2) { 17.0, 4.0 } ));
 	for(i32 i = 0; i < 0; i++)
 	{
 	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0 + i} );

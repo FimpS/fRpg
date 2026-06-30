@@ -15,6 +15,8 @@ void player_tick(Player* player, GameState* state)
 {
 	Entity* player_entity = player->entity;
 
+	//ui_inventory_tick(player->inventory, state);
+	ui_inventory_player_toggle(player->inventory, state);
 	ui_inventory_tick(player->inventory, state);
 	if(player_entity->state.tick != NULL) player_entity->state.tick(player_entity, state);
 }

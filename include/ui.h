@@ -16,6 +16,7 @@ void ui_inventory_tick(Inventory* inventory, GameState* state);
 void ui_shop_tick(Inventory* shop_inventory, GameState* state);
 void ui_smith_tick(Inventory* smith_inventory, GameState* state);
 void ui_inventory_render(Inventory* inventory, GameState* state);
+void ui_inventory_player_toggle(Inventory* inventory, GameState* state);
 
 void ui_render(GameState* state);
 

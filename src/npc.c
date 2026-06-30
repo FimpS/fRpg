@@ -1,4 +1,5 @@
 #include "npc.h"
+#include "shop_data.h"
 #include "ui.h"
 
 #define NPC_INTERACTION_RANGE 3.0
@@ -17,7 +18,8 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 	}
 
 	if(IsKeyPressed(KEY_F1) || 
-       !entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0))
+       (!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0) && 
+		self->inventory->active) )
 	{
 		self->inventory->active = false;
 		state->player->inventory->active = false;
@@ -69,17 +71,42 @@ void npcs_render(DynList* npcs, GameState* state)
 	}
 }
 
+static void npc_add_shop_stock(NPC* npc)
+{
+	Inventory* stock = npc->inventory;
+	ShopData data = shop_data_table[npc->type];
+
+	if(data.total_item >= TOTAL_INVENTORY_CELLS) data.total_item = TOTAL_INVENTORY_CELLS;
+
+	for(i32 i = 0; i < data.total_item; i++)
+	{
+		ItemType type = data.shop_item_types[i];
+		stock->cells[i].item = (Item) {
+			.type = type,
+			.info = item_info_table[type],
+			.enchant = 1,
+		};
+	}
+}
+
+//TODO can maybe remove this and use npc->type or smth?
 const InventoryType npc_to_inventory_table[] = {
 	INVENTORY_TYPE_SHOP,
 	INVENTORY_TYPE_SHOP,
+	INVENTORY_TYPE_SMITH,
 };
 
 NPC* npc_new(NPCType type, Vector2 pos)
 {
 	NPC* npc = malloc(sizeof(NPC));
+	npc->type = type;
 	npc->entity = entity_new(ENTITY_SHOP_NPC, pos);
 	npc->inventory = ui_inventory_new(npc_to_inventory_table[type]);
 
+	if(npc_to_inventory_table[type] == INVENTORY_TYPE_SHOP)
+	{
+		npc_add_shop_stock(npc);
+	}
 
 	return npc;
 }
