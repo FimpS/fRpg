@@ -84,7 +84,7 @@ static void npc_add_shop_stock(NPC* npc)
 		stock->cells[i].item = (Item) {
 			.type = type,
 			.info = item_info_table[type],
-			.enchant = 1,
+			.enchant = 1, //TODO
 		};
 	}
 }

@@ -25,6 +25,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/path.c.o.d"
   "CMakeFiles/engine.dir/src/player.c.o"
   "CMakeFiles/engine.dir/src/player.c.o.d"
+  "CMakeFiles/engine.dir/src/quest_data.c.o"
+  "CMakeFiles/engine.dir/src/quest_data.c.o.d"
   "CMakeFiles/engine.dir/src/shop_data.c.o"
   "CMakeFiles/engine.dir/src/shop_data.c.o.d"
   "CMakeFiles/engine.dir/src/sound.c.o"

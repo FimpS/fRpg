@@ -515,6 +515,30 @@ src/player.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/player.c.s
 .PHONY : src/player.c.s
 
+src/quest_data.o: src/quest_data.c.o
+.PHONY : src/quest_data.o
+
+# target to build an object file
+src/quest_data.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/quest_data.c.o
+.PHONY : src/quest_data.c.o
+
+src/quest_data.i: src/quest_data.c.i
+.PHONY : src/quest_data.i
+
+# target to preprocess a source file
+src/quest_data.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/quest_data.c.i
+.PHONY : src/quest_data.c.i
+
+src/quest_data.s: src/quest_data.c.s
+.PHONY : src/quest_data.s
+
+# target to generate assembly for a file
+src/quest_data.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/quest_data.c.s
+.PHONY : src/quest_data.c.s
+
 src/shop_data.o: src/shop_data.c.o
 .PHONY : src/shop_data.o
 
@@ -691,6 +715,9 @@ help:
 	@echo "... src/player.o"
 	@echo "... src/player.i"
 	@echo "... src/player.s"
+	@echo "... src/quest_data.o"
+	@echo "... src/quest_data.i"
+	@echo "... src/quest_data.s"
 	@echo "... src/shop_data.o"
 	@echo "... src/shop_data.i"
 	@echo "... src/shop_data.s"

@@ -1,6 +1,7 @@
 
 #include "entity_states.h"
 #include "state.h"
+#include "path.h"
 #include "map.h"
 #include "entity.h"
 #include "sound.h"

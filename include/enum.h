@@ -35,6 +35,18 @@ typedef enum NPCShopType
 	NPC_SHOP_CAVE,
 } NPCShopType;
 
+typedef enum NPCQuestType
+{
+	NPC_QUEST_TOWN_QUESTER,
+	NPC_QUEST_CAVE_QUESTER,
+} NPCQuestType;
+
+typedef enum QuestType
+{
+	QUEST_TYPE_PLACEHOLDER,
+	QUEST_TYPE_KILL_5_IMPS,
+} QuestType;
+
 typedef enum EntityStateType
 {
 	ESTYPE_PLACEHOLDER,

@@ -79,6 +79,12 @@
 },
 {
   "directory": "/home/samuel/c/game/fRpgCrawler/build",
+  "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -O3 -DNDEBUG -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/src/quest_data.c.o -c /home/samuel/c/game/fRpgCrawler/src/quest_data.c",
+  "file": "/home/samuel/c/game/fRpgCrawler/src/quest_data.c",
+  "output": "CMakeFiles/engine.dir/src/quest_data.c.o"
+},
+{
+  "directory": "/home/samuel/c/game/fRpgCrawler/build",
   "command": "/usr/bin/cc  -I/home/samuel/c/game/fRpgCrawler/include -I/home/samuel/c/game/fRpgCrawler/lib -O3 -DNDEBUG -std=gnu99 -I/usr/local/include -o CMakeFiles/engine.dir/src/shop_data.c.o -c /home/samuel/c/game/fRpgCrawler/src/shop_data.c",
   "file": "/home/samuel/c/game/fRpgCrawler/src/shop_data.c",
   "output": "CMakeFiles/engine.dir/src/shop_data.c.o"

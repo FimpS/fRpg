@@ -37,7 +37,7 @@ typedef struct AStarNodePool
 
 typedef struct AStarMapElement
 {
-	bool occupied;
+	u32 generation;
 	V2 key;
 	AStarNode* value;
 } AStarMapElement;

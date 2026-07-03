@@ -158,6 +158,30 @@ typedef struct ShopData
 	ItemType shop_item_types[MAX_SHOP_ITEMS];
 } ShopData;
 
+typedef struct QuestObjective
+{
+	u32 kill_count;
+	EntityType kill_type;
+
+	bool talk_to;
+	NPCType talk_to_type;
+} QuestObjective;
+
+#define MAX_QUEST_OBJECTIVES 8
+typedef struct QuestData
+{
+	QuestType type;
+
+	u32 objectives_len;
+	QuestObjective objective[MAX_QUEST_OBJECTIVES];
+} QuestData;
+
+#define MAX_QUESTS_ALLOWED 16
+typedef struct NPCQuestData
+{
+	QuestData quests[MAX_QUESTS_ALLOWED];	
+} NPCQuestData;
+
 typedef struct NPC
 {
 	NPCType type;

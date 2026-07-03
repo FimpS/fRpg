@@ -5,6 +5,8 @@
 
 
 static AStarNodePool node_pool = { 0 };
+static AStarMap node_map = { 0 };
+static u32 astar_map_generation = 0;
 
 bool path_validate(WalkPath path, Tile *tiles, int width, int height)
 {
@@ -155,13 +157,13 @@ void a_star_map_insert(AStarMap* map, V2 key, AStarNode* value)
     u32 index = a_star_hash(key) % ASTAR_MAP_CAPACITY;
 
 	u32 start = index;
-    while (map->entries[index].occupied)
+    while(map->entries[index].generation == astar_map_generation)
     {
         index = (index + 1) % ASTAR_MAP_CAPACITY;
 		assert(index != start);
     }
 
-    map->entries[index].occupied = true;
+    map->entries[index].generation = astar_map_generation;
     map->entries[index].key = key;
     map->entries[index].value = value;
 }
@@ -171,7 +173,7 @@ AStarNode* a_star_map_get(AStarMap* map, V2 key)
     u32 index = a_star_hash(key) % ASTAR_MAP_CAPACITY;
 
 	u32 start = index;
-    while (map->entries[index].occupied)
+    while (map->entries[index].generation == astar_map_generation)
     {
         if (map->entries[index].key.x == key.x &&
             map->entries[index].key.y == key.y)
@@ -241,7 +243,8 @@ WalkPath path_get_any_path(Entity* self, Vector2 end_pos, GameState* state)
 
 	node_pool.len = 0;
 
-	AStarMap node_map = { 0 };
+	//AStarMap node_map = { 0 };
+	astar_map_generation ++;
 
 	AStarNode* current = a_star_node_new();
 	*current = (AStarNode) {
