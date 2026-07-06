@@ -47,6 +47,26 @@ typedef enum QuestType
 	QUEST_TYPE_KILL_5_IMPS,
 } QuestType;
 
+typedef enum QuestClass
+{
+	QUEST_CLASS_RED,
+	QUEST_CLASS_YELLOW,
+	QUEST_CLASS_GREEN,
+	QUEST_CLASS_BLUE,
+} QuestClass;
+
+typedef enum QuestObjectiveType
+{	
+	QUEST_OBJECTIVE_KILL,
+	QUEST_OBJECTIVE_TALK,
+} QuestObjectiveType;
+
+typedef enum QuestStatus
+{
+	QUEST_STATUS_ACCEPTED,
+	QUEST_STATUS_COMPLETE,
+} QuestStatus;
+
 typedef enum EntityStateType
 {
 	ESTYPE_PLACEHOLDER,

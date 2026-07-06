@@ -145,11 +145,6 @@ typedef struct Entity
 
 } Entity;
 
-typedef struct Player
-{
-	Entity* entity;
-	Inventory* inventory;
-} Player;
 
 #define MAX_SHOP_ITEMS 64
 typedef struct ShopData
@@ -160,34 +155,75 @@ typedef struct ShopData
 
 typedef struct QuestObjective
 {
-	u32 kill_count;
-	EntityType kill_type;
+	QuestObjectiveType type;
+	union
+	{
+		struct
+		{
+			u32 kill_count;
+			EntityType kill_type;
+		} kill;
 
-	bool talk_to;
-	NPCType talk_to_type;
+		struct
+		{
+			bool talk_to;
+			NPCType talk_to_type;	
+		} talk;
+	} objective;
 } QuestObjective;
 
 #define MAX_QUEST_OBJECTIVES 8
 typedef struct QuestData
 {
 	QuestType type;
+	QuestClass class;
 
+	//TODO figure out a way for prerequesites
 	u32 objectives_len;
-	QuestObjective objective[MAX_QUEST_OBJECTIVES];
+	QuestObjective objectives[MAX_QUEST_OBJECTIVES];
 } QuestData;
 
 #define MAX_QUESTS_ALLOWED 16
 typedef struct NPCQuestData
 {
-	QuestData quests[MAX_QUESTS_ALLOWED];	
+	u32 len;
+	QuestData data[MAX_QUESTS_ALLOWED];	
 } NPCQuestData;
+typedef struct NPCQuestDataTypes
+{
+	u32 len;
+	QuestType types[MAX_QUESTS_ALLOWED];	
+} NPCQuestDataTypes;
 
 typedef struct NPC
 {
 	NPCType type;
 	Entity* entity;
 	Inventory* inventory;
+	NPCQuestData quests;
 } NPC;
+
+typedef struct Quest
+{
+	QuestData data;
+	QuestStatus status;
+} Quest;
+
+#define MAX_QUESTS_IN_MANAGER 16
+typedef struct QuestManager
+{
+	u32 len;
+	Quest quests[MAX_QUESTS_IN_MANAGER];
+} QuestManager;
+
+typedef struct Player
+{
+	Entity* entity;
+	Inventory* inventory;
+	QuestManager* quest_manager;
+} Player;
+
+
 
 /* ENTITY */
 

@@ -1,5 +1,6 @@
 #include "npc.h"
 #include "shop_data.h"
+#include "quest_data.h"
 #include "ui.h"
 
 #define NPC_INTERACTION_RANGE 3.0
@@ -89,6 +90,22 @@ static void npc_add_shop_stock(NPC* npc)
 	}
 }
 
+static NPCQuestData npc_add_quests(NPC* npc)
+{
+	const NPCType npc_type = npc->type;
+	const NPCQuestDataTypes data = npc_quest_data_types_table[npc_type];
+	const u32 len = data.len;
+	NPCQuestData quests = { 0 };
+
+	quests.len = len;
+	for(i32 i = 0; i < len; i++)
+	{
+		quests.data[i] = quest_data_table[data.types[i]];
+	}
+
+	return quests;
+}
+
 //TODO can maybe remove this and use npc->type or smth?
 const InventoryType npc_to_inventory_table[] = {
 	INVENTORY_TYPE_SHOP,
@@ -102,6 +119,7 @@ NPC* npc_new(NPCType type, Vector2 pos)
 	npc->type = type;
 	npc->entity = entity_new(ENTITY_SHOP_NPC, pos);
 	npc->inventory = ui_inventory_new(npc_to_inventory_table[type]);
+	npc->quests = npc_add_quests(npc);
 
 	if(npc_to_inventory_table[type] == INVENTORY_TYPE_SHOP)
 	{
