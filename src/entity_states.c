@@ -27,6 +27,7 @@ void estate_player_tick(Entity* self, GameState* state)
 
 void estate_entity_move_attack(Entity* self, GameState* state)
 {
+	
 	if(self->state.timer >= self->state.stop_timer)
 	{
 		self->target = state->player->entity;

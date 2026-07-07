@@ -77,7 +77,7 @@ void cam_tick(Map* map, Vector2 source)
 	if(cam->tile_len >= (i32) zoom_max) { cam->tile_len = (i32) zoom_max; }
 	else if(cam->tile_len <=  zoom_low) { cam->tile_len =  zoom_low; }
 
-	const Vector2 target_pos = source;
+	const Vector2 target_pos = { source.x, source.y }; //TODO this sometimes dsnt work
 	const f32 dt = GetFrameTime();
 
 	const f32 t = 1.0 - expf(- cam->speed * dt);

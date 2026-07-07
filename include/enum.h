@@ -65,6 +65,7 @@ typedef enum QuestStatus
 {
 	QUEST_STATUS_ACCEPTED,
 	QUEST_STATUS_COMPLETE,
+	QUEST_STATUS_FINISHED,
 } QuestStatus;
 
 typedef enum EntityStateType
@@ -74,6 +75,7 @@ typedef enum EntityStateType
 	ESTYPE_PLAYER_TICK,
 	ESTYPE_ENTITY_MOVE_ATTACK,
 	ESTYPE_ENTITY_PERFORM_MELEE,
+	ESTYPE_DEAD,
 	ESTYPE_CLEAR,
 
 } EntityStateType;

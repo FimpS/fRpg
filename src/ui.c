@@ -573,13 +573,35 @@ void ui_inventory_render(Inventory* inventory, GameState* state)
 	ui_inventory_render_moved_item(inventory, state);
 }
 
+static const Color quest_class_to_color_table[] = {
+	{255, 0, 0, 255},
+	{255, 255, 0, 255},
+	{0, 0, 0, 255},
+	{0, 0, 0, 255},
+};
+
+void ui_player_quest_log_render(Player* player, GameState* state)
+{
+	QuestManager* qm = player->quest_manager;
+	const u32 quest_amount = qm->len;
+	for(i32 i = 0; i < quest_amount; i++)
+	{
+		Quest* quest = &qm->quests[i];
+		char text[32];
+		const Color text_color = quest_class_to_color_table[quest->data.class];
+		strcpy(text, quest->data.name);
+		DrawTextPro(state->gfx->font, text, (Vector2) { 100, 100 + i * 20.0}, (Vector2) { 0 }, 0.0f, 20.0, 1.0, text_color);
+	}
+}
 
 void ui_render(GameState* state)
 {
+	Player* player = state->player;
 	Inventory* player_inventory = state->player->inventory;
 	if(player_inventory->active)
 	{
 		ui_inventory_render(player_inventory, state);
+		ui_player_quest_log_render(player, state);
 	}
 	gfx_render_mouse(state->gfx);
 }

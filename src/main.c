@@ -23,7 +23,11 @@ int main(void) {
 	SetTraceLogLevel(LOG_ERROR);
 	//HashMap* map = hmap_new(32);
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "2D - TileMapEditor");
+
+
+	const u32 monitor_width = 1920;
+	const u32 monitor_height = 1080;
+    InitWindow(monitor_width, monitor_height, "fRpgCrawler");
 	InitAudioDevice();
 	SetTargetFPS(60);
 
@@ -37,7 +41,7 @@ int main(void) {
 	//dynList_push(state->map->entities, state->player->entity); //This won't work later
 #if 1
 	dynList_push(state->map->npcs, npc_new(NPC_TYPE_TOWN_MERCHANT, (Vector2) { 17.0, 4.0 } ));
-	for(i32 i = 0; i < 1; i++)
+	for(i32 i = 0; i < 10; i++)
 	{
 	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0 + i} );
 	enemy->target = state->player->entity;
@@ -56,6 +60,7 @@ int main(void) {
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 12.5} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 39.0} ));
 
+	P_LOG("Width: %d, Height: %d\n", GetScreenWidth(), GetScreenHeight());
 	//state->player->path = entity_find_path(state->player, (Vector2) {16.0, 16.0}, state);
 
 	//ValidateAndPrintPath(state->player->path, state->map->content, 32, 32);

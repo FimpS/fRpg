@@ -12,15 +12,15 @@
 #define IDK 1.35
 u32 gfx_to_monitor2(u32 pixels)
 {
-	Vector2 monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
+	Vector2 monitor = { MONITOR_WIDTH, MONITOR_HEIGHT };
 	return ceilf(monitor.y / ( DEFAULT_RES_Y / pixels) ) * IDK;
 }
 
 u32 gfx_to_monitor(u32 pixels)
 {
     float scale = fminf(
-        (float)GetMonitorWidth(0) / DEFAULT_RES_X,
-        (float)GetMonitorHeight(0) / DEFAULT_RES_Y
+        (float)MONITOR_WIDTH / DEFAULT_RES_X,
+        (float)MONITOR_HEIGHT / DEFAULT_RES_Y
     );
 
     return (u32)ceilf(pixels * scale);
@@ -28,14 +28,14 @@ u32 gfx_to_monitor(u32 pixels)
 
 Vector2 gfx_to_monitor_vector2(Vector2 pixels)
 {
-	Vector2 monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
+	Vector2 monitor = { MONITOR_WIDTH, MONITOR_HEIGHT };
 	
 	return (Vector2) { ceilf(monitor.x / ( DEFAULT_RES_X / pixels.x) * IDK), ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.y )) * IDK};
 }
 Vector2 gfx_to_monitor_vector(Vector2 pixels)
 {
-    float scaleX = (float)GetMonitorWidth(0) / DEFAULT_RES_X;
-    float scaleY = (float)GetMonitorHeight(0) / DEFAULT_RES_Y;
+    float scaleX = (float)MONITOR_WIDTH / DEFAULT_RES_X;
+    float scaleY = (float)MONITOR_HEIGHT / DEFAULT_RES_Y;
 
     return (Vector2){
         pixels.x * scaleX,
@@ -44,8 +44,8 @@ Vector2 gfx_to_monitor_vector(Vector2 pixels)
 }
 Rectangle gfx_to_monitor_rectangle(Rectangle r)
 {
-    float scaleX = (float)GetMonitorWidth(0) / DEFAULT_RES_X;
-    float scaleY = (float)GetMonitorHeight(0) / DEFAULT_RES_Y;
+    float scaleX = (float)MONITOR_WIDTH / DEFAULT_RES_X;
+    float scaleY = (float)MONITOR_HEIGHT / DEFAULT_RES_Y;
 
     return (Rectangle){
         r.x * scaleX,
@@ -56,7 +56,7 @@ Rectangle gfx_to_monitor_rectangle(Rectangle r)
 }
 Rectangle gfx_to_monitor_rectangle2(Rectangle pixels)
 {
-	Rectangle monitor = { GetMonitorWidth(0), GetMonitorHeight(0) };
+	Rectangle monitor = { MONITOR_WIDTH, MONITOR_HEIGHT };
 	
 	return (Rectangle) { ceilf(monitor.x / ( DEFAULT_RES_X / pixels.x) * IDK), 
 		ceilf(monitor.y / ( DEFAULT_RES_Y / pixels.y) * IDK),

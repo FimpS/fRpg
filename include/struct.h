@@ -153,23 +153,26 @@ typedef struct ShopData
 	ItemType shop_item_types[MAX_SHOP_ITEMS];
 } ShopData;
 
+typedef union QuestObjectiveData
+{
+	struct
+	{
+		EntityType kill_type;
+	} kill;
+
+	struct
+	{
+		NPCType talk_to_type;	
+	} talk;
+} QuestObjectiveData;
+
 typedef struct QuestObjective
 {
 	QuestObjectiveType type;
-	union
-	{
-		struct
-		{
-			u32 kill_count;
-			EntityType kill_type;
-		} kill;
+	u32 target;
 
-		struct
-		{
-			bool talk_to;
-			NPCType talk_to_type;	
-		} talk;
-	} objective;
+	QuestObjectiveData objective;
+
 } QuestObjective;
 
 #define MAX_QUEST_OBJECTIVES 8
@@ -178,13 +181,14 @@ typedef struct QuestData
 	QuestType type;
 	QuestClass class;
 
+	const u8* name;
 	//TODO figure out a way for prerequesites
 	u32 objectives_len;
 	QuestObjective objectives[MAX_QUEST_OBJECTIVES];
 } QuestData;
 
 #define MAX_QUESTS_ALLOWED 16
-typedef struct NPCQuestData
+typedef struct NPCQuestData //TODO why does the NPC have the actual data, NPCQuestDataTypes should be enough to push them onto the questmanager?
 {
 	u32 len;
 	QuestData data[MAX_QUESTS_ALLOWED];	
@@ -205,6 +209,7 @@ typedef struct NPC
 
 typedef struct Quest
 {
+	u32 quest_counters[MAX_QUEST_OBJECTIVES];
 	QuestData data;
 	QuestStatus status;
 } Quest;

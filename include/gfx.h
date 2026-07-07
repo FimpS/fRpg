@@ -10,6 +10,9 @@
 #define DEFAULT_RES_X 1920
 #define DEFAULT_RES_Y 1080
 
+#define MONITOR_WIDTH 1920
+#define MONITOR_HEIGHT 1080
+
 #define MAX_ANIMATION_FRAMES 8
 
 typedef struct TemporaryText

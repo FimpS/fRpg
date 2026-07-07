@@ -1,4 +1,5 @@
 #include "npc.h"
+#include "player.h"
 #include "shop_data.h"
 #include "quest_data.h"
 #include "ui.h"
@@ -15,7 +16,6 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 	{
 		self->inventory->active = true;
 		state->player->inventory->active = true;
-		P_LOG("Clicked\n");
 	}
 
 	if(IsKeyPressed(KEY_F1) || 
@@ -24,6 +24,16 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 	{
 		self->inventory->active = false;
 		state->player->inventory->active = false;
+	}
+
+	if(IsKeyPressed(KEY_F2) &&
+	   entity_in_range(self->entity->mid_pos, state->player->entity->mid_pos, NPC_INTERACTION_RANGE) )
+	{
+		quest_manager_push_quest(state->player->quest_manager, (Quest) {
+					.quest_counters = { 0 },
+					.status = QUEST_STATUS_ACCEPTED,
+					.data = self->quests.data[0],
+				} );
 	}
 }
 
@@ -90,7 +100,7 @@ static void npc_add_shop_stock(NPC* npc)
 	}
 }
 
-static NPCQuestData npc_add_quests(NPC* npc)
+static NPCQuestData npc_quests_init(NPC* npc)
 {
 	const NPCType npc_type = npc->type;
 	const NPCQuestDataTypes data = npc_quest_data_types_table[npc_type];
@@ -100,7 +110,7 @@ static NPCQuestData npc_add_quests(NPC* npc)
 	quests.len = len;
 	for(i32 i = 0; i < len; i++)
 	{
-		quests.data[i] = quest_data_table[data.types[i]];
+		quests.data[i] = quest_data_table[ data.types[i] ];
 	}
 
 	return quests;
@@ -119,7 +129,7 @@ NPC* npc_new(NPCType type, Vector2 pos)
 	npc->type = type;
 	npc->entity = entity_new(ENTITY_SHOP_NPC, pos);
 	npc->inventory = ui_inventory_new(npc_to_inventory_table[type]);
-	npc->quests = npc_add_quests(npc);
+	npc->quests = npc_quests_init(npc);
 
 	if(npc_to_inventory_table[type] == INVENTORY_TYPE_SHOP)
 	{

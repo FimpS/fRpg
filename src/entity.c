@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "../include/entity.h"
+#include "../include/player.h"
 #include "../include/entity_data.h"
 #include "../include/global.h"
 
@@ -244,10 +245,24 @@ void entity_handle_target(Entity* self)
 	}
 }
 
+static void entity_die(Entity* self, GameState* state)
+{
+	quest_register_entry(state->player, QUEST_OBJECTIVE_KILL, (QuestObjectiveData) {
+				.kill.kill_type = self->type,
+			} );
+}
+
 void entity_pre_tick(Entity* self, GameState* state)
 {
 	self->mid_pos = Vector2Midpoint(self->pos, self->data.dim);
 	self->state.timer ++;
+
+	if(self->state.type == ESTYPE_DEAD)
+	{
+		entity_die(self, state);
+		self->state.type = ESTYPE_CLEAR;
+	}
+
 	entity_handle_target(self);	
 }
 
@@ -256,6 +271,12 @@ void entities_tick(DynList* entities, GameState* state)
 	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
 		Entity* e = dynList_get(entities, i);
+
+		if(IsKeyPressed(KEY_K))
+		{
+			e->state.type = ESTYPE_DEAD;
+			//P_LOG("Killed all entities, in map->entities\n");
+		}
 
 		entity_pre_tick(e, state);
 		if( e->state.tick != NULL ) e->state.tick(e, state);

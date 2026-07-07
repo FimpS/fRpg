@@ -1,0 +1,82 @@
+QUEST SYSTEM NOTES (2026-07-07)
+================================
+
+Problem: quest_register_kill (player.c) is one hand-rolled function per
+event kind, each looping over all quests x all objectives. Adding a new
+objective type means writing a whole new quest_register_* function.
+
+Fix #1 - generic dispatch instead of one function per event:
+    Give QuestObjective's union a name (QuestObjectiveData), then:
+
+        void quest_notify(Player* player, QuestObjectiveType type, QuestObjectiveData data)
+        {
+            for each quest, for each objective:
+                if (objective.type == type && quest_objective_matches(&objective, &data))
+                    counter++;
+        }
+
+        static bool quest_objective_matches(const QuestObjective* obj, const QuestObjectiveData* data)
+        {
+            switch (obj->type) {
+                case QUEST_OBJECTIVE_KILL: return obj->objective.kill.kill_type == data->kill.kill_type;
+                case QUEST_OBJECTIVE_TALK: return obj->objective.talk.talk_to_type == data->talk.talk_to_type;
+            }
+            return false;
+        }
+
+    Call sites become one-liners, e.g. on entity death:
+        quest_notify(player, QUEST_OBJECTIVE_KILL, (QuestObjectiveData){ .kill = { entity->type } });
+
+    New objective type = one enum value + one union member + one switch case.
+    Double loop is fine at these sizes (16 quests x 8 objectives = 128 checks max),
+    no need to index/hash it.
+
+Push vs pull objectives:
+    - Push (event-driven): discrete one-off things - kill, talk. Use quest_notify.
+    - Pull (state-checked): "have N items", "standing in cave" - not a discrete
+      event, check current state directly in quest_check_completion instead of
+      routing through quest_notify.
+
+Fix #2 (bigger, not needed yet) - WoW/Diablo style generic stat table:
+    Instead of a typed union per objective, use a sparse map keyed by
+    (stat_type, subject_id) -> counter. Kill event just does:
+        stat_increment(&player->stats, STAT_KILLED, entity->type, 1);
+    Quest objectives reference a stat key + target instead of carrying their
+    own counter.
+
+    typedef struct StatKey { u32 stat_type; u32 subject_id; } StatKey;
+
+    typedef struct StatTable {
+        StatKey keys[MAX_TRACKED_STATS];
+        u32     counts[MAX_TRACKED_STATS];
+        u32     len;
+    } StatTable;
+
+    static u32* stat_slot(StatTable* t, StatKey key) {
+        for (u32 i = 0; i < t->len; i++)
+            if (t->keys[i].stat_type == key.stat_type && t->keys[i].subject_id == key.subject_id)
+                return &t->counts[i];
+        t->keys[t->len] = key;
+        t->counts[t->len] = 0;
+        return &t->counts[t->len++];
+    }
+
+    void stat_track(StatTable* t, u32 stat_type, u32 subject_id) {
+        stat_slot(t, (StatKey){ stat_type, subject_id });
+    }
+
+    void stat_increment(StatTable* t, u32 stat_type, u32 subject_id, u32 amount) {
+        *stat_slot(t, (StatKey){ stat_type, subject_id }) += amount;
+    }
+
+    Tradeoffs vs current union approach:
+    - Loses compile-time type safety (union enforces type/payload pairing,
+      u32 keys don't - easy to typo a subject_id).
+    - Gains: no switch statement growth, easy to add new stat types.
+    - IMPORTANT semantic change: counters become shared world state instead
+      of per-quest. If two quests both want "kill orc shaman king", they'd
+      read the SAME counter - kills before quest B was accepted would count
+      toward it too. That's how WoW/Diablo generally behave, but it's a
+      deliberate design choice, not a free side effect of refactoring.
+    - Only worth it once you have many objective/stat types or want
+      persistent lifetime stats (achievements page etc.) beyond active quests.
