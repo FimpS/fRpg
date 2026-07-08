@@ -114,6 +114,7 @@ typedef struct EntityLightData
 typedef struct EntityData
 {
 	EntityType type;
+	const u8* name;
 	EntityStateType start_state;
 	TextureIndex spritesheet_index;
 

@@ -76,6 +76,12 @@ CMakeFiles/engine.dir/src/state.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/enum.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/path.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
+ /usr/include/string.h \
+ /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+ /usr/include/strings.h \
+ /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/struct.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/npc.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/ui.h \

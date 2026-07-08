@@ -8,7 +8,6 @@
 
 /* PRIVATE */
 
-
 bool entity_path_blocked(Vector2 pos, GameState* state)
 {
 	Map* map = state->map;
@@ -321,6 +320,12 @@ void entities_render(DynList* entities, GameState* state)
 		entity_render(e, state);
 	}
 }
+
+const u8* entity_get_name(EntityType type)
+{
+	return entity_data_table[type].name;
+}
+
 
 Entity* entity_new_editor(EntityType type, Vector2 pos)
 {

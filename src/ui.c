@@ -5,6 +5,7 @@
 #include "ui.h"
 #include "ui_data.h"
 #include "shop_data.h"
+#include "entity.h"
 #include "global.h"
 #include "../include/entity_data.h"
 
@@ -580,28 +581,97 @@ static const Color quest_class_to_color_table[] = {
 	{0, 0, 0, 255},
 };
 
+static const u8* quest_status_text[] = {
+	"[Ongoing]",
+	"[Complete]",
+};
+
+void ui_player_quest_render_name(Player* player, GameState* state, Quest* quest)
+{
+
+}
+
+u32 get_info_quest_objective(QuestObjectiveType type, QuestObjectiveData data)
+{
+	switch(type)
+	{
+		case QUEST_OBJECTIVE_KILL: return data.kill.kill_type; break;
+		case QUEST_OBJECTIVE_TALK: return data.talk.talk_to_type; break;
+	}
+	return 0;
+}
+
+f32 ui_player_quest_render(Player* player, GameState* state, Quest* quest, f32 y_offset)
+{
+	f32 offset = y_offset;
+	const f32 font_size = 20.0;
+	for(i32 i = 0; i < quest->data.objectives_len; i++)
+	{
+		if(i != 0) offset += font_size;
+		QuestObjective objective = quest->data.objectives[i];
+		const i32 target = objective.target;
+		const i32 current = quest->quest_counters[i];
+		u8 text[32];
+		strcpy(text, entity_get_name( get_info_quest_objective(objective.type, objective.objective) ));
+		ui_draw_outline_text(
+			TextFormat("Kill: %s (%d/%d)", text, current, target),  //TODO
+			(Vector2) { 100, offset }, 
+			font_size, 
+			BLACK,
+			WHITE,
+			state);
+	}
+	offset += font_size;
+	return offset;
+}
+
 void ui_player_quest_log_render(Player* player, GameState* state)
 {
 	QuestManager* qm = player->quest_manager;
 	const u32 quest_amount = qm->len;
+
+	f32 y_offset = 100.0;
+	const f32 font_size = 24.0;
 	for(i32 i = 0; i < quest_amount; i++)
 	{
 		Quest* quest = &qm->quests[i];
 		char text[32];
 		const Color text_color = quest_class_to_color_table[quest->data.class];
 		strcpy(text, quest->data.name);
-		DrawTextPro(state->gfx->font, text, (Vector2) { 100, 100 + i * 20.0}, (Vector2) { 0 }, 0.0f, 20.0, 1.0, text_color);
+		strcat(text, " ");
+		strcat(text, quest_status_text[quest->status]);
+		ui_draw_outline_text(
+				text, 
+				(Vector2) { 100, y_offset }, 
+				font_size, 
+				BLACK,
+				text_color,
+				state);
+		y_offset += font_size;
+		y_offset = ui_player_quest_render(player, state, quest, y_offset);
 	}
 }
 
 void ui_render(GameState* state)
 {
 	Player* player = state->player;
+	DynList* npcs = state->map->npcs;
 	Inventory* player_inventory = state->player->inventory;
+	ui_player_quest_log_render(player, state);
+	
+
+	for(i32 i = 0; i < dynList_len(npcs); i++)
+	{
+		NPC* npc = dynList_get(npcs, i);
+		if(npc->inventory->active)
+		{
+			ui_inventory_render(npc->inventory, state);
+		}
+	}
+
 	if(player_inventory->active)
 	{
 		ui_inventory_render(player_inventory, state);
-		ui_player_quest_log_render(player, state);
 	}
 	gfx_render_mouse(state->gfx);
 }

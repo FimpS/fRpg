@@ -14,7 +14,7 @@ QuestManager* player_quest_manager_new(Player* player)
 	};
 
 #if 1
-	for(i32 i = 0; i < 3; i++)
+	for(i32 i = 0; i < 4; i++)
 	{
 		 quest_manager_push_quest(manager, (Quest) {
 			.data = quest_data_table[QUEST_TYPE_KILL_5_IMPS],
@@ -22,11 +22,13 @@ QuestManager* player_quest_manager_new(Player* player)
 			.status = QUEST_STATUS_ACCEPTED,
 		} );
 	}
+#if 0
 	quest_manager_push_quest(manager, (Quest) {
 			.data = quest_data_table[QUEST_TYPE_PLACEHOLDER],
 			.status = QUEST_STATUS_ACCEPTED,
 			.quest_counters = { 0 },
 			} );
+#endif
 #endif 
 
 	return manager;
@@ -35,8 +37,6 @@ QuestManager* player_quest_manager_new(Player* player)
 void quest_check_completion(Player* player) //Check after and if any of the quest_register functions executed, maybe global var
 {
 	QuestManager* qm = player->quest_manager;
-	P_LOG("Checked completion\n");
-
 	const u32 manager_len = qm->len;
 
 	for(i32 i = 0; i < manager_len; i++)
@@ -78,7 +78,8 @@ void quest_register_entry(Player* player, QuestObjectiveType type, QuestObjectiv
 		for(i32 j = 0; j < q->data.objectives_len; j++)
 		{
 			QuestObjective objective = q->data.objectives[j];	
-			if(objective.type == type && quest_objective_data_match(objective, data))
+			if(objective.type == type && quest_objective_data_match(objective, data) &&
+				objective.target > q->quest_counters[j])
 			{
 				q->quest_counters[j] ++;
 				P_LOG("Incremented counter for quest[%d]: %d, current counter[%d] = %d\n", 
@@ -138,8 +139,6 @@ Player* player_new()
 		P_LOG("Quest type: %d, with status %d\n", q.data.class, q.status);
 	}
 
-	quest_manager_delete_quest(player->quest_manager, player->quest_manager->quests[0]);
-
 	return player;
 }
 
@@ -152,7 +151,6 @@ void player_tick(Player* player, GameState* state)
 	ui_inventory_player_toggle(player->inventory, state);
 	ui_inventory_tick(player->inventory, state);
 
-	P_LOG("%s\n", player->quest_manager->quests[2].data.name);
 	if(quests_are_updated)
 	{
 		quest_check_completion(player);

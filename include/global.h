@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 #include "raylib.h"
@@ -27,8 +28,10 @@ static inline bool AAB(Rectangle r, Vector2 p)
 }
 static inline Vector2 GetScreenPosition() { return (Vector2) { GetScreenWidth(), GetScreenHeight() }; }
 static inline u32 vector2_to_vector_index(u32 x, u32 y, u32 width) { return x + y * width; }
+
+#define P_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #define P_ERROR(s, ...) { printf("ERROR: "); printf(s, ##__VA_ARGS__); }
-#define P_LOG(s, ...) { if(LOG_MODE) { printf("LOG: "); printf(s, ##__VA_ARGS__); } }
+#define P_LOG(s, ...) do { if(LOG_MODE) { printf("LOG: %s:%d: ", P_FILENAME, __LINE__); printf(s, ##__VA_ARGS__); } } while(0)
 
 
 i32 get_tick();

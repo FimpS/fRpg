@@ -74,10 +74,12 @@ void npcs_render(DynList* npcs, GameState* state)
 	for(i32 i = 0; i < len; i++)
 	{
 		NPC* npc = dynList_get(npcs, i);
+#if 0
 		if(npc->inventory->active) 
 		{
-			ui_inventory_render(npc->inventory, state);
+			ui_inventory_render(npc->inventory, state); //TODO this alls hould be done in ui_render
 		}
+#endif
 		entity_render(npc->entity, state);
 	}
 }

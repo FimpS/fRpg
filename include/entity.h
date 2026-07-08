@@ -19,6 +19,8 @@ Entity* entity_new_editor(EntityType type, Vector2 pos);
 
 void entity_destroy(Entity* e);
 
+const u8* entity_get_name(EntityType type);
+
 void entities_tick(DynList* entities, GameState* state);
 void entity_render(Entity* self, GameState* state);
 void entities_render(DynList* entities, GameState* state);
