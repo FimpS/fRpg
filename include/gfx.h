@@ -53,6 +53,7 @@ typedef struct MouseGfx
 typedef struct Gfx
 {
 	Font font;
+	Font ui_font;
 	LightGfx* light_map;
 	Texture2D* texs;
 

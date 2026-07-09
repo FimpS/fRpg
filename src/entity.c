@@ -271,6 +271,7 @@ void entities_tick(DynList* entities, GameState* state)
 	{
 		Entity* e = dynList_get(entities, i);
 
+		if(e->state.type == ESTYPE_CLEAR) continue;
 		if(IsKeyPressed(KEY_K))
 		{
 			e->state.type = ESTYPE_DEAD;

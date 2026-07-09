@@ -20,6 +20,7 @@ QuestManager* player_quest_manager_new(Player* player)
 			.data = quest_data_table[QUEST_TYPE_KILL_5_IMPS],
 			.quest_counters = { 0 },
 			.status = QUEST_STATUS_ACCEPTED,
+			.quest_giver = NPC_TYPE_TOWN_MERCHANT,
 		} );
 	}
 #if 0
@@ -32,6 +33,18 @@ QuestManager* player_quest_manager_new(Player* player)
 #endif 
 
 	return manager;
+}
+
+bool quest_is_complete(Player* player, QuestType key)
+{
+	QuestManager* qm = player->quest_manager;
+	for(i32 i = 0; i < qm->len; i++)
+	{
+		Quest* q = &qm->quests[i];
+		if(q->data.type == key && q->status == QUEST_STATUS_COMPLETE) return true;
+	}
+
+	return false;
 }
 
 void quest_check_completion(Player* player) //Check after and if any of the quest_register functions executed, maybe global var
@@ -106,10 +119,9 @@ void quest_manager_push_quest(QuestManager* manager, Quest quest)
 	qm->quests[qm->len ++] = quest;
 }
 
-void quest_manager_delete_quest(QuestManager* manager, Quest quest)
+void quest_manager_delete_quest(QuestManager* manager, QuestType type)
 {
 	QuestManager* qm = manager;
-	QuestType type = quest.data.type;
 
 	i32 index = 0;
 	for(i32 i = 0; i < qm->len; i++)

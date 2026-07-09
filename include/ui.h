@@ -6,6 +6,8 @@
 #include "../lib/types.h"
 #include "../lib/v2.h"
 
+#define COMMON_UI_LABEL_MAX_LEN 64
+
 void ui_wrap_text_render(const u8* text, Vector2 pos, const i32 max_width, const u32 padding, const u32 font_size, GameState* state);
 void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState* state);
 

@@ -9,8 +9,18 @@
 #include "global.h"
 #include "../include/entity_data.h"
 
+void ui_draw_text(const u8* text, Vector2 pos, 
+		u32 font_size, 
+		Color outline_color, 
+		Color color, 
+		GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	DrawTextEx(gfx->ui_font, text, 
+			(Vector2) {pos.x, pos.y}, 
+			font_size, 0.0, color);
 
-
+}
 void ui_draw_outline_text(const u8* text, Vector2 pos, 
 		u32 font_size, 
 		Color outline_color, 
@@ -18,19 +28,19 @@ void ui_draw_outline_text(const u8* text, Vector2 pos,
 		GameState* state)
 {
 	Gfx* gfx = state->gfx;
-	DrawTextEx(gfx->font, text, 
+	DrawTextEx(gfx->ui_font, text, 
 			(Vector2) { pos.x + 1, pos.y }, 
 			font_size, 0.0, outline_color);
-	DrawTextEx(gfx->font, text, 
+	DrawTextEx(gfx->ui_font, text, 
 			(Vector2) {pos.x, pos.y + 1}, 
 			font_size, 0.0, outline_color);
-	DrawTextEx(gfx->font, text, 
+	DrawTextEx(gfx->ui_font, text, 
 			(Vector2) {pos.x - 1, pos.y}, 
 			font_size, 0.0, outline_color);
-	DrawTextEx(gfx->font, text, 
+	DrawTextEx(gfx->ui_font, text, 
 			(Vector2) {pos.x, pos.y - 1}, 
 			font_size, 0.0, outline_color);
-	DrawTextEx(gfx->font, text, 
+	DrawTextEx(gfx->ui_font, text, 
 			(Vector2) {pos.x, pos.y}, 
 			font_size, 0.0, color);
 
@@ -60,7 +70,7 @@ void ui_wrap_text_render(const u8* text,
 		{
 
 			current_string[index] = '\0';
-			Vector2 line_width = MeasureTextEx(gfx->font, current_string, font_size, 0.0);
+			Vector2 line_width = MeasureTextEx(gfx->ui_font, current_string, font_size, 0.0);
 			if( line_width.x >= max_width )
 			{
 				ui_draw_outline_text(current_string, 
@@ -109,7 +119,7 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 {
 	Gfx* gfx = state->gfx;
 	Vector2 box_dim = gfx_to_monitor_vector( (Vector2) {200, 400} );
-	const i32 size = gfx_to_monitor(20);
+	const i32 size = gfx_to_monitor(16);
 	const u32 text_len = strlen(text);
 	const i32 line_len = box_dim.x - 40;
 
@@ -445,7 +455,7 @@ static void ui_inventory_cell_render(InventoryCell cell, GameState* state)
 			ui_draw_outline_text(TextFormat("x%d", cell.amount),
 					(Vector2) { cell.hitbox.x + cell.hitbox.width - 25, 
 					cell.hitbox.y + cell.hitbox.height - 25 }, 
-					32,
+					22,
 					BLACK,
 					WHITE,
 					state);
@@ -586,36 +596,41 @@ static const u8* quest_status_text[] = {
 	"[Complete]",
 };
 
-void ui_player_quest_render_name(Player* player, GameState* state, Quest* quest)
+static void ui_player_quest_get_objective_kill_string(Player* player, QuestObjective quest_objective, char* dst)
 {
-
+	strcpy(dst, "Slay: ");
+	strcat(dst, entity_get_name(quest_objective.objective.kill.kill_type));
 }
 
-u32 get_info_quest_objective(QuestObjectiveType type, QuestObjectiveData data)
+static void ui_player_quest_get_objective_talk_string(Player* player, QuestObjective quest_objective, char* dst)
 {
-	switch(type)
-	{
-		case QUEST_OBJECTIVE_KILL: return data.kill.kill_type; break;
-		case QUEST_OBJECTIVE_TALK: return data.talk.talk_to_type; break;
-	}
-	return 0;
+	strcpy(dst, "Talk to: ");
+	strcat(dst,	npc_get_name(quest_objective.objective.talk.talk_to_type));
 }
+
+static void (*const objective_to_string_function_table[])(Player* player, QuestObjective quest_objective, char* dst) = {
+	ui_player_quest_get_objective_kill_string,
+	ui_player_quest_get_objective_talk_string,
+};
 
 f32 ui_player_quest_render(Player* player, GameState* state, Quest* quest, f32 y_offset)
 {
 	f32 offset = y_offset;
-	const f32 font_size = 20.0;
+	const f32 x_offset = 52.0;
+	const f32 font_size = 14.0;
+
+	u8 objective_string[COMMON_UI_LABEL_MAX_LEN];
+
 	for(i32 i = 0; i < quest->data.objectives_len; i++)
 	{
 		if(i != 0) offset += font_size;
 		QuestObjective objective = quest->data.objectives[i];
 		const i32 target = objective.target;
 		const i32 current = quest->quest_counters[i];
-		u8 text[32];
-		strcpy(text, entity_get_name( get_info_quest_objective(objective.type, objective.objective) ));
-		ui_draw_outline_text(
-			TextFormat("Kill: %s (%d/%d)", text, current, target),  //TODO
-			(Vector2) { 100, offset }, 
+		objective_to_string_function_table[objective.type](player, objective, objective_string);
+		ui_draw_text(
+			TextFormat("%5.20s (%.2d/%.2d)", objective_string, current, target), 
+			(Vector2) { x_offset, offset }, 
 			font_size, 
 			BLACK,
 			WHITE,
@@ -630,19 +645,21 @@ void ui_player_quest_log_render(Player* player, GameState* state)
 	QuestManager* qm = player->quest_manager;
 	const u32 quest_amount = qm->len;
 
-	f32 y_offset = 100.0;
-	const f32 font_size = 24.0;
+	const f32 x_offset = 50.0;
+	f32 y_offset = 50.0;
+	const f32 font_size = 20.0;
+
+	char text[COMMON_UI_LABEL_MAX_LEN];
 	for(i32 i = 0; i < quest_amount; i++)
 	{
 		Quest* quest = &qm->quests[i];
-		char text[32];
 		const Color text_color = quest_class_to_color_table[quest->data.class];
 		strcpy(text, quest->data.name);
 		strcat(text, " ");
 		strcat(text, quest_status_text[quest->status]);
-		ui_draw_outline_text(
+		ui_draw_text(
 				text, 
-				(Vector2) { 100, y_offset }, 
+				(Vector2) { x_offset, y_offset }, 
 				font_size, 
 				BLACK,
 				text_color,
@@ -659,15 +676,7 @@ void ui_render(GameState* state)
 	Inventory* player_inventory = state->player->inventory;
 	ui_player_quest_log_render(player, state);
 	
-
-	for(i32 i = 0; i < dynList_len(npcs); i++)
-	{
-		NPC* npc = dynList_get(npcs, i);
-		if(npc->inventory->active)
-		{
-			ui_inventory_render(npc->inventory, state);
-		}
-	}
+	npcs_ui_render(npcs, state);
 
 	if(player_inventory->active)
 	{

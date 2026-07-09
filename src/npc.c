@@ -14,6 +14,10 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 	   entity_AAB(self->entity, mouse_cords) &&
 	   entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
 	{
+		quest_register_entry(state->player, QUEST_OBJECTIVE_TALK, (QuestObjectiveData) { //TODO Should be on talk button
+				.talk.talk_to_type = self->type,
+				} );
+
 		self->inventory->active = true;
 		state->player->inventory->active = true;
 	}
@@ -29,10 +33,20 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 	if(IsKeyPressed(KEY_F2) &&
 	   entity_in_range(self->entity->mid_pos, state->player->entity->mid_pos, NPC_INTERACTION_RANGE) )
 	{
+		if(quest_is_complete(state->player, QUEST_TYPE_KILL_5_IMPS))
+		{
+			quest_manager_delete_quest(state->player->quest_manager, QUEST_TYPE_KILL_5_IMPS);
+		}
+	}
+
+	if(IsKeyPressed(KEY_SPACE) &&
+	   entity_in_range(self->entity->mid_pos, state->player->entity->mid_pos, NPC_INTERACTION_RANGE) )
+	{
 		quest_manager_push_quest(state->player->quest_manager, (Quest) {
-					.quest_counters = { 0 },
+					.data = quest_data_table[QUEST_TYPE_PLACEHOLDER],
+					.quest_giver = self->type,
 					.status = QUEST_STATUS_ACCEPTED,
-					.data = self->quests.data[0],
+					.quest_counters = { 0 },
 				} );
 	}
 }
@@ -74,12 +88,7 @@ void npcs_render(DynList* npcs, GameState* state)
 	for(i32 i = 0; i < len; i++)
 	{
 		NPC* npc = dynList_get(npcs, i);
-#if 0
-		if(npc->inventory->active) 
-		{
-			ui_inventory_render(npc->inventory, state); //TODO this alls hould be done in ui_render
-		}
-#endif
+
 		entity_render(npc->entity, state);
 	}
 }
@@ -118,22 +127,28 @@ static NPCQuestData npc_quests_init(NPC* npc)
 	return quests;
 }
 
-//TODO can maybe remove this and use npc->type or smth?
-const InventoryType npc_to_inventory_table[] = {
-	INVENTORY_TYPE_SHOP,
-	INVENTORY_TYPE_SHOP,
-	INVENTORY_TYPE_SMITH,
+const u8* npc_get_name(NPCType type)
+{
+	return entity_get_name(npc_data_table[type].entity);
+}
+
+const NPCData npc_data_table[] = {
+	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SHOP},
+	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SHOP},
+	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SMITH},
 };
 
 NPC* npc_new(NPCType type, Vector2 pos)
 {
 	NPC* npc = malloc(sizeof(NPC));
 	npc->type = type;
-	npc->entity = entity_new(ENTITY_SHOP_NPC, pos);
-	npc->inventory = ui_inventory_new(npc_to_inventory_table[type]);
+	npc->data = npc_data_table[type];
+
+	npc->entity = entity_new(npc->data.entity, pos);
+	npc->inventory = ui_inventory_new(npc->data.inventory);
 	npc->quests = npc_quests_init(npc);
 
-	if(npc_to_inventory_table[type] == INVENTORY_TYPE_SHOP)
+	if(npc->data.inventory == INVENTORY_TYPE_SHOP)
 	{
 		npc_add_shop_stock(npc);
 	}

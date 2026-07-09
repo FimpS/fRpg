@@ -161,13 +161,15 @@ Gfx* gfx_new()
 	Gfx* gnew = malloc(sizeof(Gfx));
 	*gnew = (Gfx) {
 		.texs = malloc(sizeof(Texture2D) * TEXTURE_COUNT),
-			.font = LoadFont("../fonts/PixelSans.ttf"),
+			.font = LoadFontEx("../fonts/PixelSans.ttf", 64, NULL, 0),
+			.ui_font = LoadFontEx("../fonts/Inter-VariableFont_opsz,wght.ttf", 64, NULL, 0),
 			.light_map = lightgfx_new(),
 			.mouse = (MouseGfx) {
 				.type = MOUSE_TYPE_STANDARD,
 			},
 	};
-
+	SetTextureFilter(gnew->font.texture, TEXTURE_FILTER_BILINEAR);
+	SetTextureFilter(gnew->ui_font.texture, TEXTURE_FILTER_BILINEAR);
 	gfx_load_textures(gnew->texs);
 
 	return gnew;

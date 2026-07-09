@@ -200,9 +200,17 @@ typedef struct NPCQuestDataTypes
 	QuestType types[MAX_QUESTS_ALLOWED];	
 } NPCQuestDataTypes;
 
+typedef struct NPCData 
+{
+	EntityType entity;
+	InventoryType inventory;
+} NPCData;
+
 typedef struct NPC
 {
 	NPCType type;
+	NPCData data;
+
 	Entity* entity;
 	Inventory* inventory;
 	NPCQuestData quests;
@@ -212,6 +220,8 @@ typedef struct Quest
 {
 	u32 quest_counters[MAX_QUEST_OBJECTIVES];
 	QuestData data;
+
+	NPCType quest_giver;
 	QuestStatus status;
 } Quest;
 
