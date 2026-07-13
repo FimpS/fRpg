@@ -7,6 +7,9 @@
 #include "shop_data.h"
 #include "entity.h"
 #include "global.h"
+#include "quest_data.h"
+#include "npc.h"
+#include "player.h"
 #include "../include/entity_data.h"
 
 void ui_draw_text(const u8* text, Vector2 pos, 
@@ -584,8 +587,97 @@ void ui_inventory_render(Inventory* inventory, GameState* state)
 	ui_inventory_render_moved_item(inventory, state);
 }
 
+
+void ui_tick_npc_menu(NPC* npc, GameState* state)
+{
+	NPCMenu* menu = &npc->menu;
+	Inventory* player_inventory = state->player->inventory;
+	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && menu->choice != -1)
+	{
+		P_LOG("choice: %d\n", menu->choice);
+		if(!strcmp(menu->option_strings[menu->choice], "Shop")) 
+		{
+			npc->inventory->active = true;
+			player_inventory->active = true;
+			
+		}
+		if(!strcmp(menu->option_strings[menu->choice], "Quests")) 
+		{
+			menu->quest_menu_active = true;
+#if 0
+			quest_manager_push_quest(state->player->quest_manager, (Quest) {
+					.data = quest_data_table[QUEST_TYPE_PLACEHOLDER],
+					.quest_giver = npc->type,
+					.status = QUEST_STATUS_ACCEPTED,
+					.quest_counters = { 0 },
+				} );
+#endif
+		}
+		menu->active = false;
+	}
+}
+
+
+
+void ui_render_npc_menu(NPC* npc, GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	NPCMenu* menu = &npc->menu;
+	const f32 font_size = 16.0f;
+	const Vector2 npc_dim = map_convert_map_to_screen(npc->entity->data.dim, state->map);
+	const Vector2 first_pos = Vector2Add(map_convert_map_to_screen(npc->entity->pos, state->map), 
+			(Vector2) { npc_dim.x + 10.0, npc_dim.y / 2.0 });
+
+	const f32 box_height = font_size + 2.0;
+	const f32 box_width = 120.0;
+
+	const Vector2 mouse_pos = GetMousePosition();
+
+	i8 pick = -1;
+
+	for(i32 i = 0; i < menu->len; i++)
+	{
+		const u8* str = menu->option_strings[i];
+		const Vector2 str_len = MeasureTextEx(gfx->ui_font, str, font_size, 0.0);
+
+		const Vector2 pos = { first_pos.x, first_pos.y + i * (font_size + 1) };
+
+		const Rectangle box = { pos.x, pos.y, box_width, box_height }; 
+		const Rectangle src = { 0, 0, 16, 16 }; 
+
+		const Vector2 text_pos = { pos.x + box.width / 2.0 - str_len.x / 2.0, pos.y };
+
+		Color tint = WHITE;
+
+		if(AAB(box, mouse_pos))
+		{
+			tint = (Color) { 130, 130, 130, 100 };
+			pick = i;
+		}
+
+
+		DrawTexturePro(state->gfx->texs[TEXTURE_GAME_UI], src, box, (Vector2) { 0 }, 0.0f, tint);
+		//P_LOG("String length of option [%d]: (%f,%f)\n", i, str_len.x, str_len.y);
+
+		ui_draw_text(str, text_pos, font_size, WHITE, WHITE, state);
+	}
+
+	menu->choice = pick;
+
+}
+
+
+/* UI QUESTING */
+
 static const Color quest_class_to_color_table[] = {
 	{255, 0, 0, 255},
+	{255, 255, 0, 255},
+	{0, 0, 0, 255},
+	{0, 0, 0, 255},
+};
+
+static const Color quest_status_to_color_table[] = {
+	{0, 0, 0, 255},
 	{255, 255, 0, 255},
 	{0, 0, 0, 255},
 	{0, 0, 0, 255},
@@ -629,12 +721,12 @@ f32 ui_player_quest_render(Player* player, GameState* state, Quest* quest, f32 y
 		const i32 current = quest->quest_counters[i];
 		objective_to_string_function_table[objective.type](player, objective, objective_string);
 		ui_draw_text(
-			TextFormat("%5.20s (%.2d/%.2d)", objective_string, current, target), 
-			(Vector2) { x_offset, offset }, 
-			font_size, 
-			BLACK,
-			WHITE,
-			state);
+				TextFormat("%5.20s (%.2d/%.2d)", objective_string, current, target), 
+				(Vector2) { x_offset, offset }, 
+				font_size, 
+				BLACK,
+				WHITE,
+				state);
 	}
 	offset += font_size;
 	return offset;
@@ -669,13 +761,84 @@ void ui_player_quest_log_render(Player* player, GameState* state)
 	}
 }
 
+void ui_render_npc_quest_menu(NPC* npc, GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	QuestManager* qm = state->player->quest_manager;
+	NPCQuestData* quests = &npc->quests;
+
+	const f32 font_size = 16.0f;
+	const Vector2 npc_dim = map_convert_map_to_screen(npc->entity->data.dim, state->map);
+	const Vector2 first_pos = Vector2Add(map_convert_map_to_screen(npc->entity->pos, state->map), 
+			(Vector2) { npc_dim.x + 10.0, npc_dim.y / 2.0 });
+
+	const f32 box_height = font_size + 2.0;
+	const f32 box_width = 240.0;
+
+	const Vector2 mouse_pos = GetMousePosition();
+
+	u8 str[COMMON_UI_LABEL_MAX_LEN];
+
+	for(i32 i = 0; i < quests->len; i++)
+	{
+		//const u8* str = quests->data[i].name;
+		Color tint = WHITE;
+		Color text_tint = WHITE;
+
+		strcpy(str, "");
+		for(i32 j = 0; j < qm->len; j++)
+		{
+			if(quests->data[i].type == qm->quests[j].data.type)
+			{
+				if(qm->quests[j].status == QUEST_STATUS_COMPLETE) 
+				{
+					text_tint = (Color) { 10, 210, 10, 255 };
+				}
+				if(qm->quests[j].status == QUEST_STATUS_ACCEPTED) 
+				{
+					text_tint = (Color) { 20, 20, 210, 255 };
+				}
+				strcpy(str, quest_status_text[qm->quests[i].status]);
+			}
+		}
+		strcat(str, " ");
+		strcat(str, quests->data[i].name);
+
+		const Vector2 str_len = MeasureTextEx(gfx->ui_font, str, font_size, 0.0);
+
+
+		const Vector2 pos = { first_pos.x, first_pos.y + i * (font_size + 1) };
+
+		const Rectangle box = { pos.x, pos.y, box_width, box_height }; 
+		const Rectangle src = { 0, 0, 16, 16 }; 
+
+		const Vector2 text_pos = { pos.x + box.width / 2.0 - str_len.x / 2.0, pos.y };
+
+		if(AAB(box, mouse_pos))
+		{
+			tint = (Color) { 130, 130, 130, 100 };
+		}
+
+
+
+		DrawTexturePro(state->gfx->texs[TEXTURE_GAME_UI], src, box, (Vector2) { 0 }, 0.0f, tint);
+		//P_LOG("String length of option [%d]: (%f,%f)\n", i, str_len.x, str_len.y);
+		ui_draw_text(str, text_pos, font_size, text_tint, text_tint, state);
+	}
+}
+
+/* UI QUESTING */
+
+
+
+
 void ui_render(GameState* state)
 {
 	Player* player = state->player;
 	DynList* npcs = state->map->npcs;
 	Inventory* player_inventory = state->player->inventory;
 	ui_player_quest_log_render(player, state);
-	
+
 	npcs_ui_render(npcs, state);
 
 	if(player_inventory->active)

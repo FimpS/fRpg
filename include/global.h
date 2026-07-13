@@ -31,7 +31,7 @@ static inline u32 vector2_to_vector_index(u32 x, u32 y, u32 width) { return x + 
 
 #define P_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #define P_ERROR(s, ...) { printf("ERROR: "); printf(s, ##__VA_ARGS__); }
-#define P_LOG(s, ...) do { if(LOG_MODE) { printf("LOG: %s:%d: ", P_FILENAME, __LINE__); printf(s, ##__VA_ARGS__); } } while(0)
+#define P_LOG(s, ...) do { if(LOG_MODE) { printf("LOG: %-16s%-8d", P_FILENAME, __LINE__); printf(s, ##__VA_ARGS__); } } while(0)
 
 
 i32 get_tick();

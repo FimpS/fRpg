@@ -200,6 +200,17 @@ typedef struct NPCQuestDataTypes
 	QuestType types[MAX_QUESTS_ALLOWED];	
 } NPCQuestDataTypes;
 
+#define MAX_NPC_TALK_OPTIONS 8
+typedef struct NPCMenu
+{
+	bool active;
+	bool quest_menu_active;
+	i8 choice;
+
+	u32 len;
+	const u8* option_strings[MAX_NPC_TALK_OPTIONS];
+} NPCMenu;
+
 typedef struct NPCData 
 {
 	EntityType entity;
@@ -211,6 +222,7 @@ typedef struct NPC
 	NPCType type;
 	NPCData data;
 
+	NPCMenu menu;
 	Entity* entity;
 	Inventory* inventory;
 	NPCQuestData quests;

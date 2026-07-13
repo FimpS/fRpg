@@ -19,6 +19,18 @@ Vector2 map_get_mouse_cords(Map* map)
 	return vector2(((f32)GetMouseX() / map->camera->tile_len + map->camera->offset.x), ((f32)GetMouseY() / map->camera->tile_len + map->camera->offset.y));
 }
 
+Vector2 map_convert_screen_to_map(Vector2 v, Map* map)
+{
+	MapCamera* cam = map->camera;
+	return Vector2Add(Vector2Scale(v, (f32) 1 / (f32) cam->tile_len), cam->offset);
+}
+
+Vector2 map_convert_map_to_screen(Vector2 v, Map* map)
+{
+	MapCamera* cam = map->camera;
+	return Vector2Scale(Vector2Subtract(v, cam->offset), cam->tile_len);
+}
+
 MapCamera* cam_new()
 {
 	MapCamera* mc_new = malloc(sizeof(MapCamera));

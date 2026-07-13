@@ -10,6 +10,27 @@
 void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when adding different npcs
 {
 	const Vector2 mouse_cords = map_get_mouse_cords(state->map);
+
+	ui_tick_npc_menu(self, state);
+
+	if(IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) &&
+	   entity_AAB(self->entity, mouse_cords) &&
+	   entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
+	{
+		self->menu.active = true;
+	}
+
+	if(IsKeyPressed(KEY_F1) || 
+       (!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0)) )
+	{
+		self->inventory->active = false;
+		state->player->inventory->active = false;
+		self->menu.active = false;
+		self->menu.quest_menu_active = false;
+		self->menu.choice = -1;
+	}
+
+#if 0
 	if(IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) &&
 	   entity_AAB(self->entity, mouse_cords) &&
 	   entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
@@ -49,6 +70,7 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 					.quest_counters = { 0 },
 				} );
 	}
+#endif
 }
 
 void npcs_tick(DynList* npcs, GameState* state)
@@ -73,9 +95,18 @@ void npcs_ui_render(DynList* npcs, GameState* state)
 	for(i32 i = 0; i < len; i++)
 	{
 		NPC* npc = dynList_get(npcs, i);
+		if(npc->menu.active)
+		{
+			ui_render_npc_menu(npc, state);	
+		}
 		if(npc->inventory->active) 
 		{
 			ui_inventory_render(npc->inventory, state);
+		}
+
+		if(npc->menu.quest_menu_active)
+		{
+			ui_render_npc_quest_menu(npc, state);
 		}
 	}
 
@@ -127,15 +158,49 @@ static NPCQuestData npc_quests_init(NPC* npc)
 	return quests;
 }
 
+static NPCMenu npc_menu_init(NPC* npc)
+{
+	const InventoryType inv_type = npc->data.inventory;
+	const u32 has_quests = npc->quests.len;
+
+	NPCMenu menu = (NPCMenu) {
+		.active = false,
+		.quest_menu_active = false,
+		.choice = 0,
+		.len = 0,
+	};
+	
+	if(has_quests)
+	{
+		menu.option_strings[ menu.len ++ ] = "Quests";		
+	}
+
+	switch(inv_type)
+	{
+		case INVENTORY_TYPE_SHOP: 
+			menu.option_strings[ menu.len ++ ] = "Shop";  //TODO check if this is actually safe
+			break;
+		case INVENTORY_TYPE_SMITH:
+			menu.option_strings[ menu.len ++] = "Enchant";
+			break;
+		default: break;
+	}
+
+	menu.option_strings[ menu.len ++ ] = "Conversations";
+
+	return menu;
+
+}
+
 const u8* npc_get_name(NPCType type)
 {
 	return entity_get_name(npc_data_table[type].entity);
 }
 
 const NPCData npc_data_table[] = {
-	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SHOP},
-	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SHOP},
-	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SMITH},
+	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SHOP },
+	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SHOP },
+	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SMITH },
 };
 
 NPC* npc_new(NPCType type, Vector2 pos)
@@ -147,6 +212,13 @@ NPC* npc_new(NPCType type, Vector2 pos)
 	npc->entity = entity_new(npc->data.entity, pos);
 	npc->inventory = ui_inventory_new(npc->data.inventory);
 	npc->quests = npc_quests_init(npc);
+
+	npc->menu = npc_menu_init(npc);
+
+	for(i32 i = 0; i < npc->menu.len; i++)
+	{
+		P_LOG("[%d] - %s\n", i, npc->menu.option_strings[i]);
+	}
 
 	if(npc->data.inventory == INVENTORY_TYPE_SHOP)
 	{
