@@ -11,29 +11,37 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 {
 	const Vector2 mouse_cords = map_get_mouse_cords(state->map);
 
-	ui_tick_npc_menu(self, state);
+	if(self->menu.active)
+	{
+		ui_tick_npc_menu(self, state);
+	}
+	if(self->menu.quest_menu_active)
+	{
+		ui_tick_npc_quest_menu(self, state);
+	}
 
 	if(IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) &&
-	   entity_AAB(self->entity, mouse_cords) &&
-	   entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
+			entity_AAB(self->entity, mouse_cords) &&
+			entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
 	{
 		self->menu.active = true;
 	}
 
 	if(IsKeyPressed(KEY_F1) || 
-       (!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0)) )
+			(!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0)) )
 	{
 		self->inventory->active = false;
 		state->player->inventory->active = false;
 		self->menu.active = false;
 		self->menu.quest_menu_active = false;
 		self->menu.choice = -1;
+		self->menu.quest_choice = -1;
 	}
 
 #if 0
 	if(IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) &&
-	   entity_AAB(self->entity, mouse_cords) &&
-	   entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
+			entity_AAB(self->entity, mouse_cords) &&
+			entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
 	{
 		quest_register_entry(state->player, QUEST_OBJECTIVE_TALK, (QuestObjectiveData) { //TODO Should be on talk button
 				.talk.talk_to_type = self->type,
@@ -44,15 +52,15 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 	}
 
 	if(IsKeyPressed(KEY_F1) || 
-       (!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0) && 
-		self->inventory->active) )
+			(!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0) && 
+			 self->inventory->active) )
 	{
 		self->inventory->active = false;
 		state->player->inventory->active = false;
 	}
 
 	if(IsKeyPressed(KEY_F2) &&
-	   entity_in_range(self->entity->mid_pos, state->player->entity->mid_pos, NPC_INTERACTION_RANGE) )
+			entity_in_range(self->entity->mid_pos, state->player->entity->mid_pos, NPC_INTERACTION_RANGE) )
 	{
 		if(quest_is_complete(state->player, QUEST_TYPE_KILL_5_IMPS))
 		{
@@ -61,16 +69,42 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 	}
 
 	if(IsKeyPressed(KEY_SPACE) &&
-	   entity_in_range(self->entity->mid_pos, state->player->entity->mid_pos, NPC_INTERACTION_RANGE) )
+			entity_in_range(self->entity->mid_pos, state->player->entity->mid_pos, NPC_INTERACTION_RANGE) )
 	{
 		quest_manager_push_quest(state->player->quest_manager, (Quest) {
-					.data = quest_data_table[QUEST_TYPE_PLACEHOLDER],
-					.quest_giver = self->type,
-					.status = QUEST_STATUS_ACCEPTED,
-					.quest_counters = { 0 },
+				.data = quest_data_table[QUEST_TYPE_PLACEHOLDER],
+				.quest_giver = self->type,
+				.status = QUEST_STATUS_ACCEPTED,
+				.quest_counters = { 0 },
 				} );
 	}
 #endif
+}
+
+static void npc_give_quest_reward(NPC* npc, Quest* quest, GameState* state)
+{
+	Inventory* player_inventory = state->player->inventory;
+	QuestManager* qm = state->player->quest_manager;
+	//player->experience += quest->data.reward.experience;
+	const u32 len = quest->data.reward.item_rewards_len;
+	P_LOG("Quest Reward item count: %d\n", len);
+	for(i32 i = 0; i < len; i++)
+	{
+		P_LOG("Quest Reward ItemType: %d\n", quest->data.reward.item_rewards[i]);
+		ui_inventory_add_item(player_inventory, (Item) {
+				.type = quest->data.reward.item_rewards[i],
+				.info = item_info_table[ quest->data.reward.item_rewards[i] ],
+				.enchant = 1,
+		} );
+	}
+}
+
+void npc_finish_quest(NPC* npc, Quest* quest, const i32 quest_index, GameState* state)
+{
+	QuestManager* qm = state->player->quest_manager;
+	npc_give_quest_reward(npc, quest, state);
+	quest_manager_delete_quest(qm, quest->data.type);
+	npc->quests.completed[quest_index] = true;	
 }
 
 void npcs_tick(DynList* npcs, GameState* state)
@@ -165,11 +199,12 @@ static NPCMenu npc_menu_init(NPC* npc)
 
 	NPCMenu menu = (NPCMenu) {
 		.active = false,
+		.choice = -1,
 		.quest_menu_active = false,
-		.choice = 0,
+		.quest_choice = -1,
 		.len = 0,
 	};
-	
+
 	if(has_quests)
 	{
 		menu.option_strings[ menu.len ++ ] = "Quests";		

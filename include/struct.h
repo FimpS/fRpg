@@ -176,6 +176,15 @@ typedef struct QuestObjective
 
 } QuestObjective;
 
+
+#define MAX_ITEM_QUEST_REWARDS 16
+typedef struct QuestReward
+{
+	u32 experience;
+	u32 item_rewards_len;
+	ItemType item_rewards[MAX_ITEM_QUEST_REWARDS];
+} QuestReward;
+
 #define MAX_QUEST_OBJECTIVES 8
 typedef struct QuestData
 {
@@ -186,6 +195,7 @@ typedef struct QuestData
 	//TODO figure out a way for prerequesites
 	u32 objectives_len;
 	QuestObjective objectives[MAX_QUEST_OBJECTIVES];
+	QuestReward reward;
 } QuestData;
 
 #define MAX_QUESTS_ALLOWED 16
@@ -193,6 +203,7 @@ typedef struct NPCQuestData //TODO why does the NPC have the actual data, NPCQue
 {
 	u32 len;
 	QuestData data[MAX_QUESTS_ALLOWED];	
+	bool completed[MAX_QUESTS_ALLOWED];
 } NPCQuestData;
 typedef struct NPCQuestDataTypes
 {
@@ -206,6 +217,7 @@ typedef struct NPCMenu
 	bool active;
 	bool quest_menu_active;
 	i8 choice;
+	i8 quest_choice;
 
 	u32 len;
 	const u8* option_strings[MAX_NPC_TALK_OPTIONS];

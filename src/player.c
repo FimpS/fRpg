@@ -119,6 +119,20 @@ void quest_manager_push_quest(QuestManager* manager, Quest quest)
 	qm->quests[qm->len ++] = quest;
 }
 
+Quest* quest_manager_get_quest(QuestManager* manager, QuestType key)
+{
+	const u32 len = manager->len;
+	for(i32 i = 0; i < len; i++)
+	{
+		Quest* q = &manager->quests[i];
+		if(q->data.type == key)
+		{
+			return q;
+		}
+	}
+	return NULL;
+}
+
 void quest_manager_delete_quest(QuestManager* manager, QuestType type)
 {
 	QuestManager* qm = manager;

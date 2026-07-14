@@ -13,6 +13,7 @@ void player_render(Player* player, GameState* state);
 /* QuestManager functions */
 bool quest_is_complete(Player* player, QuestType key);
 void quest_register_entry(Player* player, QuestObjectiveType type, QuestObjectiveData data);
+Quest* quest_manager_get_quest(QuestManager* manager, QuestType key);
 void quest_manager_push_quest(QuestManager* manager, Quest quest);
 void quest_manager_delete_quest(QuestManager* manager, QuestType type);
 /* QuestManager functions */

@@ -686,6 +686,7 @@ static const Color quest_status_to_color_table[] = {
 static const u8* quest_status_text[] = {
 	"[Ongoing]",
 	"[Complete]",
+	"[Finished]",
 };
 
 static void ui_player_quest_get_objective_kill_string(Player* player, QuestObjective quest_objective, char* dst)
@@ -761,6 +762,38 @@ void ui_player_quest_log_render(Player* player, GameState* state)
 	}
 }
 
+void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
+{
+	NPCMenu* menu = &npc->menu;
+	QuestManager* qm = state->player->quest_manager;
+	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && menu->quest_choice != -1)
+	{
+		QuestData quest_data = npc->quests.data[menu->quest_choice];
+		Quest* player_quest = quest_manager_get_quest(qm, quest_data.type);
+		if(player_quest != NULL)
+		{
+			switch(player_quest->status)
+			{
+				case QUEST_STATUS_COMPLETE: 
+					npc_finish_quest(npc, player_quest, menu->quest_choice, state);
+					break;
+				case QUEST_STATUS_ACCEPTED:
+					P_LOG("Quest Already Accepted\n");
+					break;
+			}
+		} 
+		else
+		{
+			quest_manager_push_quest(qm, (Quest) {
+					.status = QUEST_STATUS_ACCEPTED,
+					.data = quest_data_table[quest_data.type],
+					.quest_counters = { 0 },
+					.quest_giver = npc->type,
+					} );
+		}
+	}
+}
+
 void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 {
 	Gfx* gfx = state->gfx;
@@ -779,8 +812,15 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 
 	u8 str[COMMON_UI_LABEL_MAX_LEN];
 
+	i8 pick = -1;
+	i32 completed_counter = 0;
 	for(i32 i = 0; i < quests->len; i++)
 	{
+		if(quests->completed[i]) 
+		{
+			completed_counter ++;
+			continue;
+		}
 		//const u8* str = quests->data[i].name;
 		Color tint = WHITE;
 		Color text_tint = WHITE;
@@ -798,16 +838,17 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 				{
 					text_tint = (Color) { 20, 20, 210, 255 };
 				}
-				strcpy(str, quest_status_text[qm->quests[i].status]);
+				strcpy(str, quest_status_text[qm->quests[j].status]);
+				strcat(str, " ");
+				j = qm->len;
 			}
 		}
-		strcat(str, " ");
 		strcat(str, quests->data[i].name);
 
 		const Vector2 str_len = MeasureTextEx(gfx->ui_font, str, font_size, 0.0);
 
 
-		const Vector2 pos = { first_pos.x, first_pos.y + i * (font_size + 1) };
+		const Vector2 pos = { first_pos.x, first_pos.y + (i - completed_counter) * (font_size + 1) };
 
 		const Rectangle box = { pos.x, pos.y, box_width, box_height }; 
 		const Rectangle src = { 0, 0, 16, 16 }; 
@@ -816,6 +857,7 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 
 		if(AAB(box, mouse_pos))
 		{
+			pick = i;
 			tint = (Color) { 130, 130, 130, 100 };
 		}
 
@@ -825,6 +867,7 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 		//P_LOG("String length of option [%d]: (%f,%f)\n", i, str_len.x, str_len.y);
 		ui_draw_text(str, text_pos, font_size, text_tint, text_tint, state);
 	}
+	npc->menu.quest_choice = pick;
 }
 
 /* UI QUESTING */
