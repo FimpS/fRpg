@@ -604,14 +604,12 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 		if(!strcmp(menu->option_strings[menu->choice], "Quests")) 
 		{
 			menu->quest_menu_active = true;
-#if 0
-			quest_manager_push_quest(state->player->quest_manager, (Quest) {
-					.data = quest_data_table[QUEST_TYPE_PLACEHOLDER],
-					.quest_giver = npc->type,
-					.status = QUEST_STATUS_ACCEPTED,
-					.quest_counters = { 0 },
-				} );
-#endif
+		}
+		if(!strcmp(menu->option_strings[menu->choice], "Conversations"))
+		{
+			quest_register_entry(state->player, QUEST_OBJECTIVE_TALK, (QuestObjectiveData) {
+					.talk.talk_to_type = npc->type,
+					} );
 		}
 		menu->active = false;
 	}
@@ -814,15 +812,32 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 
 	i8 pick = -1;
 	i32 completed_counter = 0;
+
 	for(i32 i = 0; i < quests->len; i++)
 	{
+		const Vector2 pos = { first_pos.x, first_pos.y + (i - completed_counter) * (font_size + 1) };
+		const Rectangle box = { pos.x, pos.y, box_width, box_height }; 
+		const Rectangle src = { 0, 0, 16, 16 }; 
+		Color tint = WHITE;
+
+		if(i == 0) 
+		{
+			Rectangle title_box = { box.x, box.y - font_size, box.width, box.height };
+			const u8* title_str = "[Quests]";
+			const Vector2 title_str_len = MeasureTextEx(gfx->ui_font, title_str, font_size, 0.0);
+
+			const Vector2 title_text_pos = { pos.x + title_box.width / 2.0 - title_str_len.x / 2.0, pos.y - font_size};
+
+			DrawTexturePro(state->gfx->texs[TEXTURE_GAME_UI], src, title_box, (Vector2) { 0 }, 0.0f, tint);
+			ui_draw_text(title_str, title_text_pos, font_size, WHITE, WHITE, state);
+		}
+
 		if(quests->completed[i]) 
 		{
 			completed_counter ++;
 			continue;
 		}
 		//const u8* str = quests->data[i].name;
-		Color tint = WHITE;
 		Color text_tint = WHITE;
 
 		strcpy(str, "");
@@ -847,13 +862,9 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 
 		const Vector2 str_len = MeasureTextEx(gfx->ui_font, str, font_size, 0.0);
 
-
-		const Vector2 pos = { first_pos.x, first_pos.y + (i - completed_counter) * (font_size + 1) };
-
-		const Rectangle box = { pos.x, pos.y, box_width, box_height }; 
-		const Rectangle src = { 0, 0, 16, 16 }; 
-
 		const Vector2 text_pos = { pos.x + box.width / 2.0 - str_len.x / 2.0, pos.y };
+
+		
 
 		if(AAB(box, mouse_pos))
 		{

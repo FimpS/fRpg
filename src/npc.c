@@ -27,15 +27,18 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 		self->menu.active = true;
 	}
 
-	if(IsKeyPressed(KEY_F1) || 
-			(!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0)) )
+	if(self->menu.quest_menu_active || self->menu.active || self->inventory->active)
 	{
-		self->inventory->active = false;
-		state->player->inventory->active = false;
-		self->menu.active = false;
-		self->menu.quest_menu_active = false;
-		self->menu.choice = -1;
-		self->menu.quest_choice = -1;
+		if(IsKeyPressed(KEY_F1) || 
+				(!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0)) )
+		{
+			self->inventory->active = false;
+			state->player->inventory->active = false;
+			self->menu.active = false;
+			self->menu.quest_menu_active = false;
+			self->menu.choice = -1;
+			self->menu.quest_choice = -1;
+		}
 	}
 
 #if 0
@@ -87,15 +90,13 @@ static void npc_give_quest_reward(NPC* npc, Quest* quest, GameState* state)
 	QuestManager* qm = state->player->quest_manager;
 	//player->experience += quest->data.reward.experience;
 	const u32 len = quest->data.reward.item_rewards_len;
-	P_LOG("Quest Reward item count: %d\n", len);
 	for(i32 i = 0; i < len; i++)
 	{
-		P_LOG("Quest Reward ItemType: %d\n", quest->data.reward.item_rewards[i]);
 		ui_inventory_add_item(player_inventory, (Item) {
 				.type = quest->data.reward.item_rewards[i],
 				.info = item_info_table[ quest->data.reward.item_rewards[i] ],
 				.enchant = 1,
-		} );
+				} );
 	}
 }
 

@@ -14,7 +14,7 @@ QuestManager* player_quest_manager_new(Player* player)
 	};
 
 #if 1
-	for(i32 i = 0; i < 4; i++)
+	for(i32 i = 0; i < 1; i++)
 	{
 		 quest_manager_push_quest(manager, (Quest) {
 			.data = quest_data_table[QUEST_TYPE_KILL_5_IMPS],
