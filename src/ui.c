@@ -5,6 +5,7 @@
 #include "ui.h"
 #include "ui_data.h"
 #include "shop_data.h"
+#include "text_data.h"
 #include "entity.h"
 #include "global.h"
 #include "quest_data.h"
@@ -594,7 +595,6 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 	Inventory* player_inventory = state->player->inventory;
 	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && menu->choice != -1)
 	{
-		P_LOG("choice: %d\n", menu->choice);
 		if(!strcmp(menu->option_strings[menu->choice], "Shop")) 
 		{
 			npc->inventory->active = true;
@@ -610,6 +610,7 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 			quest_register_entry(state->player, QUEST_OBJECTIVE_TALK, (QuestObjectiveData) {
 					.talk.talk_to_type = npc->type,
 					} );
+			P_LOG("%s\n", text_data_table[TEXT_TYPE_PLACEHOLDER].text);
 		}
 		menu->active = false;
 	}
@@ -811,11 +812,11 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 	u8 str[COMMON_UI_LABEL_MAX_LEN];
 
 	i8 pick = -1;
-	i32 completed_counter = 0;
+	i32 not_available_counter = 0;
 
 	for(i32 i = 0; i < quests->len; i++)
 	{
-		const Vector2 pos = { first_pos.x, first_pos.y + (i - completed_counter) * (font_size + 1) };
+		const Vector2 pos = { first_pos.x, first_pos.y + (i - not_available_counter) * (font_size + 1) };
 		const Rectangle box = { pos.x, pos.y, box_width, box_height }; 
 		const Rectangle src = { 0, 0, 16, 16 }; 
 		Color tint = WHITE;
@@ -832,9 +833,9 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 			ui_draw_text(title_str, title_text_pos, font_size, WHITE, WHITE, state);
 		}
 
-		if(quests->completed[i]) 
+		if(quests->completed[i] || !npc_is_quest_available(npc, &quests->data[i], state)) 
 		{
-			completed_counter ++;
+			not_available_counter ++;
 			continue;
 		}
 		//const u8* str = quests->data[i].name;

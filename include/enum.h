@@ -22,6 +22,12 @@ typedef enum EntityType
 	ENTITY_LAST,
 } EntityType;
 
+typedef enum TextType
+{
+	TEXT_TYPE_PLACEHOLDER,
+	TEXT_TYPE_PLACEHOLDER2,
+} TextType;
+
 typedef enum NPCType
 {
 	NPC_TYPE_TOWN_MERCHANT,
@@ -41,6 +47,8 @@ typedef enum NPCQuestType
 	NPC_QUEST_CAVE_QUESTER,
 } NPCQuestType;
 
+
+#define MAX_QUESTS_IN_GAME 2
 typedef enum QuestType
 {
 	QUEST_TYPE_PLACEHOLDER,

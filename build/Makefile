@@ -611,6 +611,30 @@ src/state.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/state.c.s
 .PHONY : src/state.c.s
 
+src/text_data.o: src/text_data.c.o
+.PHONY : src/text_data.o
+
+# target to build an object file
+src/text_data.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/text_data.c.o
+.PHONY : src/text_data.c.o
+
+src/text_data.i: src/text_data.c.i
+.PHONY : src/text_data.i
+
+# target to preprocess a source file
+src/text_data.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/text_data.c.i
+.PHONY : src/text_data.c.i
+
+src/text_data.s: src/text_data.c.s
+.PHONY : src/text_data.s
+
+# target to generate assembly for a file
+src/text_data.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/text_data.c.s
+.PHONY : src/text_data.c.s
+
 src/ui.o: src/ui.c.o
 .PHONY : src/ui.o
 
@@ -727,6 +751,9 @@ help:
 	@echo "... src/state.o"
 	@echo "... src/state.i"
 	@echo "... src/state.s"
+	@echo "... src/text_data.o"
+	@echo "... src/text_data.i"
+	@echo "... src/text_data.s"
 	@echo "... src/ui.o"
 	@echo "... src/ui.i"
 	@echo "... src/ui.s"

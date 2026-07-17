@@ -25,6 +25,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/samuel/c/game/fRpgCrawler/src/shop_data.c" "CMakeFiles/engine.dir/src/shop_data.c.o" "gcc" "CMakeFiles/engine.dir/src/shop_data.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/sound.c" "CMakeFiles/engine.dir/src/sound.c.o" "gcc" "CMakeFiles/engine.dir/src/sound.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/state.c" "CMakeFiles/engine.dir/src/state.c.o" "gcc" "CMakeFiles/engine.dir/src/state.c.o.d"
+  "/home/samuel/c/game/fRpgCrawler/src/text_data.c" "CMakeFiles/engine.dir/src/text_data.c.o" "gcc" "CMakeFiles/engine.dir/src/text_data.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/ui.c" "CMakeFiles/engine.dir/src/ui.c.o" "gcc" "CMakeFiles/engine.dir/src/ui.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/ui_data.c" "CMakeFiles/engine.dir/src/ui_data.c.o" "gcc" "CMakeFiles/engine.dir/src/ui_data.c.o.d"
   )

@@ -7,6 +7,11 @@
 #define NPC_INTERACTION_RANGE 3.0
 
 
+static bool npc_busy(NPC* self)
+{
+	return self->menu.quest_menu_active || self->menu.active || self->inventory->active;
+}
+
 void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when adding different npcs
 {
 	const Vector2 mouse_cords = map_get_mouse_cords(state->map);
@@ -22,12 +27,13 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 
 	if(IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) &&
 			entity_AAB(self->entity, mouse_cords) &&
+			!npc_busy(self) &&
 			entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
 	{
 		self->menu.active = true;
 	}
 
-	if(self->menu.quest_menu_active || self->menu.active || self->inventory->active)
+	if(npc_busy(self))
 	{
 		if(IsKeyPressed(KEY_F1) || 
 				(!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0)) )
@@ -88,7 +94,9 @@ static void npc_give_quest_reward(NPC* npc, Quest* quest, GameState* state)
 {
 	Inventory* player_inventory = state->player->inventory;
 	QuestManager* qm = state->player->quest_manager;
-	//player->experience += quest->data.reward.experience;
+
+	entity_gain_experience(state->player->entity, quest->data.reward.experience);
+
 	const u32 len = quest->data.reward.item_rewards_len;
 	for(i32 i = 0; i < len; i++)
 	{
@@ -106,6 +114,23 @@ void npc_finish_quest(NPC* npc, Quest* quest, const i32 quest_index, GameState* 
 	npc_give_quest_reward(npc, quest, state);
 	quest_manager_delete_quest(qm, quest->data.type);
 	npc->quests.completed[quest_index] = true;	
+	state->player->quest_manager->completed[quest->data.type].completed = true;;
+}
+
+bool npc_is_quest_available(NPC* npc, const QuestData* data, GameState* state)
+{
+	Player* player = state->player;
+
+	//if(! (player->level >= data->prerequisite.player_level) ) return false;
+
+	const u32 len = data->prerequisite.quests_len;
+
+	for(i32 i = 0; i < len; i++)
+	{
+		QuestType type = data->prerequisite.quests[i];
+		if(!player->quest_manager->completed[type].completed) return false;
+	}
+	return true;
 }
 
 void npcs_tick(DynList* npcs, GameState* state)
@@ -233,11 +258,14 @@ const u8* npc_get_name(NPCType type)
 	return entity_get_name(npc_data_table[type].entity);
 }
 
+
+//Add talk types here and for quests maybe ( saj DanyCide )
 const NPCData npc_data_table[] = {
 	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SHOP },
 	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SHOP },
 	{ENTITY_SHOP_NPC,		INVENTORY_TYPE_SMITH },
 };
+
 
 NPC* npc_new(NPCType type, Vector2 pos)
 {

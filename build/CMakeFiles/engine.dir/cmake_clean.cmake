@@ -33,6 +33,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/sound.c.o.d"
   "CMakeFiles/engine.dir/src/state.c.o"
   "CMakeFiles/engine.dir/src/state.c.o.d"
+  "CMakeFiles/engine.dir/src/text_data.c.o"
+  "CMakeFiles/engine.dir/src/text_data.c.o.d"
   "CMakeFiles/engine.dir/src/ui.c.o"
   "CMakeFiles/engine.dir/src/ui.c.o.d"
   "CMakeFiles/engine.dir/src/ui_data.c.o"

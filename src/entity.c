@@ -244,6 +244,11 @@ void entity_handle_target(Entity* self)
 	}
 }
 
+void entity_gain_experience(Entity* self, const u32 experience)
+{
+	self->stats.experience += experience;
+}
+
 static void entity_die(Entity* self, GameState* state)
 {
 	quest_register_entry(state->player, QUEST_OBJECTIVE_KILL, (QuestObjectiveData) {
@@ -373,6 +378,11 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	newe->aggro_range = 0.0;
 	newe->facing_angle = 0.0;
 	newe->id = 0;
+
+	newe->stats = (EntityStats) {
+		.level = 20,
+		.experience = 0,
+	};
 
 	return newe;
 }

@@ -123,6 +123,12 @@ typedef struct EntityData
 	EntityLightData light;
 } EntityData;
 
+typedef struct EntityStats
+{
+	i32 level;
+	u64 experience;
+} EntityStats;
+
 //Decent idea to have separate every Data/changing so you have LighData and Light
 typedef struct Entity
 {
@@ -133,6 +139,9 @@ typedef struct Entity
 
 	EntityType type;
 	EntityState state;
+
+	EntityStats stats;
+
 	f32 speed;
 	f32 facing_angle;
 
@@ -185,6 +194,16 @@ typedef struct QuestReward
 	ItemType item_rewards[MAX_ITEM_QUEST_REWARDS];
 } QuestReward;
 
+#define MAX_PREREQ_QUESTS 8
+typedef struct QuestPrerequisite
+{
+	i32 player_level;
+
+	u32 quests_len;
+	QuestType quests[MAX_PREREQ_QUESTS];
+} QuestPrerequisite;
+
+
 #define MAX_QUEST_OBJECTIVES 8
 typedef struct QuestData
 {
@@ -196,6 +215,7 @@ typedef struct QuestData
 	u32 objectives_len;
 	QuestObjective objectives[MAX_QUEST_OBJECTIVES];
 	QuestReward reward;
+	QuestPrerequisite prerequisite;
 } QuestData;
 
 #define MAX_QUESTS_ALLOWED 16
@@ -254,6 +274,11 @@ typedef struct QuestManager
 {
 	u32 len;
 	Quest quests[MAX_QUESTS_IN_MANAGER];
+
+	struct {
+		QuestType type;
+		bool completed;
+	} completed[MAX_QUESTS_IN_GAME];
 } QuestManager;
 
 typedef struct Player
@@ -266,6 +291,17 @@ typedef struct Player
 
 
 /* ENTITY */
+
+/* TEXT */
+
+typedef struct TextData
+{
+	const u8* text;
+	TextType type;
+} TextData;
+
+/* TEXT */
+
 
 /* MAP */
 

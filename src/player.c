@@ -11,9 +11,16 @@ QuestManager* player_quest_manager_new(Player* player)
 	*manager = (QuestManager) {
 		.len =  0,
 		.quests = { 0 },
+		.completed = { 0 },
 	};
 
-#if 1
+	for(i32 i = 0; i < MAX_QUESTS_IN_GAME; i++)
+	{
+		manager->completed[i].type = i;
+	}
+	//TODO load finished quests from savefile
+
+#if 0
 	for(i32 i = 0; i < 1; i++)
 	{
 		 quest_manager_push_quest(manager, (Quest) {
@@ -23,13 +30,6 @@ QuestManager* player_quest_manager_new(Player* player)
 			.quest_giver = NPC_TYPE_TOWN_MERCHANT,
 		} );
 	}
-#if 0
-	quest_manager_push_quest(manager, (Quest) {
-			.data = quest_data_table[QUEST_TYPE_PLACEHOLDER],
-			.status = QUEST_STATUS_ACCEPTED,
-			.quest_counters = { 0 },
-			} );
-#endif
 #endif 
 
 	return manager;
@@ -151,6 +151,12 @@ void quest_manager_delete_quest(QuestManager* manager, QuestType type)
 	qm->len --;
 }
 
+
+void player_tick_level(Player* self, GameState* state)
+{
+	Entity* player_entity = self->entity;
+
+}
 
 Player* player_new()
 {
