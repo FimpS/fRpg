@@ -610,7 +610,7 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 			quest_register_entry(state->player, QUEST_OBJECTIVE_TALK, (QuestObjectiveData) {
 					.talk.talk_to_type = npc->type,
 					} );
-			P_LOG("%s\n", text_data_table[TEXT_TYPE_PLACEHOLDER].text);
+			P_LOG("%s\n", text_data_table[ npc->text.generic ].text);
 		}
 		menu->active = false;
 	}
@@ -777,12 +777,19 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 					npc_finish_quest(npc, player_quest, menu->quest_choice, state);
 					break;
 				case QUEST_STATUS_ACCEPTED:
-					P_LOG("Quest Already Accepted\n");
+					P_LOG("Type: %d - %s\n", quest_data.type, text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text);
 					break;
 			}
 		} 
 		else
 		{
+			ui_text_display_push( (TextDisplay)	{ 
+						.text = text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text,
+						.frame_text = text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text,
+						.stop = 400,
+						.timer = 0,
+					},
+					state);
 			quest_manager_push_quest(qm, (Quest) {
 					.status = QUEST_STATUS_ACCEPTED,
 					.data = quest_data_table[quest_data.type],
@@ -895,6 +902,7 @@ void ui_render(GameState* state)
 	ui_player_quest_log_render(player, state);
 
 	npcs_ui_render(npcs, state);
+	ui_text_display_render(state);
 
 	if(player_inventory->active)
 	{
@@ -988,5 +996,68 @@ void ui_smith_tick(Inventory* smith_inventory, GameState* state)
 	}
 	ui_smith_select_item(smith_inventory, state);
 }
+
+void ui_text_display_push(TextDisplay text_display, GameState* state)
+{
+	ui_text_queue_push(&state->ui->text_queue, text_display);
+}
+
+void ui_text_display_render(GameState* state)
+{
+	UITextQueue* queue = &state->ui->text_queue;
+	const u8 index = 0;
+	const u32 character_limit = 10;
+
+	if(ui_text_queue_empty(queue))
+	{
+		return;
+	}
+
+	TextDisplay* current_displaying_text = ui_text_queue_get(queue, index);
+	if(current_displaying_text->timer ++ >= current_displaying_text->stop)
+	{
+		ui_text_queue_del(queue, index);
+		return;
+	}
+	const u32 str_len = strlen(current_displaying_text->text);
+
+	if(str_len >= character_limit)
+	{
+		P_LOG("manip\n");
+		current_displaying_text->frame_text = current_displaying_text->text + character_limit;
+	}
+
+	ui_draw_text(
+			current_displaying_text->frame_text,
+			(Vector2) { 240, 240 },
+			40.0,
+			WHITE,
+			WHITE,
+			state);
+
+}
+
+UIQueues* ui_queues_new()
+{
+	UIQueues* queues = malloc(sizeof(UIQueues));
+	*queues = (UIQueues) {
+		.text_queue = ui_text_queue_init(),
+	};
+
+	return queues;
+}
+
+void ui_queues_destroy(UIQueues* q)
+{
+	free(q);
+}
+
+
+
+
+
+
+
+
 
 

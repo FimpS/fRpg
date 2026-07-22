@@ -76,6 +76,7 @@ CMakeFiles/engine.dir/src/sound.c.o: \
  /home/samuel/c/game/fRpgCrawler/include/enum.h \
  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/include/../lib/statList.h \
  /home/samuel/c/game/fRpgCrawler/lib/fstring.h /usr/include/dirent.h \
  /usr/include/x86_64-linux-gnu/bits/dirent.h \
  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \

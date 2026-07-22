@@ -79,6 +79,7 @@ CMakeFiles/engine.dir/src/ui.c.o: \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
+ /home/samuel/c/game/fRpgCrawler/include/../lib/statList.h \
  /home/samuel/c/game/fRpgCrawler/include/state.h \
  /home/samuel/c/game/fRpgCrawler/include/map.h \
  /home/samuel/c/game/fRpgCrawler/include/entity.h \

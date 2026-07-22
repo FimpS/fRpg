@@ -77,4 +77,5 @@ CMakeFiles/engine.dir/src/entity_data.c.o: \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/enum.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/gfx.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/../lib/dynList.h
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/statList.h

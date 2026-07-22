@@ -93,6 +93,7 @@ CMakeFiles/engine.dir/lib/fstring.c.o: /home/samuel/c/game/fRpgCrawler/lib/fstri
 
 CMakeFiles/engine.dir/src/editor.c.o: /home/samuel/c/game/fRpgCrawler/src/editor.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/editor.h \
@@ -198,6 +199,7 @@ CMakeFiles/engine.dir/src/editor.c.o: /home/samuel/c/game/fRpgCrawler/src/editor
 CMakeFiles/engine.dir/src/entity.c.o: /home/samuel/c/game/fRpgCrawler/src/entity.c \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/entity_data.h \
@@ -295,6 +297,7 @@ CMakeFiles/engine.dir/src/entity.c.o: /home/samuel/c/game/fRpgCrawler/src/entity
 CMakeFiles/engine.dir/src/entity_data.c.o: /home/samuel/c/game/fRpgCrawler/src/entity_data.c \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity_data.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
@@ -382,6 +385,7 @@ CMakeFiles/engine.dir/src/entity_data.c.o: /home/samuel/c/game/fRpgCrawler/src/e
 
 CMakeFiles/engine.dir/src/entity_states.c.o: /home/samuel/c/game/fRpgCrawler/src/entity_states.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/entity_states.h \
@@ -479,6 +483,7 @@ CMakeFiles/engine.dir/src/entity_states.c.o: /home/samuel/c/game/fRpgCrawler/src
 
 CMakeFiles/engine.dir/src/gfx.c.o: /home/samuel/c/game/fRpgCrawler/src/gfx.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
@@ -567,6 +572,7 @@ CMakeFiles/engine.dir/src/gfx.c.o: /home/samuel/c/game/fRpgCrawler/src/gfx.c \
 
 CMakeFiles/engine.dir/src/global.c.o: /home/samuel/c/game/fRpgCrawler/src/global.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
@@ -654,6 +660,7 @@ CMakeFiles/engine.dir/src/global.c.o: /home/samuel/c/game/fRpgCrawler/src/global
 
 CMakeFiles/engine.dir/src/item.c.o: /home/samuel/c/game/fRpgCrawler/src/item.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
@@ -742,6 +749,7 @@ CMakeFiles/engine.dir/src/item.c.o: /home/samuel/c/game/fRpgCrawler/src/item.c \
 
 CMakeFiles/engine.dir/src/map.c.o: /home/samuel/c/game/fRpgCrawler/src/map.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -838,6 +846,7 @@ CMakeFiles/engine.dir/src/map.c.o: /home/samuel/c/game/fRpgCrawler/src/map.c \
 
 CMakeFiles/engine.dir/src/npc.c.o: /home/samuel/c/game/fRpgCrawler/src/npc.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
@@ -937,6 +946,7 @@ CMakeFiles/engine.dir/src/npc.c.o: /home/samuel/c/game/fRpgCrawler/src/npc.c \
 CMakeFiles/engine.dir/src/path.c.o: /home/samuel/c/game/fRpgCrawler/src/path.c \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
@@ -1032,6 +1042,7 @@ CMakeFiles/engine.dir/src/path.c.o: /home/samuel/c/game/fRpgCrawler/src/path.c \
 
 CMakeFiles/engine.dir/src/player.c.o: /home/samuel/c/game/fRpgCrawler/src/player.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
@@ -1129,6 +1140,7 @@ CMakeFiles/engine.dir/src/player.c.o: /home/samuel/c/game/fRpgCrawler/src/player
 
 CMakeFiles/engine.dir/src/quest_data.c.o: /home/samuel/c/game/fRpgCrawler/src/quest_data.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
@@ -1217,6 +1229,7 @@ CMakeFiles/engine.dir/src/quest_data.c.o: /home/samuel/c/game/fRpgCrawler/src/qu
 
 CMakeFiles/engine.dir/src/shop_data.c.o: /home/samuel/c/game/fRpgCrawler/src/shop_data.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
@@ -1306,6 +1319,7 @@ CMakeFiles/engine.dir/src/shop_data.c.o: /home/samuel/c/game/fRpgCrawler/src/sho
 
 CMakeFiles/engine.dir/src/sound.c.o: /home/samuel/c/game/fRpgCrawler/src/sound.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
@@ -1401,6 +1415,7 @@ CMakeFiles/engine.dir/src/sound.c.o: /home/samuel/c/game/fRpgCrawler/src/sound.c
 
 CMakeFiles/engine.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/state.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -1498,6 +1513,7 @@ CMakeFiles/engine.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/state.c
 
 CMakeFiles/engine.dir/src/text_data.c.o: /home/samuel/c/game/fRpgCrawler/src/text_data.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/enum.h \
   /home/samuel/c/game/fRpgCrawler/include/gfx.h \
@@ -1585,6 +1601,7 @@ CMakeFiles/engine.dir/src/text_data.c.o: /home/samuel/c/game/fRpgCrawler/src/tex
   /usr/local/include/raylib.h
 
 CMakeFiles/engine.dir/src/ui.c.o: /home/samuel/c/game/fRpgCrawler/src/ui.c \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -1686,6 +1703,7 @@ CMakeFiles/engine.dir/src/ui.c.o: /home/samuel/c/game/fRpgCrawler/src/ui.c \
   /usr/local/include/raymath.h
 
 CMakeFiles/engine.dir/src/ui_data.c.o: /home/samuel/c/game/fRpgCrawler/src/ui_data.c \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -1787,6 +1805,8 @@ CMakeFiles/engine.dir/src/ui_data.c.o: /home/samuel/c/game/fRpgCrawler/src/ui_da
 /usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
 
 /usr/include/x86_64-linux-gnu/bits/dirent_ext.h:
+
+/usr/include/dirent.h:
 
 /home/samuel/c/game/fRpgCrawler/lib/v2.h:
 
@@ -1964,8 +1984,6 @@ CMakeFiles/engine.dir/src/ui_data.c.o: /home/samuel/c/game/fRpgCrawler/src/ui_da
 
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
 
-/usr/include/dirent.h:
-
 /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/9/include/stdarg.h:
@@ -2049,6 +2067,8 @@ CMakeFiles/engine.dir/src/ui_data.c.o: /home/samuel/c/game/fRpgCrawler/src/ui_da
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
 /home/samuel/c/game/fRpgCrawler/src/path.c:
+
+/home/samuel/c/game/fRpgCrawler/lib/statList.h:
 
 /usr/include/assert.h:
 

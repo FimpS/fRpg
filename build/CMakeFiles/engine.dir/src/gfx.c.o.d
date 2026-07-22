@@ -77,4 +77,5 @@ CMakeFiles/engine.dir/src/gfx.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/v2.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/struct.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/statList.h \
  /usr/local/include/raymath.h

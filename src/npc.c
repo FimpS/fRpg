@@ -46,63 +46,22 @@ void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when ad
 			self->menu.quest_choice = -1;
 		}
 	}
-
-#if 0
-	if(IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) &&
-			entity_AAB(self->entity, mouse_cords) &&
-			entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
-	{
-		quest_register_entry(state->player, QUEST_OBJECTIVE_TALK, (QuestObjectiveData) { //TODO Should be on talk button
-				.talk.talk_to_type = self->type,
-				} );
-
-		self->inventory->active = true;
-		state->player->inventory->active = true;
-	}
-
-	if(IsKeyPressed(KEY_F1) || 
-			(!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0) && 
-			 self->inventory->active) )
-	{
-		self->inventory->active = false;
-		state->player->inventory->active = false;
-	}
-
-	if(IsKeyPressed(KEY_F2) &&
-			entity_in_range(self->entity->mid_pos, state->player->entity->mid_pos, NPC_INTERACTION_RANGE) )
-	{
-		if(quest_is_complete(state->player, QUEST_TYPE_KILL_5_IMPS))
-		{
-			quest_manager_delete_quest(state->player->quest_manager, QUEST_TYPE_KILL_5_IMPS);
-		}
-	}
-
-	if(IsKeyPressed(KEY_SPACE) &&
-			entity_in_range(self->entity->mid_pos, state->player->entity->mid_pos, NPC_INTERACTION_RANGE) )
-	{
-		quest_manager_push_quest(state->player->quest_manager, (Quest) {
-				.data = quest_data_table[QUEST_TYPE_PLACEHOLDER],
-				.quest_giver = self->type,
-				.status = QUEST_STATUS_ACCEPTED,
-				.quest_counters = { 0 },
-				} );
-	}
-#endif
 }
 
 static void npc_give_quest_reward(NPC* npc, Quest* quest, GameState* state)
 {
 	Inventory* player_inventory = state->player->inventory;
 	QuestManager* qm = state->player->quest_manager;
+	QuestReward reward = quest_reward_table[quest->data.type];
 
-	entity_gain_experience(state->player->entity, quest->data.reward.experience);
+	entity_gain_experience(state->player->entity, reward.experience);
 
-	const u32 len = quest->data.reward.item_rewards_len;
+	const u32 len = reward.item_rewards_len;
 	for(i32 i = 0; i < len; i++)
 	{
 		ui_inventory_add_item(player_inventory, (Item) {
-				.type = quest->data.reward.item_rewards[i],
-				.info = item_info_table[ quest->data.reward.item_rewards[i] ],
+				.type = reward.item_rewards[i],
+				.info = item_info_table[ reward.item_rewards[i] ],
 				.enchant = 1,
 				} );
 	}
@@ -120,14 +79,15 @@ void npc_finish_quest(NPC* npc, Quest* quest, const i32 quest_index, GameState* 
 bool npc_is_quest_available(NPC* npc, const QuestData* data, GameState* state)
 {
 	Player* player = state->player;
+	QuestPrerequisite prerequisite = quest_prerequisite_table[ data->type ];
 
 	//if(! (player->level >= data->prerequisite.player_level) ) return false;
 
-	const u32 len = data->prerequisite.quests_len;
+	const u32 len = prerequisite.quests_len;
 
 	for(i32 i = 0; i < len; i++)
 	{
-		QuestType type = data->prerequisite.quests[i];
+		QuestType type = prerequisite.quests[i];
 		if(!player->quest_manager->completed[type].completed) return false;
 	}
 	return true;
@@ -272,6 +232,7 @@ NPC* npc_new(NPCType type, Vector2 pos)
 	NPC* npc = malloc(sizeof(NPC));
 	npc->type = type;
 	npc->data = npc_data_table[type];
+	npc->text = npc_text_data_table[type];
 
 	npc->entity = entity_new(npc->data.entity, pos);
 	npc->inventory = ui_inventory_new(npc->data.inventory);

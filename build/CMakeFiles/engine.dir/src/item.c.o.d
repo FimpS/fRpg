@@ -75,4 +75,5 @@ CMakeFiles/engine.dir/src/item.c.o: \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
- /home/samuel/c/game/fRpgCrawler/include/../lib/dynList.h
+ /home/samuel/c/game/fRpgCrawler/include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/include/../lib/statList.h

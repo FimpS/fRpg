@@ -82,6 +82,7 @@ CMakeFiles/engine.dir/src/entity.c.o: \
  /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/statList.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/npc.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/ui.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/item.h \

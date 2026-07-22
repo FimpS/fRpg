@@ -76,6 +76,7 @@ CMakeFiles/engine.dir/src/player.c.o: \
  /home/samuel/c/game/fRpgCrawler/include/struct.h \
  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/include/../lib/statList.h \
  /home/samuel/c/game/fRpgCrawler/include/state.h \
  /home/samuel/c/game/fRpgCrawler/include/map.h \
  /home/samuel/c/game/fRpgCrawler/include/entity.h \

@@ -24,14 +24,14 @@ bool dynList_empty(DynList* l)
 
 void* dynList_get(DynList* l, unsigned index)
 {
-	if( !(index <= l->len && index >= 0) )
+	if( index >= l->len )
 		return NULL;
 	return l->v[index];
 }
 
 void dynList_set(DynList* l, void* key, unsigned index)
 {
-	if ( index <= l->len && index >= 0 )
+	if ( index < l->len )
 	{
 		l->v[index] = key;
 	}
@@ -53,25 +53,25 @@ void dynList_pop(DynList* l)
 
 void dynList_add(DynList* l, void* key, unsigned index)
 {
-	if( index <= l->len && index >= 0)
+	if( index <= l->len )
 	{
 		MEM_ALLOC(l);
-		l->len ++;
 		unsigned len = dynList_len(l);
 		for(int i = len; i >= index + 1; i--)
 		{
 			l->v[i] = l->v[i - 1];
 		}
 		l->v[index] = key;
+		l->len ++;
 	}
 }
 
 void dynList_del(DynList *l, unsigned index)
 {
-	if( index <= l->len && index >= 0 )
+	if( index < l->len )
 	{
 		unsigned len = dynList_len(l);
-		for(int i = index; i < len; i++)
+		for(int i = index; i + 1 < len; i++)
 		{
 			l->v[i] = l->v[i + 1];
 		}

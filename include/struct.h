@@ -4,6 +4,7 @@
 #include "gfx.h"
 #include "../lib/types.h"
 #include "../lib/dynList.h"
+#include "../lib/statList.h"
 
 typedef struct Map Map;
 typedef struct Entity Entity;
@@ -185,7 +186,6 @@ typedef struct QuestObjective
 
 } QuestObjective;
 
-
 #define MAX_ITEM_QUEST_REWARDS 16
 typedef struct QuestReward
 {
@@ -203,7 +203,6 @@ typedef struct QuestPrerequisite
 	QuestType quests[MAX_PREREQ_QUESTS];
 } QuestPrerequisite;
 
-
 #define MAX_QUEST_OBJECTIVES 8
 typedef struct QuestData
 {
@@ -211,11 +210,9 @@ typedef struct QuestData
 	QuestClass class;
 
 	const u8* name;
-	//TODO figure out a way for prerequesites
+
 	u32 objectives_len;
 	QuestObjective objectives[MAX_QUEST_OBJECTIVES];
-	QuestReward reward;
-	QuestPrerequisite prerequisite;
 } QuestData;
 
 #define MAX_QUESTS_ALLOWED 16
@@ -243,6 +240,17 @@ typedef struct NPCMenu
 	const u8* option_strings[MAX_NPC_TALK_OPTIONS];
 } NPCMenu;
 
+typedef struct NPCTextData 
+{
+	TextType generic;
+	struct 
+	{
+		TextType information;
+		TextType completion;
+	} quests[MAX_QUESTS_ALLOWED];
+
+} NPCTextData;
+
 typedef struct NPCData 
 {
 	EntityType entity;
@@ -257,6 +265,7 @@ typedef struct NPC
 	NPCMenu menu;
 	Entity* entity;
 	Inventory* inventory;
+	NPCTextData text;
 	NPCQuestData quests;
 } NPC;
 
@@ -360,6 +369,18 @@ typedef struct Map
 
 /* UI */
 
+typedef struct TextDisplay
+{
+	const u8* text;
+	const u8* frame_text;
+
+	u32 timer;
+	u32 stop;
+} TextDisplay;
+
+
+
+
 #define TOTAL_INVENTORY_CELLS 60
 #define TOTAL_INVENTORY_BUTTONS 2
 
@@ -411,6 +432,13 @@ typedef struct Inventory
 	InventoryButton buttons[TOTAL_INVENTORY_BUTTONS]; //Same here
 } Inventory;
 
+#define MAX_TEXTS_IN_UI_QUEUE 16
+DEFINE_STATIC_LIST(TextDisplay, UITextQueue, ui_text_queue, MAX_TEXTS_IN_UI_QUEUE);
+typedef struct UIQueues
+{
+	UITextQueue text_queue;
+} UIQueues;
+
 /* UI */
 
 /* State */
@@ -419,6 +447,7 @@ typedef struct GameState
 {
 	Map* map;
 	SoundManager* global_sound_manager;
+	UIQueues* ui;
 	Gfx* gfx;
 
 

@@ -81,6 +81,7 @@ CMakeFiles/engine.dir/src/map.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/npc.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/struct.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/global.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/statList.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/ui.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/item.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/path.h \

@@ -77,6 +77,7 @@ CMakeFiles/engine.dir/src/path.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/struct.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/dynList.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/../lib/statList.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/map.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/entity.h \
  /usr/local/include/raymath.h \

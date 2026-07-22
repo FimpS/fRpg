@@ -26,7 +26,10 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state);
 
 void ui_render(GameState* state);
 
-
+UIQueues* ui_queues_new();
+void ui_queues_destroy(UIQueues* q);
+void ui_text_display_push(TextDisplay text_display, GameState* state);
+void ui_text_display_render(GameState* state);
 
 
 void ui_inventory_toggle_fire(Inventory* inventory, GameState* state);

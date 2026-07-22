@@ -3,6 +3,7 @@
 
 CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
   /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
+  /home/samuel/c/game/fRpgCrawler/lib/statList.h \
   /home/samuel/c/game/fRpgCrawler/lib/v2.h \
   /home/samuel/c/game/fRpgCrawler/include/editor.h \
   /home/samuel/c/game/fRpgCrawler/include/entity.h \
@@ -168,8 +169,6 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
 
 /usr/include/stdlib.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
-
 /usr/include/strings.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
@@ -184,6 +183,8 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
 
 /usr/include/alloca.h:
 
+/home/samuel/c/game/fRpgCrawler/lib/statList.h:
+
 /usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
 
 /usr/include/x86_64-linux-gnu/bits/fp-logb.h:
@@ -194,9 +195,17 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
 
 /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
+
+/usr/include/stdio.h:
+
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
 /home/samuel/c/game/fRpgCrawler/include/editor.h:
+
+/home/samuel/c/game/fRpgCrawler/include/player.h:
+
+/home/samuel/c/game/fRpgCrawler/include/map.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
@@ -211,10 +220,6 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
 
 /home/samuel/c/game/fRpgCrawler/include/path.h:
-
-/usr/include/time.h:
-
-/usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
 
 /home/samuel/c/game/fRpgCrawler/src/main.c:
 
@@ -234,17 +239,15 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
 
 /usr/include/x86_64-linux-gnu/bits/floatn.h:
 
+/usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
+
+/home/samuel/c/game/fRpgCrawler/include/struct.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
+
 /home/samuel/c/game/fRpgCrawler/include/global.h:
 
 /home/samuel/c/game/fRpgCrawler/include/ui.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
-
-/usr/include/stdio.h:
-
-/home/samuel/c/game/fRpgCrawler/include/map.h:
-
-/home/samuel/c/game/fRpgCrawler/include/player.h:
 
 /home/samuel/c/game/fRpgCrawler/include/state.h:
 
@@ -255,6 +258,12 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
 /home/samuel/c/game/fRpgCrawler/include/item.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+
+/usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
+
+/usr/include/time.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h:
 
@@ -297,11 +306,5 @@ CMakeFiles/game.dir/src/main.c.o: /home/samuel/c/game/fRpgCrawler/src/main.c \
 /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
-
-/home/samuel/c/game/fRpgCrawler/include/struct.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
-
-/usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
 
 /usr/include/x86_64-linux-gnu/bits/string_fortified.h:
