@@ -27,22 +27,32 @@ const QuestData quest_data_table[] = {
 };
 
 const NPCQuestDataTypes npc_quest_data_types_table[] = {
-	(NPCQuestDataTypes) { 2, .types= { QUEST_TYPE_KILL_5_IMPS, QUEST_TYPE_PLACEHOLDER } },
+	(NPCQuestDataTypes) { 4, .types= { QUEST_TYPE_KILL_5_IMPS, QUEST_TYPE_KILL_5_IMPS, QUEST_TYPE_KILL_5_IMPS, QUEST_TYPE_PLACEHOLDER } },
 	(NPCQuestDataTypes) { 2, .types= { QUEST_TYPE_PLACEHOLDER, QUEST_TYPE_PLACEHOLDER } },
 	(NPCQuestDataTypes) { 1, .types= { QUEST_TYPE_KILL_5_IMPS, } },
 };
 
+// Above and below should match in size of the QuestType and TextType array 
+
 const NPCTextData npc_text_data_table[] = {
 // 	Generic							Quests				Information								Completion
-	{TEXT_TYPE_PLACEHOLDER,			{	{				TEXT_TYPE_PLACEHOLDER2, 				TEXT_TYPE_PLACEHOLDER},
+	{TEXT_TYPE_PLACEHOLDER,			{	
+										{				TEXT_TYPE_IMPS_RAVAGING, 				TEXT_TYPE_PLACEHOLDER},
+										{				TEXT_TYPE_IMPS_RAVAGING, 				TEXT_TYPE_PLACEHOLDER},
+										{				TEXT_TYPE_IMPS_RAVAGING, 				TEXT_TYPE_PLACEHOLDER},
 										{				TEXT_TYPE_PLACEHOLDER,					TEXT_TYPE_PLACEHOLDER},
-	}	},
-	{TEXT_TYPE_PLACEHOLDER,			{	{				TEXT_TYPE_PLACEHOLDER2, 				TEXT_TYPE_PLACEHOLDER},
+									}
+	},
+	{TEXT_TYPE_PLACEHOLDER,			{	
+										{				TEXT_TYPE_IMPS_RAVAGING, 				TEXT_TYPE_PLACEHOLDER},
 										{				TEXT_TYPE_PLACEHOLDER,					TEXT_TYPE_PLACEHOLDER},
-	}	},
-	{TEXT_TYPE_PLACEHOLDER,			{	{				TEXT_TYPE_PLACEHOLDER2, 				TEXT_TYPE_PLACEHOLDER},
+									}
+	},
+	{TEXT_TYPE_PLACEHOLDER,			{	
+										{				TEXT_TYPE_PLACEHOLDER2, 				TEXT_TYPE_PLACEHOLDER},
 										{				TEXT_TYPE_PLACEHOLDER,					TEXT_TYPE_PLACEHOLDER},
-	}	},
+									}
+	},
 
 };
 

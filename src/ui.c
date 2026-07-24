@@ -607,6 +607,12 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 		}
 		if(!strcmp(menu->option_strings[menu->choice], "Conversations"))
 		{
+			ui_text_display_push( (TextDisplay)	{ 
+					.text = text_data_table[ npc->text.generic ].text,
+					.stop = 1000,
+					.timer = 0,
+					},
+					state);
 			quest_register_entry(state->player, QUEST_OBJECTIVE_TALK, (QuestObjectiveData) {
 					.talk.talk_to_type = npc->type,
 					} );
@@ -777,17 +783,21 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 					npc_finish_quest(npc, player_quest, menu->quest_choice, state);
 					break;
 				case QUEST_STATUS_ACCEPTED:
-					P_LOG("Type: %d - %s\n", quest_data.type, text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text);
+					ui_text_display_push( (TextDisplay)	{ 
+							.text = text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text,
+							.stop = 1000,
+							.timer = 0,
+							},
+							state);
 					break;
 			}
 		} 
 		else
 		{
 			ui_text_display_push( (TextDisplay)	{ 
-						.text = text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text,
-						.frame_text = text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text,
-						.stop = 400,
-						.timer = 0,
+					.text = text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text,
+					.stop = 1000,
+					.timer = 0,
 					},
 					state);
 			quest_manager_push_quest(qm, (Quest) {
@@ -797,6 +807,8 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 					.quest_giver = npc->type,
 					} );
 		}
+		menu->quest_menu_active = false;
+		menu->quest_choice = -1;
 	}
 }
 
@@ -872,7 +884,7 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 
 		const Vector2 text_pos = { pos.x + box.width / 2.0 - str_len.x / 2.0, pos.y };
 
-		
+
 
 		if(AAB(box, mouse_pos))
 		{
@@ -1002,11 +1014,13 @@ void ui_text_display_push(TextDisplay text_display, GameState* state)
 	ui_text_queue_push(&state->ui->text_queue, text_display);
 }
 
+
 void ui_text_display_render(GameState* state)
 {
 	UITextQueue* queue = &state->ui->text_queue;
 	const u8 index = 0;
-	const u32 character_limit = 10;
+	const u32 character_limit = 64;
+	u8 frame_text[character_limit];
 
 	if(ui_text_queue_empty(queue))
 	{
@@ -1014,25 +1028,75 @@ void ui_text_display_render(GameState* state)
 	}
 
 	TextDisplay* current_displaying_text = ui_text_queue_get(queue, index);
-	if(current_displaying_text->timer ++ >= current_displaying_text->stop)
-	{
-		ui_text_queue_del(queue, index);
-		return;
-	}
+
+	const u32 text_speed = 4;
 	const u32 str_len = strlen(current_displaying_text->text);
+	const u32 remaining = str_len - current_displaying_text->text_offset;
+	u32 page_len = minu32(remaining, character_limit);
+	const u32 reveal_threshold = page_len * text_speed;
+	bool skip_flag = false;
 
-	if(str_len >= character_limit)
+	if(page_len < remaining 
+			&& current_displaying_text->text[current_displaying_text->text_offset + page_len] != ' ')
 	{
-		P_LOG("manip\n");
-		current_displaying_text->frame_text = current_displaying_text->text + character_limit;
+		u32 trimmed = page_len;
+		while(trimmed > 0 && current_displaying_text->text[current_displaying_text->text_offset + trimmed] != ' ') trimmed --;
+		if(trimmed > 0) page_len = trimmed;
 	}
 
-	ui_draw_text(
-			current_displaying_text->frame_text,
+	u32 advance_page = page_len;
+	if(current_displaying_text->text_offset + page_len < str_len
+			&& current_displaying_text->text[current_displaying_text->text_offset + page_len] == ' ')
+	{
+		advance_page ++;
+	}
+
+
+	u32 revealed = current_displaying_text->reveal_timer / text_speed;
+	revealed = minu32(revealed, page_len);
+
+
+	if(IsKeyPressed(KEY_SPACE))
+	{
+		if(revealed < page_len)
+		{
+			current_displaying_text->reveal_timer = reveal_threshold;
+			revealed = page_len;
+			skip_flag = true;
+		}
+		else
+		{
+			current_displaying_text->reveal_timer = reveal_threshold + text_speed;
+		}
+	}
+
+	memcpy(frame_text, current_displaying_text->text + current_displaying_text->text_offset, revealed);
+	frame_text[revealed] = '\0';
+
+	if(IsKeyPressed(KEY_SPACE) && !skip_flag)
+	{
+		if(current_displaying_text->text_offset + page_len < str_len)
+		{
+
+			//current_displaying_text->text_offset += character_limit;
+			current_displaying_text->text_offset += advance_page;
+			current_displaying_text->reveal_timer = 0;
+		}
+		else
+		{
+			ui_text_queue_del(queue, index);
+
+		}
+	}
+
+	current_displaying_text->reveal_timer ++;
+
+	ui_wrap_text_render(
+			frame_text, 
 			(Vector2) { 240, 240 },
-			40.0,
-			WHITE,
-			WHITE,
+			300,
+			10,
+			30,
 			state);
 
 }

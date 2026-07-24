@@ -26,6 +26,7 @@ typedef enum TextType
 {
 	TEXT_TYPE_PLACEHOLDER,
 	TEXT_TYPE_PLACEHOLDER2,
+	TEXT_TYPE_IMPS_RAVAGING,
 } TextType;
 
 typedef enum NPCType

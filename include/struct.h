@@ -372,8 +372,9 @@ typedef struct Map
 typedef struct TextDisplay
 {
 	const u8* text;
-	const u8* frame_text;
-
+	
+	u32 text_offset;
+	u32 reveal_timer;
 	u32 timer;
 	u32 stop;
 } TextDisplay;
