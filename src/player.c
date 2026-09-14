@@ -9,8 +9,7 @@ QuestManager* player_quest_manager_new(Player* player)
 {
 	QuestManager* manager = malloc(sizeof(QuestManager));
 	*manager = (QuestManager) {
-		.len =  0,
-		.quests = { 0 },
+		.quests = quest_manager_list_init(),
 		.completed = { 0 },
 	};
 
@@ -38,9 +37,10 @@ QuestManager* player_quest_manager_new(Player* player)
 bool quest_is_complete(Player* player, QuestType key)
 {
 	QuestManager* qm = player->quest_manager;
-	for(i32 i = 0; i < qm->len; i++)
+	const u32 manager_len = quest_manager_list_len(&qm->quests);
+	for(i32 i = 0; i < manager_len; i++)
 	{
-		Quest* q = &qm->quests[i];
+		Quest* q = &qm->quests.data[i];
 		if(q->data.type == key && q->status == QUEST_STATUS_COMPLETE) return true;
 	}
 
@@ -50,11 +50,11 @@ bool quest_is_complete(Player* player, QuestType key)
 void quest_check_completion(Player* player) //Check after and if any of the quest_register functions executed, maybe global var
 {
 	QuestManager* qm = player->quest_manager;
-	const u32 manager_len = qm->len;
+	const u32 manager_len = quest_manager_list_len(&qm->quests);
 
 	for(i32 i = 0; i < manager_len; i++)
 	{
-		Quest* q = &qm->quests[i];
+		Quest* q = &qm->quests.data[i];
 		u32 objective_counter = 0;
 		for(i32 j = 0; j < q->data.objectives_len; j++)
 		{
@@ -85,9 +85,10 @@ void quest_register_entry(Player* player, QuestObjectiveType type, QuestObjectiv
 {
 	QuestManager* qm = player->quest_manager;
 
-	for(i32 i = 0; i < qm->len; i++)
+	const u32 manager_len = quest_manager_list_len(&qm->quests);
+	for(i32 i = 0; i < manager_len; i++)
 	{
-		Quest* q = &qm->quests[i];
+		Quest* q = &qm->quests.data[i];
 		for(i32 j = 0; j < q->data.objectives_len; j++)
 		{
 			QuestObjective objective = q->data.objectives[j];	
@@ -110,21 +111,21 @@ void quest_register_entry(Player* player, QuestObjectiveType type, QuestObjectiv
 void quest_manager_push_quest(QuestManager* manager, Quest quest)
 {
 	QuestManager* qm = manager;
-	if(qm->len >= MAX_QUESTS_IN_MANAGER)
+	if(quest_manager_list_len(&qm->quests) >= MAX_QUESTS_IN_MANAGER)
 	{
 		P_ERROR("Too many quests in manager\n");
 		return;
 	}
 
-	qm->quests[qm->len ++] = quest;
+	quest_manager_list_push(&qm->quests, quest);
 }
 
 Quest* quest_manager_get_quest(QuestManager* manager, QuestType key)
 {
-	const u32 len = manager->len;
+	const u32 len = quest_manager_list_len(&manager->quests);
 	for(i32 i = 0; i < len; i++)
 	{
-		Quest* q = &manager->quests[i];
+		Quest* q = &manager->quests.data[i];
 		if(q->data.type == key)
 		{
 			return q;
@@ -136,19 +137,23 @@ Quest* quest_manager_get_quest(QuestManager* manager, QuestType key)
 void quest_manager_delete_quest(QuestManager* manager, QuestType type)
 {
 	QuestManager* qm = manager;
+	const u32 len = quest_manager_list_len(&manager->quests);
 
 	i32 index = 0;
-	for(i32 i = 0; i < qm->len; i++)
+	for(i32 i = 0; i < len; i++)
 	{
 		index = i;
-		if(qm->quests[i].data.type == type) break;
+		if(quest_manager_list_get(&qm->quests, i)->data.type == type) break;
 	}
+	quest_manager_list_del(&qm->quests, index);
 
+#if 0
 	for(i32 i = index; i < qm->len; i++)
 	{
 		qm->quests[i] = qm->quests[i + 1];
 	}
 	qm->len --;
+#endif 
 }
 
 
@@ -165,10 +170,10 @@ Player* player_new()
 	player->inventory = ui_inventory_new(INVENTORY_TYPE_PLAYER);	
 	player->quest_manager = player_quest_manager_new(player);
 
-	for(i32 i = 0; i < player->quest_manager->len; i++)
+	for(i32 i = 0; i < player->quest_manager->quests.len; i++)
 	{
-		Quest q = player->quest_manager->quests[i];
-		P_LOG("Quest type: %d, with status %d\n", q.data.class, q.status);
+		Quest* q = quest_manager_list_get(&player->quest_manager->quests, i);
+		P_LOG("Quest type: %d, with status %d\n", q->data.class, q->status);
 	}
 
 	return player;

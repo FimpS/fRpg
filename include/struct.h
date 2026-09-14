@@ -232,6 +232,7 @@ typedef struct NPCQuestDataTypes
 typedef struct NPCMenu
 {
 	bool active;
+	bool talking;
 	bool quest_menu_active;
 	i8 choice;
 	i8 quest_choice;
@@ -279,10 +280,12 @@ typedef struct Quest
 } Quest;
 
 #define MAX_QUESTS_IN_MANAGER 16
+DEFINE_STATIC_LIST(Quest, QuestManagerList, quest_manager_list, MAX_QUESTS_IN_MANAGER);
 typedef struct QuestManager
 {
-	u32 len;
-	Quest quests[MAX_QUESTS_IN_MANAGER];
+	//u32 len;
+	//Quest quests[MAX_QUESTS_IN_MANAGER];
+	QuestManagerList quests;
 
 	struct {
 		QuestType type;
@@ -307,6 +310,7 @@ typedef struct TextData
 {
 	const u8* text;
 	TextType type;
+	f32 speed;
 } TextData;
 
 /* TEXT */
@@ -371,7 +375,9 @@ typedef struct Map
 
 typedef struct TextDisplay
 {
-	const u8* text;
+	//const u8* text;
+	TextData data;
+	NPC* owner;
 	
 	u32 text_offset;
 	u32 reveal_timer;

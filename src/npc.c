@@ -9,43 +9,71 @@
 
 static bool npc_busy(NPC* self)
 {
-	return self->menu.quest_menu_active || self->menu.active || self->inventory->active;
+	return self->menu.quest_menu_active || self->menu.active || self->inventory->active || self->menu.talking;
+}
+
+static void npc_menu_disable(NPC* self, GameState* state)
+{
+	self->inventory->active = false;
+	state->player->inventory->active = false;
+	self->menu.active = false;
+	self->menu.quest_menu_active = false;
+	self->menu.choice = 0;
+	self->menu.quest_choice = 0;
+}
+
+static void npc_menu_enable(NPC* self, GameState* state)
+{
+	self->menu.active = true;
+	self->menu.choice = 0;
+}
+
+static bool npc_menu_can_disable(NPC* self, GameState* state)
+{
+	return npc_busy(self) && 
+					(IsKeyPressed(KEY_F1) || 
+		 			(!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0)));
+}
+
+static bool npc_menu_can_enable(NPC* self, GameState* state)
+{
+	const Vector2 mouse_cords = map_get_mouse_cords(state->map);
+	return (IsKeyPressed(KEY_SPACE) || (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) &&
+				entity_AAB(self->entity, mouse_cords))) &&
+				!npc_busy(self) &&
+				entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE);
+}
+
+static void npc_menu_toggle(NPC* self, GameState* state)
+{
+	if(npc_menu_can_enable(self, state))
+	{
+		npc_menu_enable(self, state);
+	}
+
+	if(npc_menu_can_disable(self, state))
+	{
+		npc_menu_disable(self, state);
+	}
 }
 
 void npc_tick(NPC* self, GameState* state) //TODO change to npc->tick(), when adding different npcs
 {
 	const Vector2 mouse_cords = map_get_mouse_cords(state->map);
 
+	 
 	if(self->menu.active)
 	{
 		ui_tick_npc_menu(self, state);
 	}
-	if(self->menu.quest_menu_active)
+	else if(self->menu.quest_menu_active)
 	{
 		ui_tick_npc_quest_menu(self, state);
 	}
+	
+	npc_menu_toggle(self, state);
 
-	if(IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) &&
-			entity_AAB(self->entity, mouse_cords) &&
-			!npc_busy(self) &&
-			entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE))
-	{
-		self->menu.active = true;
-	}
 
-	if(npc_busy(self))
-	{
-		if(IsKeyPressed(KEY_F1) || 
-				(!entity_in_range(self->entity->pos, state->player->entity->pos, NPC_INTERACTION_RANGE + 2.0)) )
-		{
-			self->inventory->active = false;
-			state->player->inventory->active = false;
-			self->menu.active = false;
-			self->menu.quest_menu_active = false;
-			self->menu.choice = -1;
-			self->menu.quest_choice = -1;
-		}
-	}
 }
 
 static void npc_give_quest_reward(NPC* npc, Quest* quest, GameState* state)
@@ -185,9 +213,10 @@ static NPCMenu npc_menu_init(NPC* npc)
 
 	NPCMenu menu = (NPCMenu) {
 		.active = false,
-		.choice = -1,
+		.choice = 0,
 		.quest_menu_active = false,
-		.quest_choice = -1,
+		.quest_choice = 0,
+		.talking = false,
 		.len = 0,
 	};
 

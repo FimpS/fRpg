@@ -13,9 +13,18 @@
 #include "player.h"
 #include "../include/entity_data.h"
 
+
+/*--------------------------------- UI GLOBALS ---------------------------------*/
+
+static i32 ui_local_key_timer = 0;
+
+
+/*--------------------------------- UI GLOBALS ---------------------------------*/
+
+/*--------------------------------- DRAW TEXT ---------------------------------*/
+
 void ui_draw_text(const u8* text, Vector2 pos, 
 		u32 font_size, 
-		Color outline_color, 
 		Color color, 
 		GameState* state)
 {
@@ -36,7 +45,7 @@ void ui_draw_outline_text(const u8* text, Vector2 pos,
 			(Vector2) { pos.x + 1, pos.y }, 
 			font_size, 0.0, outline_color);
 	DrawTextEx(gfx->ui_font, text, 
-			(Vector2) {pos.x, pos.y + 1}, 
+			(Vector2) { pos.x, pos.y + 1 }, 
 			font_size, 0.0, outline_color);
 	DrawTextEx(gfx->ui_font, text, 
 			(Vector2) {pos.x - 1, pos.y}, 
@@ -140,6 +149,115 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 	pos.y += padding * 4;
 	ui_wrap_text_render(text, pos, max_width, padding, size, state);
 }
+
+/*--------------------------------- DRAW TEXT ---------------------------------*/
+
+
+/*--------------------------------- TEXTDISPLAY ---------------------------------*/
+
+void ui_text_display_push(TextDisplay text_display, GameState* state)
+{
+	ui_text_queue_push(&state->ui->text_queue, text_display);
+}
+
+static f32 ui_text_display_text_speed_function(f32 x)
+{
+	return x <= 0 ? 10.0 : 0.1 + 9.9 / ( ( 1 + (x/5)*(x/5) ) );
+}
+
+void ui_text_display_render(GameState* state)
+{
+	UITextQueue* queue = &state->ui->text_queue;
+	const u8 index = 0;
+	const u32 character_limit = 128;
+	u8 frame_text[character_limit];
+
+	if(ui_text_queue_empty(queue))
+	{
+		return;
+	}
+
+	TextDisplay* current_displaying_text = ui_text_queue_get(queue, index);
+
+	const f32 text_speed = ui_text_display_text_speed_function(current_displaying_text->data.speed);
+	const u32 str_len = strlen(current_displaying_text->data.text);
+	const u32 remaining = str_len - current_displaying_text->text_offset;
+	u32 page_len = minu32(remaining, character_limit);
+	const u32 reveal_threshold = page_len * text_speed;
+	bool skip_flag = false;
+
+	if(page_len < remaining 
+			&& current_displaying_text->data.text[current_displaying_text->text_offset + page_len] != ' ')
+	{
+		u32 trimmed = page_len;
+		while(trimmed > 0 && current_displaying_text->data.text[current_displaying_text->text_offset + trimmed] != ' ') trimmed --;
+		if(trimmed > 0) page_len = trimmed;
+	}
+
+	u32 advance_page = page_len;
+	if(current_displaying_text->text_offset + page_len < str_len
+			&& current_displaying_text->data.text[current_displaying_text->text_offset + page_len] == ' ')
+	{
+		advance_page ++;
+	}
+
+
+	u32 revealed = current_displaying_text->reveal_timer / text_speed;
+	revealed = minu32(revealed, page_len);
+
+	const u32 minimum_time_on_page = 4;
+
+	if(IsKeyPressed(KEY_SPACE) && current_displaying_text->reveal_timer >= minimum_time_on_page)
+	{
+		if(revealed < page_len)
+		{
+			current_displaying_text->reveal_timer = reveal_threshold;
+			revealed = page_len;
+			skip_flag = true;
+		}
+		else
+		{
+			current_displaying_text->reveal_timer = reveal_threshold + text_speed;
+		}
+	}
+
+	memcpy(frame_text, current_displaying_text->data.text + current_displaying_text->text_offset, revealed);
+	frame_text[revealed] = '\0';
+
+	if(IsKeyPressed(KEY_SPACE) && !skip_flag  && current_displaying_text->reveal_timer >= minimum_time_on_page)
+	{
+		if(current_displaying_text->text_offset + page_len < str_len)
+		{
+
+			//current_displaying_text->text_offset += character_limit;
+			current_displaying_text->text_offset += advance_page;
+			current_displaying_text->reveal_timer = 0;
+		}
+		else
+		{
+			if(current_displaying_text->owner != NULL) current_displaying_text->owner->menu.talking = false;
+			ui_text_queue_del(queue, index);
+
+		}
+	}
+
+	current_displaying_text->reveal_timer ++;
+
+	const u32 font_size = 18;
+	ui_wrap_text_render(
+			frame_text, 
+			(Vector2) { 240, 240 },
+			300,
+			10,
+			font_size,
+			state);
+
+}
+
+/*--------------------------------- TEXTDISPLAY ---------------------------------*/
+
+
+/*--------------------------------- INVENTORY ---------------------------------*/
 
 static u32 ui_inventory_cap(Inventory* inventory)
 {
@@ -267,7 +385,9 @@ Inventory* ui_inventory_new(InventoryType type)
 	};
 	ui_inventory_init_cells(inv_new);
 	if(type == INVENTORY_TYPE_PLAYER)
+	{
 		ui_inventory_init_buttons(inv_new);
+	}
 
 
 	if(type == INVENTORY_TYPE_PLAYER)
@@ -365,9 +485,9 @@ static void ui_inventory_cell_tick(InventoryCell* cell, Inventory* inventory, Ga
 
 static void ui_inventory_switch_items(Inventory* inventory, GameState* state)
 {
-	i32 focus_id = inventory->focus_id;
-	i32 moved_id = inventory->moved_id;
-	Item tmp = inventory->cells[focus_id].item;
+	const i32 focus_id = inventory->focus_id;
+	const i32 moved_id = inventory->moved_id;
+	const Item tmp = inventory->cells[focus_id].item;
 	inventory->cells[focus_id].item = inventory->cells[moved_id].item;
 	inventory->cells[moved_id].item = tmp;
 }
@@ -588,12 +708,16 @@ void ui_inventory_render(Inventory* inventory, GameState* state)
 	ui_inventory_render_moved_item(inventory, state);
 }
 
+/*--------------------------------- INVENTORY ---------------------------------*/
+
+
+/*--------------------------------- MENU ---------------------------------*/
 
 void ui_tick_npc_menu(NPC* npc, GameState* state)
 {
 	NPCMenu* menu = &npc->menu;
 	Inventory* player_inventory = state->player->inventory;
-	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && menu->choice != -1)
+	if( (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER) )&& menu->choice != -1)
 	{
 		if(!strcmp(menu->option_strings[menu->choice], "Shop")) 
 		{
@@ -607,8 +731,10 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 		}
 		if(!strcmp(menu->option_strings[menu->choice], "Conversations"))
 		{
+			npc->menu.talking = true;
 			ui_text_display_push( (TextDisplay)	{ 
-					.text = text_data_table[ npc->text.generic ].text,
+					.owner = npc,
+					.data = text_data_table[ npc->text.generic ],
 					.stop = 1000,
 					.timer = 0,
 					},
@@ -622,6 +748,23 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 	}
 }
 
+
+//LOOKS OKAY BUT YOU NEED TO DISABLE SPACE WHEN TALKING AND INIT IT SOMEWAY
+static void ui_check_keys_npc_menu(GameState* state, u32 len, i8* pick, i8* selected)
+{
+	if(IsKeyReleased(KEY_DOWN) && ui_local_key_timer>= 4)
+	{
+		if(*pick < len - 1) (*pick) ++;
+		ui_local_key_timer = 0;
+	}
+	if(IsKeyReleased(KEY_UP) && ui_local_key_timer >= 4)
+	{
+		if(*pick > 0) (*pick) --;
+		ui_local_key_timer = 0;
+	}
+	ui_local_key_timer ++;
+	*selected = *pick;
+}
 
 
 void ui_render_npc_menu(NPC* npc, GameState* state)
@@ -638,7 +781,8 @@ void ui_render_npc_menu(NPC* npc, GameState* state)
 
 	const Vector2 mouse_pos = GetMousePosition();
 
-	i8 pick = -1;
+	i8 pick = menu->choice;
+	i8 selected = menu->choice;
 
 	for(i32 i = 0; i < menu->len; i++)
 	{
@@ -656,23 +800,32 @@ void ui_render_npc_menu(NPC* npc, GameState* state)
 
 		if(AAB(box, mouse_pos))
 		{
-			tint = (Color) { 130, 130, 130, 100 };
+			selected = i;
 			pick = i;
+		}
+
+		if(selected == i)
+		{
+			tint = (Color) { 130, 130, 130, 100 };
 		}
 
 
 		DrawTexturePro(state->gfx->texs[TEXTURE_GAME_UI], src, box, (Vector2) { 0 }, 0.0f, tint);
 		//P_LOG("String length of option [%d]: (%f,%f)\n", i, str_len.x, str_len.y);
 
-		ui_draw_text(str, text_pos, font_size, WHITE, WHITE, state);
+		ui_draw_text(str, text_pos, font_size, WHITE, state);
 	}
+	ui_check_keys_npc_menu(state, menu->len, &pick, &selected);
+	
 
 	menu->choice = pick;
 
 }
 
+/*--------------------------------- MENU ---------------------------------*/
 
-/* UI QUESTING */
+
+/*--------------------------------- QUEST ---------------------------------*/
 
 static const Color quest_class_to_color_table[] = {
 	{255, 0, 0, 255},
@@ -694,19 +847,19 @@ static const u8* quest_status_text[] = {
 	"[Finished]",
 };
 
-static void ui_player_quest_get_objective_kill_string(Player* player, QuestObjective quest_objective, char* dst)
+static void ui_player_quest_get_objective_kill_string(Player* player, QuestObjective quest_objective, u8* dst)
 {
 	strcpy(dst, "Slay: ");
 	strcat(dst, entity_get_name(quest_objective.objective.kill.kill_type));
 }
 
-static void ui_player_quest_get_objective_talk_string(Player* player, QuestObjective quest_objective, char* dst)
+static void ui_player_quest_get_objective_talk_string(Player* player, QuestObjective quest_objective, u8* dst)
 {
 	strcpy(dst, "Talk to: ");
 	strcat(dst,	npc_get_name(quest_objective.objective.talk.talk_to_type));
 }
 
-static void (*const objective_to_string_function_table[])(Player* player, QuestObjective quest_objective, char* dst) = {
+static void (*const objective_to_string_function_table[])(Player* player, QuestObjective quest_objective, u8* dst) = {
 	ui_player_quest_get_objective_kill_string,
 	ui_player_quest_get_objective_talk_string,
 };
@@ -730,7 +883,6 @@ f32 ui_player_quest_render(Player* player, GameState* state, Quest* quest, f32 y
 				TextFormat("%5.20s (%.2d/%.2d)", objective_string, current, target), 
 				(Vector2) { x_offset, offset }, 
 				font_size, 
-				BLACK,
 				WHITE,
 				state);
 	}
@@ -741,7 +893,7 @@ f32 ui_player_quest_render(Player* player, GameState* state, Quest* quest, f32 y
 void ui_player_quest_log_render(Player* player, GameState* state)
 {
 	QuestManager* qm = player->quest_manager;
-	const u32 quest_amount = qm->len;
+	const u32 quest_amount = quest_manager_list_len(&qm->quests);
 
 	const f32 x_offset = 50.0;
 	f32 y_offset = 50.0;
@@ -750,7 +902,7 @@ void ui_player_quest_log_render(Player* player, GameState* state)
 	char text[COMMON_UI_LABEL_MAX_LEN];
 	for(i32 i = 0; i < quest_amount; i++)
 	{
-		Quest* quest = &qm->quests[i];
+		Quest* quest = &qm->quests.data[i];
 		const Color text_color = quest_class_to_color_table[quest->data.class];
 		strcpy(text, quest->data.name);
 		strcat(text, " ");
@@ -759,7 +911,6 @@ void ui_player_quest_log_render(Player* player, GameState* state)
 				text, 
 				(Vector2) { x_offset, y_offset }, 
 				font_size, 
-				BLACK,
 				text_color,
 				state);
 		y_offset += font_size;
@@ -771,7 +922,16 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 {
 	NPCMenu* menu = &npc->menu;
 	QuestManager* qm = state->player->quest_manager;
-	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && menu->quest_choice != -1)
+	if(IsKeyPressed(KEY_BACKSPACE) && menu->quest_choice != -1)
+	{
+		QuestData quest_data = npc->quests.data[menu->quest_choice];
+		Quest* player_quest = quest_manager_get_quest(qm, quest_data.type);
+		if(player_quest != NULL && player_quest->status == QUEST_STATUS_ACCEPTED)
+		{
+			quest_manager_delete_quest(qm, quest_data.type);
+		}
+	}
+	else if( (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE) ) && menu->quest_choice != -1)
 	{
 		QuestData quest_data = npc->quests.data[menu->quest_choice];
 		Quest* player_quest = quest_manager_get_quest(qm, quest_data.type);
@@ -781,10 +941,20 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 			{
 				case QUEST_STATUS_COMPLETE: 
 					npc_finish_quest(npc, player_quest, menu->quest_choice, state);
+					npc->menu.talking = true;
+					ui_text_display_push( (TextDisplay)	{ 
+							.owner = npc,
+							.data = text_data_table[ npc->text.quests[ menu->quest_choice ].completion ],
+							.stop = 1000,
+							.timer = 0,
+							},
+							state);
 					break;
 				case QUEST_STATUS_ACCEPTED:
+					npc->menu.talking = true;
 					ui_text_display_push( (TextDisplay)	{ 
-							.text = text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text,
+							.owner = npc,
+							.data = text_data_table[ npc->text.quests[ menu->quest_choice ].information ],
 							.stop = 1000,
 							.timer = 0,
 							},
@@ -794,8 +964,10 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 		} 
 		else
 		{
+			npc->menu.talking = true;
 			ui_text_display_push( (TextDisplay)	{ 
-					.text = text_data_table[ npc->text.quests[ menu->quest_choice ].information ].text,
+					.owner = npc,
+					.data = text_data_table[ npc->text.quests[ menu->quest_choice ].information ],
 					.stop = 1000,
 					.timer = 0,
 					},
@@ -808,7 +980,7 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 					} );
 		}
 		menu->quest_menu_active = false;
-		menu->quest_choice = -1;
+		menu->quest_choice = 0;
 	}
 }
 
@@ -830,7 +1002,8 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 
 	u8 str[COMMON_UI_LABEL_MAX_LEN];
 
-	i8 pick = -1;
+	i8 pick = npc->menu.quest_choice;
+	i8 selected = npc->menu.quest_choice;
 	i32 not_available_counter = 0;
 
 	for(i32 i = 0; i < quests->len; i++)
@@ -849,7 +1022,7 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 			const Vector2 title_text_pos = { pos.x + title_box.width / 2.0 - title_str_len.x / 2.0, pos.y - font_size};
 
 			DrawTexturePro(state->gfx->texs[TEXTURE_GAME_UI], src, title_box, (Vector2) { 0 }, 0.0f, tint);
-			ui_draw_text(title_str, title_text_pos, font_size, WHITE, WHITE, state);
+			ui_draw_text(title_str, title_text_pos, font_size, WHITE, state);
 		}
 
 		if(quests->completed[i] || !npc_is_quest_available(npc, &quests->data[i], state)) 
@@ -861,21 +1034,21 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 		Color text_tint = WHITE;
 
 		strcpy(str, "");
-		for(i32 j = 0; j < qm->len; j++)
+		for(i32 j = 0; j < quest_manager_list_len(&qm->quests); j++)
 		{
-			if(quests->data[i].type == qm->quests[j].data.type)
+			if(quests->data[i].type == qm->quests.data[j].data.type)
 			{
-				if(qm->quests[j].status == QUEST_STATUS_COMPLETE) 
+				if(qm->quests.data[j].status == QUEST_STATUS_COMPLETE) 
 				{
 					text_tint = (Color) { 10, 210, 10, 255 };
 				}
-				if(qm->quests[j].status == QUEST_STATUS_ACCEPTED) 
+				if(qm->quests.data[j].status == QUEST_STATUS_ACCEPTED) 
 				{
 					text_tint = (Color) { 20, 20, 210, 255 };
 				}
-				strcpy(str, quest_status_text[qm->quests[j].status]);
+				strcpy(str, quest_status_text[qm->quests.data[j].status]);
 				strcat(str, " ");
-				j = qm->len;
+				j = quest_manager_list_len(&qm->quests);
 			}
 		}
 		strcat(str, quests->data[i].name);
@@ -885,43 +1058,37 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 		const Vector2 text_pos = { pos.x + box.width / 2.0 - str_len.x / 2.0, pos.y };
 
 
-
+#if 0
 		if(AAB(box, mouse_pos))
 		{
 			pick = i;
 			tint = (Color) { 130, 130, 130, 100 };
 		}
+#endif 
 
+		if(AAB(box, mouse_pos))
+		{
+			selected = i;
+			pick = i;
+		}
 
+		if(selected == i)
+		{
+			tint = (Color) { 130, 130, 130, 100 };
+		}
 
 		DrawTexturePro(state->gfx->texs[TEXTURE_GAME_UI], src, box, (Vector2) { 0 }, 0.0f, tint);
 		//P_LOG("String length of option [%d]: (%f,%f)\n", i, str_len.x, str_len.y);
-		ui_draw_text(str, text_pos, font_size, text_tint, text_tint, state);
+		ui_draw_text(str, text_pos, font_size, text_tint, state);
 	}
+	ui_check_keys_npc_menu(state, quests->len - 1, &pick, &selected);
 	npc->menu.quest_choice = pick;
 }
 
-/* UI QUESTING */
+/*--------------------------------- QUEST ---------------------------------*/
 
 
-
-
-void ui_render(GameState* state)
-{
-	Player* player = state->player;
-	DynList* npcs = state->map->npcs;
-	Inventory* player_inventory = state->player->inventory;
-	ui_player_quest_log_render(player, state);
-
-	npcs_ui_render(npcs, state);
-	ui_text_display_render(state);
-
-	if(player_inventory->active)
-	{
-		ui_inventory_render(player_inventory, state);
-	}
-	gfx_render_mouse(state->gfx);
-}
+/*--------------------------------- NPC INVENTORY ---------------------------------*/
 
 //TODO money logic
 static void ui_shop_buy_item(InventoryCell* cell, Inventory* shop_inventory, GameState* state)
@@ -929,7 +1096,6 @@ static void ui_shop_buy_item(InventoryCell* cell, Inventory* shop_inventory, Gam
 	Item item_to_buy = cell->item;
 	const Vector2 mouse_cords = GetMousePosition();
 	Inventory* player_inventory = state->player->inventory;
-	//Player* p = state->player;
 
 	//P_LOG("%f %f\n", cell->hitbox.x, cell->hitbox.y);
 	if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && 
@@ -958,7 +1124,7 @@ static void ui_shop_cell_tick(InventoryCell* cell, Inventory* shop_inventory, Ga
 
 void ui_shop_tick(Inventory* shop_inventory, GameState* state)
 {
-	if(!state->player->inventory->active) return;
+	if(!state->player->inventory->active) return; // ???
 
 	const Vector2 mp = GetMousePosition();
 	const u32 cap = ui_inventory_cap(shop_inventory);
@@ -1009,97 +1175,10 @@ void ui_smith_tick(Inventory* smith_inventory, GameState* state)
 	ui_smith_select_item(smith_inventory, state);
 }
 
-void ui_text_display_push(TextDisplay text_display, GameState* state)
-{
-	ui_text_queue_push(&state->ui->text_queue, text_display);
-}
+/*--------------------------------- NPC INVENTORY ---------------------------------*/
 
 
-void ui_text_display_render(GameState* state)
-{
-	UITextQueue* queue = &state->ui->text_queue;
-	const u8 index = 0;
-	const u32 character_limit = 64;
-	u8 frame_text[character_limit];
-
-	if(ui_text_queue_empty(queue))
-	{
-		return;
-	}
-
-	TextDisplay* current_displaying_text = ui_text_queue_get(queue, index);
-
-	const u32 text_speed = 4;
-	const u32 str_len = strlen(current_displaying_text->text);
-	const u32 remaining = str_len - current_displaying_text->text_offset;
-	u32 page_len = minu32(remaining, character_limit);
-	const u32 reveal_threshold = page_len * text_speed;
-	bool skip_flag = false;
-
-	if(page_len < remaining 
-			&& current_displaying_text->text[current_displaying_text->text_offset + page_len] != ' ')
-	{
-		u32 trimmed = page_len;
-		while(trimmed > 0 && current_displaying_text->text[current_displaying_text->text_offset + trimmed] != ' ') trimmed --;
-		if(trimmed > 0) page_len = trimmed;
-	}
-
-	u32 advance_page = page_len;
-	if(current_displaying_text->text_offset + page_len < str_len
-			&& current_displaying_text->text[current_displaying_text->text_offset + page_len] == ' ')
-	{
-		advance_page ++;
-	}
-
-
-	u32 revealed = current_displaying_text->reveal_timer / text_speed;
-	revealed = minu32(revealed, page_len);
-
-
-	if(IsKeyPressed(KEY_SPACE))
-	{
-		if(revealed < page_len)
-		{
-			current_displaying_text->reveal_timer = reveal_threshold;
-			revealed = page_len;
-			skip_flag = true;
-		}
-		else
-		{
-			current_displaying_text->reveal_timer = reveal_threshold + text_speed;
-		}
-	}
-
-	memcpy(frame_text, current_displaying_text->text + current_displaying_text->text_offset, revealed);
-	frame_text[revealed] = '\0';
-
-	if(IsKeyPressed(KEY_SPACE) && !skip_flag)
-	{
-		if(current_displaying_text->text_offset + page_len < str_len)
-		{
-
-			//current_displaying_text->text_offset += character_limit;
-			current_displaying_text->text_offset += advance_page;
-			current_displaying_text->reveal_timer = 0;
-		}
-		else
-		{
-			ui_text_queue_del(queue, index);
-
-		}
-	}
-
-	current_displaying_text->reveal_timer ++;
-
-	ui_wrap_text_render(
-			frame_text, 
-			(Vector2) { 240, 240 },
-			300,
-			10,
-			30,
-			state);
-
-}
+/*--------------------------------- UIQUEUES ---------------------------------*/
 
 UIQueues* ui_queues_new()
 {
@@ -1116,10 +1195,29 @@ void ui_queues_destroy(UIQueues* q)
 	free(q);
 }
 
+/*--------------------------------- UIQUEUES ---------------------------------*/
 
 
+/*--------------------------------- UI RENDER ---------------------------------*/
 
+void ui_render(GameState* state)
+{
+	Player* player = state->player;
+	DynList* npcs = state->map->npcs;
+	Inventory* player_inventory = state->player->inventory;
+	ui_player_quest_log_render(player, state);
 
+	ui_text_display_render(state);
+	npcs_ui_render(npcs, state);
+
+	if(player_inventory->active)
+	{
+		ui_inventory_render(player_inventory, state);
+	}
+	gfx_render_mouse(state->gfx);
+}
+
+/*--------------------------------- UI RENDER ---------------------------------*/
 
 
 
