@@ -31,6 +31,8 @@ void ui_queues_destroy(UIQueues* q);
 void ui_text_display_push(TextDisplay text_display, GameState* state);
 void ui_text_display_render(GameState* state);
 
+UIElements* ui_elements_new();
+
 
 void ui_inventory_toggle_fire(Inventory* inventory, GameState* state);
 void ui_inventory_sort_cells(Inventory* inventory, GameState* state);

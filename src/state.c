@@ -26,6 +26,7 @@ GameState* state_new()
 		.gfx = gfx_new(),
 		.global_sound_manager = sound_manager_new(),
 		.ui = ui_queues_new(),
+		.ui_elements = ui_elements_new(),
 	};
 
 	sound_manager_global_init(newstate->global_sound_manager);

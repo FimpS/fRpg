@@ -2,6 +2,7 @@
 #include "player.h"
 #include "entity.h"
 #include "quest_data.h"
+#include "skills.h"
 
 static bool quests_are_updated = false;
 
@@ -41,6 +42,7 @@ bool quest_is_complete(Player* player, QuestType key)
 	for(i32 i = 0; i < manager_len; i++)
 	{
 		Quest* q = &qm->quests.data[i];
+		P_LOG("Quest of Type %d; is complete: %d\n", q->data.type, q->status);
 		if(q->data.type == key && q->status == QUEST_STATUS_COMPLETE) return true;
 	}
 
@@ -169,6 +171,14 @@ Player* player_new()
 	player->entity = entity_new(ENTITY_PLAYER, (Vector2) { 10.0, 10.0 } );
 	player->inventory = ui_inventory_new(INVENTORY_TYPE_PLAYER);	
 	player->quest_manager = player_quest_manager_new(player);
+
+	// TESTTTTTTTTTTTTTTTTTTt
+	player->skill = malloc(sizeof(Skill));
+	*player->skill = (Skill) {
+		.data = skill_data_table[SKILL_TYPE_PLACEHOLDER],
+		.caster = player->entity,
+	};
+	// TESTTTTTTTTTTTTTTTTTTt
 
 	for(i32 i = 0; i < player->quest_manager->quests.len; i++)
 	{

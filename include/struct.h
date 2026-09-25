@@ -7,6 +7,7 @@
 #include "../lib/statList.h"
 
 typedef struct Map Map;
+typedef struct Skill Skill;
 typedef struct Entity Entity;
 typedef struct GameState GameState;
 typedef struct Inventory Inventory;
@@ -195,12 +196,14 @@ typedef struct QuestReward
 } QuestReward;
 
 #define MAX_PREREQ_QUESTS 8
+DEFINE_STATIC_LIST(QuestType, QuestPreList, quest_pre_list, MAX_PREREQ_QUESTS);
 typedef struct QuestPrerequisite
 {
 	i32 player_level;
 
-	u32 quests_len;
-	QuestType quests[MAX_PREREQ_QUESTS];
+	QuestPreList quests;
+	//u32 quests_len;
+	//QuestType quests[MAX_PREREQ_QUESTS];
 } QuestPrerequisite;
 
 #define MAX_QUEST_OBJECTIVES 8
@@ -297,6 +300,7 @@ typedef struct Player
 {
 	Entity* entity;
 	Inventory* inventory;
+	Skill* skill;
 	QuestManager* quest_manager;
 } Player;
 
@@ -371,7 +375,41 @@ typedef struct Map
 
 /* MAP */
 
+/* SKILLS */
+typedef struct Skill Skill;
+
+typedef struct SkillTreeNode
+{
+
+} SkillTreeNode;
+
+typedef struct SkillData
+{
+	SkillType type;
+	bool castable;
+	void (*activate)(Skill* skill, GameState* state, Entity* target);
+} SkillData;
+
+typedef struct Skill
+{
+	SkillData data;
+	Entity* caster;
+} Skill;
+
+#define MAX_HOTBAR_SKILLS 8
+typedef struct SkillHotBar
+{
+	SkillType skills[MAX_HOTBAR_SKILLS];	
+} SkillHotBar;
+
+/* SKILLS */
+
 /* UI */
+
+typedef struct UIElements
+{
+	SkillHotBar hotbar;
+} UIElements;
 
 typedef struct TextDisplay
 {
@@ -457,6 +495,7 @@ typedef struct GameState
 	UIQueues* ui;
 	Gfx* gfx;
 
+	UIElements* ui_elements;
 
 	Player* player;
 } GameState;

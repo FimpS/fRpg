@@ -563,6 +563,30 @@ src/shop_data.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/shop_data.c.s
 .PHONY : src/shop_data.c.s
 
+src/skills.o: src/skills.c.o
+.PHONY : src/skills.o
+
+# target to build an object file
+src/skills.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/skills.c.o
+.PHONY : src/skills.c.o
+
+src/skills.i: src/skills.c.i
+.PHONY : src/skills.i
+
+# target to preprocess a source file
+src/skills.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/skills.c.i
+.PHONY : src/skills.c.i
+
+src/skills.s: src/skills.c.s
+.PHONY : src/skills.s
+
+# target to generate assembly for a file
+src/skills.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/skills.c.s
+.PHONY : src/skills.c.s
+
 src/sound.o: src/sound.c.o
 .PHONY : src/sound.o
 
@@ -745,6 +769,9 @@ help:
 	@echo "... src/shop_data.o"
 	@echo "... src/shop_data.i"
 	@echo "... src/shop_data.s"
+	@echo "... src/skills.o"
+	@echo "... src/skills.i"
+	@echo "... src/skills.s"
 	@echo "... src/sound.o"
 	@echo "... src/sound.i"
 	@echo "... src/sound.s"

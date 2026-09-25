@@ -2,9 +2,9 @@
 
 
 const QuestPrerequisite quest_prerequisite_table[] = {
-// 	PlayerLevel		len				QuestTypes
-	{0, 			1, 				{ 	QUEST_TYPE_PLACEHOLDER,	} },
-	{0, 			0, 				{	0, },	},
+// 	PlayerLevel		PreReqQuests	
+	{0, 			{ 1, 				{ 	QUEST_TYPE_KILL_5_IMPS,	} } },
+	{0, 			{ 0, 				{	QUEST_TYPE_NONE, } },	},
 };
 
 const QuestReward quest_reward_table[] = {
@@ -27,7 +27,7 @@ const QuestData quest_data_table[] = {
 };
 
 const NPCQuestDataTypes npc_quest_data_types_table[] = {
-	(NPCQuestDataTypes) { 4, .types= { QUEST_TYPE_KILL_5_IMPS, QUEST_TYPE_KILL_5_IMPS, QUEST_TYPE_KILL_5_IMPS, QUEST_TYPE_PLACEHOLDER } },
+	(NPCQuestDataTypes) { 4, .types= { QUEST_TYPE_KILL_5_IMPS, QUEST_TYPE_PLACEHOLDER, QUEST_TYPE_KILL_5_IMPS, QUEST_TYPE_PLACEHOLDER } },
 	(NPCQuestDataTypes) { 2, .types= { QUEST_TYPE_PLACEHOLDER, QUEST_TYPE_PLACEHOLDER } },
 	(NPCQuestDataTypes) { 1, .types= { QUEST_TYPE_KILL_5_IMPS, } },
 };

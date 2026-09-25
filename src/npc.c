@@ -101,7 +101,7 @@ void npc_finish_quest(NPC* npc, Quest* quest, const i32 quest_index, GameState* 
 	npc_give_quest_reward(npc, quest, state);
 	quest_manager_delete_quest(qm, quest->data.type);
 	npc->quests.completed[quest_index] = true;	
-	state->player->quest_manager->completed[quest->data.type].completed = true;;
+	state->player->quest_manager->completed[quest->data.type].completed = true;
 }
 
 bool npc_is_quest_available(NPC* npc, const QuestData* data, GameState* state)
@@ -111,11 +111,12 @@ bool npc_is_quest_available(NPC* npc, const QuestData* data, GameState* state)
 
 	//if(! (player->level >= data->prerequisite.player_level) ) return false;
 
-	const u32 len = prerequisite.quests_len;
+	const u32 len = quest_pre_list_len(&prerequisite.quests);
 
+	// Need to have quest length to 0 to disable prereqs
 	for(i32 i = 0; i < len; i++)
 	{
-		QuestType type = prerequisite.quests[i];
+		QuestType type = *quest_pre_list_get(&prerequisite.quests, i);
 		if(!player->quest_manager->completed[type].completed) return false;
 	}
 	return true;

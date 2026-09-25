@@ -44,7 +44,7 @@ int main(void) {
 	for(i32 i = 0; i < 10; i++)
 	{
 	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0 + i} );
-	enemy->target = state->player->entity;
+	enemy->target = state->player->entity; //TODO well this is really bad that is why it fails
 	dynList_push(state->map->entities, enemy);
 	}
 #endif

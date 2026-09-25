@@ -54,6 +54,7 @@ typedef enum QuestType
 {
 	QUEST_TYPE_PLACEHOLDER,
 	QUEST_TYPE_KILL_5_IMPS,
+	QUEST_TYPE_NONE,
 } QuestType;
 
 typedef enum QuestClass
@@ -130,6 +131,14 @@ typedef enum
 	INVENTORY_MODE_MOVE,
 	INVENTORY_MODE_DELETE,
 } InventoryMode;
+
+typedef enum
+{
+	SKILL_TYPE_PLACEHOLDER,
+	SKILL_TYPE_FIREBALL,
+	SKILL_TYPE_NONE,
+} SkillType;
+
 
 typedef enum SoundTypeGlobal
 {

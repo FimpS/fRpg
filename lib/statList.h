@@ -7,8 +7,8 @@
 #define DEFINE_STATIC_LIST(T, Name, Prefix, CAP)                     \
     typedef struct 													 \
 	{                                                 				 \
-        T data[CAP];                                                 \
         u64 len;                                                     \
+        T data[CAP];                                                 \
     } Name;                                                          \
 																	 \
 	static inline Name Prefix##_init() {							 \

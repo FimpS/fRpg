@@ -7,6 +7,7 @@
 #include "shop_data.h"
 #include "text_data.h"
 #include "entity.h"
+#include "skills.h"
 #include "global.h"
 #include "quest_data.h"
 #include "npc.h"
@@ -244,10 +245,16 @@ void ui_text_display_render(GameState* state)
 	current_displaying_text->reveal_timer ++;
 
 	const u32 font_size = 18;
+	const Vector2 frame_str_len = MeasureTextEx(state->gfx->ui_font, frame_text, font_size, 0.0);
+	const u32 text_width = 300;
+	const Vector2 pos = {
+		GetScreenWidth() / 2 - text_width / 2,
+		GetScreenHeight() - 100
+	};
 	ui_wrap_text_render(
 			frame_text, 
-			(Vector2) { 240, 240 },
-			300,
+			pos,
+			text_width,
 			10,
 			font_size,
 			state);
@@ -351,7 +358,7 @@ static void ui_inventory_init_buttons(Inventory* inventory)
 		button->hitbox = ui_buttons_table[i].hitbox;
 		Vector2 offset = { button->hitbox.x, button->hitbox.y };
 		Vector2 inv_pos = { inventory->hitbox.x + inventory->hitbox.width, 
-							inventory->hitbox.y + inventory->hitbox.height };
+			inventory->hitbox.y + inventory->hitbox.height };
 
 		button->hitbox = (Rectangle) {
 			.x = inv_pos.x - offset.x,
@@ -723,7 +730,7 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 		{
 			npc->inventory->active = true;
 			player_inventory->active = true;
-			
+
 		}
 		if(!strcmp(menu->option_strings[menu->choice], "Quests")) 
 		{
@@ -816,7 +823,7 @@ void ui_render_npc_menu(NPC* npc, GameState* state)
 		ui_draw_text(str, text_pos, font_size, WHITE, state);
 	}
 	ui_check_keys_npc_menu(state, menu->len, &pick, &selected);
-	
+
 
 	menu->choice = pick;
 
@@ -984,6 +991,7 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 	}
 }
 
+
 void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 {
 	Gfx* gfx = state->gfx;
@@ -1004,11 +1012,22 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 
 	i8 pick = npc->menu.quest_choice;
 	i8 selected = npc->menu.quest_choice;
-	i32 not_available_counter = 0;
 
+
+	u32 available_quests_len = 0;
+	QuestData available_quests[MAX_QUESTS_ALLOWED];
 	for(i32 i = 0; i < quests->len; i++)
 	{
-		const Vector2 pos = { first_pos.x, first_pos.y + (i - not_available_counter) * (font_size + 1) };
+		if(!(quests->completed[i] || !npc_is_quest_available(npc, &quests->data[i], state))) 
+		{
+			available_quests[available_quests_len ++] = quests->data[i];
+		}
+	}
+
+	//P_LOG("%d\n", available_quests_len);
+	for(i32 i = 0; i < available_quests_len ; i++)
+	{
+		const Vector2 pos = { first_pos.x, first_pos.y + (i) * (font_size + 1) };
 		const Rectangle box = { pos.x, pos.y, box_width, box_height }; 
 		const Rectangle src = { 0, 0, 16, 16 }; 
 		Color tint = WHITE;
@@ -1025,18 +1044,13 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 			ui_draw_text(title_str, title_text_pos, font_size, WHITE, state);
 		}
 
-		if(quests->completed[i] || !npc_is_quest_available(npc, &quests->data[i], state)) 
-		{
-			not_available_counter ++;
-			continue;
-		}
 		//const u8* str = quests->data[i].name;
 		Color text_tint = WHITE;
 
 		strcpy(str, "");
 		for(i32 j = 0; j < quest_manager_list_len(&qm->quests); j++)
 		{
-			if(quests->data[i].type == qm->quests.data[j].data.type)
+			if(available_quests[i].type == qm->quests.data[j].data.type)
 			{
 				if(qm->quests.data[j].status == QUEST_STATUS_COMPLETE) 
 				{
@@ -1051,7 +1065,7 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 				j = quest_manager_list_len(&qm->quests);
 			}
 		}
-		strcat(str, quests->data[i].name);
+		strcat(str, available_quests[i].name);
 
 		const Vector2 str_len = MeasureTextEx(gfx->ui_font, str, font_size, 0.0);
 
@@ -1081,7 +1095,10 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 		//P_LOG("String length of option [%d]: (%f,%f)\n", i, str_len.x, str_len.y);
 		ui_draw_text(str, text_pos, font_size, text_tint, state);
 	}
-	ui_check_keys_npc_menu(state, quests->len - 1, &pick, &selected);
+
+	i8 old_pick = pick;
+	ui_check_keys_npc_menu(state, available_quests_len, &pick, &selected);
+
 	npc->menu.quest_choice = pick;
 }
 
@@ -1178,7 +1195,107 @@ void ui_smith_tick(Inventory* smith_inventory, GameState* state)
 /*--------------------------------- NPC INVENTORY ---------------------------------*/
 
 
+/*--------------------------------- SKILL HOTBAR ---------------------------------*/
+
+
+static const i32 skill_keys[] = {
+	KEY_E,
+	KEY_R,
+	KEY_T,
+	KEY_Y,
+	KEY_F,
+	KEY_G,
+	KEY_X,
+	KEY_C,
+};
+
+void ui_skill_hotbar_tick(GameState* state)
+{
+	SkillHotBar* hotbar = &state->ui_elements->hotbar;
+
+	const u32 len = MAX_HOTBAR_SKILLS;
+	for(i32 i = 0; i < len; i++)
+	{
+		if(IsKeyPressed( skill_keys[i] ))
+		{
+			const SkillType type = hotbar->skills[i];
+			if(type == SKILL_TYPE_NONE) continue;
+			skills_use_skill( (Skill) {
+					.data = skill_data_table[type],
+					.caster = state->player->entity,
+			},
+			state,
+			NULL
+			);
+		}
+	}
+}
+
+static void ui_skill_hotbar_render_frames(GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	SkillHotBar* hotbar = &state->ui_elements->hotbar;
+
+	P_LOG("Q: %d, W: %d\n", KEY_Q, KEY_W);
+	const u32 total_len = MAX_HOTBAR_SKILLS;
+	for(i32 i = 0; i < total_len; i++)
+	{
+		const u32 width = 25;
+		const SkillType frame_skill_type = hotbar->skills[i]; //TODO no table to find rec, just make it mathematical with a new tilemap
+		const Rectangle frame_src = (Rectangle)	 {0,0,16,16};
+		const Rectangle skill_src = (Rectangle)	 {16,0,16,16};
+		const Rectangle dst = (Rectangle)	 {155 + (i * (width + 4)),500,width,width};
+
+		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI],
+				frame_src,
+				dst,
+				(Vector2) {0},
+				0.0f,
+				WHITE
+				);
+
+		if(frame_skill_type == SKILL_TYPE_NONE) continue;
+		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI],
+				skill_src,
+				dst,
+				(Vector2) {0},
+				0.0f,
+				WHITE
+				);
+	}
+}
+
+void ui_skill_hotbar_render(GameState* state)
+{
+	SkillHotBar* hotbar = &state->ui_elements->hotbar;
+	ui_skill_hotbar_render_frames(state);	
+}
+
+
+/*--------------------------------- SKILL HOTBAR ---------------------------------*/
+
+
 /*--------------------------------- UIQUEUES ---------------------------------*/
+
+UIElements* ui_elements_new()
+{
+	UIElements* ui = malloc(sizeof(UIElements));
+
+	(*ui) = (UIElements) {
+		.hotbar = (SkillHotBar) {
+			.skills = {0},
+
+		},
+	};
+	for(i32 i = 0; i < MAX_HOTBAR_SKILLS; i++)
+	{
+		ui->hotbar.skills[i] = SKILL_TYPE_NONE;
+	}
+	ui->hotbar.skills[3] = SKILL_TYPE_PLACEHOLDER;
+
+	return ui;
+}
+
 
 UIQueues* ui_queues_new()
 {
@@ -1205,7 +1322,11 @@ void ui_render(GameState* state)
 	Player* player = state->player;
 	DynList* npcs = state->map->npcs;
 	Inventory* player_inventory = state->player->inventory;
+
+	ui_skill_hotbar_tick(state);
+
 	ui_player_quest_log_render(player, state);
+	ui_skill_hotbar_render(state);
 
 	ui_text_display_render(state);
 	npcs_ui_render(npcs, state);
