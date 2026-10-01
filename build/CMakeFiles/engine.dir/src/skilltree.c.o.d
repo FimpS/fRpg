@@ -1,6 +1,8 @@
-CMakeFiles/engine.dir/src/player.c.o: \
- /home/samuel/c/game/fRpgCrawler/src/player.c /usr/include/stdc-predef.h \
- /home/samuel/c/game/fRpgCrawler/include/player.h \
+CMakeFiles/engine.dir/src/skilltree.c.o: \
+ /home/samuel/c/game/fRpgCrawler/src/skilltree.c \
+ /usr/include/stdc-predef.h \
+ /home/samuel/c/game/fRpgCrawler/include/skilltree.h \
+ /home/samuel/c/game/fRpgCrawler/include/struct.h \
  /home/samuel/c/game/fRpgCrawler/include/global.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -73,18 +75,14 @@ CMakeFiles/engine.dir/src/player.c.o: \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathinline.h \
  /home/samuel/c/game/fRpgCrawler/include/enum.h \
- /home/samuel/c/game/fRpgCrawler/include/struct.h \
  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/dynList.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/statList.h \
+ /home/samuel/c/game/fRpgCrawler/include/ui.h \
+ /home/samuel/c/game/fRpgCrawler/include/item.h \
  /home/samuel/c/game/fRpgCrawler/include/state.h \
  /home/samuel/c/game/fRpgCrawler/include/map.h \
  /home/samuel/c/game/fRpgCrawler/include/entity.h \
  /usr/local/include/raymath.h \
  /home/samuel/c/game/fRpgCrawler/include/path.h \
- /home/samuel/c/game/fRpgCrawler/include/npc.h \
- /home/samuel/c/game/fRpgCrawler/include/ui.h \
- /home/samuel/c/game/fRpgCrawler/include/item.h \
- /home/samuel/c/game/fRpgCrawler/include/skilltree.h \
- /home/samuel/c/game/fRpgCrawler/include/quest_data.h \
- /home/samuel/c/game/fRpgCrawler/include/skills.h
+ /home/samuel/c/game/fRpgCrawler/include/npc.h

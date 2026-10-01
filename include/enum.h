@@ -1,5 +1,6 @@
 #pragma once
 
+
 typedef enum MapSoundIndex
 {
 	MAPSOUND_DEFAULT,
@@ -11,6 +12,7 @@ typedef enum TextureIndex
 	TEXTURE_TILEMAP,
 	TEXTURE_EDITOR_UI,
 	TEXTURE_GAME_UI,
+	TEXTURE_SKILL_DISPLAY,
 } TextureIndex;
 
 typedef enum EntityType
@@ -134,10 +136,22 @@ typedef enum
 
 typedef enum
 {
+	SKILL_TYPE_NONE,
 	SKILL_TYPE_PLACEHOLDER,
 	SKILL_TYPE_FIREBALL,
-	SKILL_TYPE_NONE,
+	SKILL_TYPE_ONE,
+	SKILL_TYPE_TWO,
+	SKILL_TYPE_THREE,
+	SKILL_TYPE_FOUR,
 } SkillType;
+
+typedef enum 
+{
+	CHARACTER_CLASS_WARLOCK,
+	CHARACTER_CLASS_WARRIOR,
+	CHARACTER_CLASS_NONE,
+} CharacterClass;
+
 
 
 typedef enum SoundTypeGlobal

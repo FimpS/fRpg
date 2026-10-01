@@ -25,10 +25,19 @@ void skills_placeholder_activate(Skill* skill, GameState* state, Entity* target)
 }
 
 
-
+Rectangle skills_get_skill_src(SkillType type, CharacterClass class)
+{
+	const u32 length = 16;
+	return (Rectangle) { type * length, class * length, length, length };
+}
 
 
 const SkillData skill_data_table[] = {
+	{SKILL_TYPE_NONE, 				false, 		NULL},
 	{SKILL_TYPE_PLACEHOLDER, 		true, 		skills_placeholder_activate},
 	{SKILL_TYPE_FIREBALL, 			false, 		NULL},
+	{SKILL_TYPE_ONE, 				false, 		NULL},
+	{SKILL_TYPE_TWO, 				false, 		NULL},
+	{SKILL_TYPE_THREE, 				false, 		NULL},
+	{SKILL_TYPE_FOUR, 				false, 		NULL},
 };

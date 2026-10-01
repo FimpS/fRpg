@@ -133,6 +133,7 @@ static const u8* texture_filenames[] =
 	"../assets/TileMap.png",
 	"../assets/EditorUI.png",
 	"../assets/UI.png",
+	"../assets/SkillDisplay.png",
 };
 
 LightGfx* lightgfx_new()

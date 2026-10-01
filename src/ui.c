@@ -5,6 +5,7 @@
 #include "ui.h"
 #include "ui_data.h"
 #include "shop_data.h"
+#include "skilltree.h"
 #include "text_data.h"
 #include "entity.h"
 #include "skills.h"
@@ -21,6 +22,16 @@ static i32 ui_local_key_timer = 0;
 
 
 /*--------------------------------- UI GLOBALS ---------------------------------*/
+
+/*--------------------------------- UI GENERIC ---------------------------------*/
+
+void ui_draw_element(Texture2D* tex, Rectangle src, Rectangle dst, Color tint)
+{
+	DrawTexturePro(*tex, src, dst, (Vector2) {0}, 0.0f, tint);
+}
+
+/*--------------------------------- UI GENERIC ---------------------------------*/
+
 
 /*--------------------------------- DRAW TEXT ---------------------------------*/
 
@@ -1194,6 +1205,42 @@ void ui_smith_tick(Inventory* smith_inventory, GameState* state)
 
 /*--------------------------------- NPC INVENTORY ---------------------------------*/
 
+/*--------------------------------- SKILL TREE ---------------------------------*/
+
+static void skill_tree_draw_background(GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	SkillTree* tree = state->player->skill_tree;
+
+	const Rectangle src = { 0, 0, 16, 16 };
+	const Rectangle dst = { 40, 100, 400, 800 };
+
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, dst, (Color) { 220, 210, 160, 255 });
+}
+
+void ui_skill_tree_toggle(GameState* state)
+{
+	SkillTree* tree = state->player->skill_tree;
+	if(IsKeyPressed(KEY_K))
+	{
+		tree->active = !tree->active;
+	}
+}
+
+void ui_skill_tree_render(GameState* state)
+{
+	SkillTree* tree = state->player->skill_tree;
+
+	if(!tree->active) return; 
+	skill_tree_draw_background(state);
+
+	skill_tree_render(tree->root, state);
+
+	ui_draw_text(TextFormat("Skill Points: %d\n", tree->skill_points), (Vector2) { 200, 50 }, 24, YELLOW, state);
+}
+
+
+/*--------------------------------- SKILL TREE ---------------------------------*/
 
 /*--------------------------------- SKILL HOTBAR ---------------------------------*/
 
@@ -1236,15 +1283,22 @@ static void ui_skill_hotbar_render_frames(GameState* state)
 	Gfx* gfx = state->gfx;
 	SkillHotBar* hotbar = &state->ui_elements->hotbar;
 
-	P_LOG("Q: %d, W: %d\n", KEY_Q, KEY_W);
+	const Vector2 mouse_pos = GetMousePosition();
 	const u32 total_len = MAX_HOTBAR_SKILLS;
 	for(i32 i = 0; i < total_len; i++)
 	{
-		const u32 width = 25;
+		const u32 width = 42;
+		const u8 frame_character[2] = {skill_keys[i] - KEY_A + 'A', '\0'};
 		const SkillType frame_skill_type = hotbar->skills[i]; //TODO no table to find rec, just make it mathematical with a new tilemap
 		const Rectangle frame_src = (Rectangle)	 {0,0,16,16};
-		const Rectangle skill_src = (Rectangle)	 {16,0,16,16};
-		const Rectangle dst = (Rectangle)	 {155 + (i * (width + 4)),500,width,width};
+		const Rectangle skill_src = skills_get_skill_src(hotbar->skills[i], state->player->class);
+		hotbar->start_location = (Rectangle) { 455, 800, width, width };
+		const Rectangle dst = (Rectangle)	 {455 + (i * (width + 4)),800,width,width};
+
+		if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && AAB(dst, mouse_pos))
+		{
+			hotbar->skills[i] = SKILL_TYPE_NONE;
+		}
 
 		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI],
 				frame_src,
@@ -1254,14 +1308,12 @@ static void ui_skill_hotbar_render_frames(GameState* state)
 				WHITE
 				);
 
-		if(frame_skill_type == SKILL_TYPE_NONE) continue;
-		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI],
-				skill_src,
-				dst,
-				(Vector2) {0},
-				0.0f,
-				WHITE
-				);
+		if(frame_skill_type != SKILL_TYPE_NONE) 
+		{
+			ui_draw_element(&gfx->texs[TEXTURE_SKILL_DISPLAY], skill_src, dst, WHITE);
+		}
+
+		ui_draw_text( frame_character, (Vector2) { dst.x + 1, dst.y + 1}, 16, YELLOW, state);
 	}
 }
 
@@ -1330,6 +1382,7 @@ void ui_render(GameState* state)
 
 	ui_text_display_render(state);
 	npcs_ui_render(npcs, state);
+	ui_skill_tree_render(state);
 
 	if(player_inventory->active)
 	{

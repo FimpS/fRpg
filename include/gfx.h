@@ -5,7 +5,7 @@
 #include "../lib/types.h"
 #include "../lib/dynList.h"
 
-#define TEXTURE_COUNT 3
+#define TEXTURE_COUNT 4
 #define MAX_SCREEN_STRING_LEN 48
 #define DEFAULT_RES_X 1920
 #define DEFAULT_RES_Y 1080

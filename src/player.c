@@ -1,6 +1,7 @@
 
 #include "player.h"
 #include "entity.h"
+#include "skilltree.h"
 #include "quest_data.h"
 #include "skills.h"
 
@@ -171,14 +172,8 @@ Player* player_new()
 	player->entity = entity_new(ENTITY_PLAYER, (Vector2) { 10.0, 10.0 } );
 	player->inventory = ui_inventory_new(INVENTORY_TYPE_PLAYER);	
 	player->quest_manager = player_quest_manager_new(player);
-
-	// TESTTTTTTTTTTTTTTTTTTt
-	player->skill = malloc(sizeof(Skill));
-	*player->skill = (Skill) {
-		.data = skill_data_table[SKILL_TYPE_PLACEHOLDER],
-		.caster = player->entity,
-	};
-	// TESTTTTTTTTTTTTTTTTTTt
+	player->skill_tree = skill_tree_new();
+	player->class = CHARACTER_CLASS_WARLOCK;
 
 	for(i32 i = 0; i < player->quest_manager->quests.len; i++)
 	{
@@ -196,6 +191,8 @@ void player_tick(Player* player, GameState* state)
 
 	//ui_inventory_tick(player->inventory, state);
 	ui_inventory_player_toggle(player->inventory, state);
+	ui_skill_tree_toggle(state);
+
 	ui_inventory_tick(player->inventory, state);
 
 	if(quests_are_updated)

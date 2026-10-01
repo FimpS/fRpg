@@ -10,6 +10,8 @@
 
 void ui_wrap_text_render(const u8* text, Vector2 pos, const i32 max_width, const u32 padding, const u32 font_size, GameState* state);
 void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState* state);
+void ui_draw_element(Texture2D* tex, Rectangle src, Rectangle dst, Color tint);
+void ui_draw_text(const u8* text, Vector2 pos, u32 font_size, Color color, GameState* state);
 
 Inventory* ui_inventory_new(InventoryType type);
 
@@ -23,6 +25,9 @@ void ui_render_npc_menu(NPC* npc, GameState* state);
 void ui_render_npc_quest_menu(NPC* npc, GameState* state);
 void ui_tick_npc_menu(NPC* npc, GameState* state);
 void ui_tick_npc_quest_menu(NPC* npc, GameState* state);
+
+void ui_skill_tree_toggle(GameState* state);
+void ui_skill_tree_render(GameState* state);
 
 void ui_render(GameState* state);
 

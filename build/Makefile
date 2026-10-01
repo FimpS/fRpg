@@ -587,6 +587,30 @@ src/skills.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/skills.c.s
 .PHONY : src/skills.c.s
 
+src/skilltree.o: src/skilltree.c.o
+.PHONY : src/skilltree.o
+
+# target to build an object file
+src/skilltree.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/skilltree.c.o
+.PHONY : src/skilltree.c.o
+
+src/skilltree.i: src/skilltree.c.i
+.PHONY : src/skilltree.i
+
+# target to preprocess a source file
+src/skilltree.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/skilltree.c.i
+.PHONY : src/skilltree.c.i
+
+src/skilltree.s: src/skilltree.c.s
+.PHONY : src/skilltree.s
+
+# target to generate assembly for a file
+src/skilltree.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/skilltree.c.s
+.PHONY : src/skilltree.c.s
+
 src/sound.o: src/sound.c.o
 .PHONY : src/sound.o
 
@@ -772,6 +796,9 @@ help:
 	@echo "... src/skills.o"
 	@echo "... src/skills.i"
 	@echo "... src/skills.s"
+	@echo "... src/skilltree.o"
+	@echo "... src/skilltree.i"
+	@echo "... src/skilltree.s"
 	@echo "... src/sound.o"
 	@echo "... src/sound.i"
 	@echo "... src/sound.s"

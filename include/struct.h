@@ -9,6 +9,8 @@
 typedef struct Map Map;
 typedef struct Skill Skill;
 typedef struct Entity Entity;
+typedef struct SkillTreeNode SkillTreeNode;
+typedef struct SkillTree SkillTree;
 typedef struct GameState GameState;
 typedef struct Inventory Inventory;
 
@@ -302,6 +304,8 @@ typedef struct Player
 	Inventory* inventory;
 	Skill* skill;
 	QuestManager* quest_manager;
+	CharacterClass class;
+	SkillTree* skill_tree;
 } Player;
 
 
@@ -376,11 +380,37 @@ typedef struct Map
 /* MAP */
 
 /* SKILLS */
+
 typedef struct Skill Skill;
 
+
+
+typedef struct SkillTree
+{
+	bool active;
+	SkillTreeNode* holding_node;
+	SkillTreeNode* root;
+
+	i32 skill_points;
+} SkillTree;
+
+#define MAX_SKILL_TREE_ADJACENT 4
+typedef struct SkillTreeNode SkillTreeNode;
+typedef struct SkillTreeNodeData
+{
+	SkillType type;
+	i32 level;
+	i32 skill_point_cost;
+	Vector2 pos;
+	SkillType neighbors[MAX_SKILL_TREE_ADJACENT];
+} SkillTreeNodeData;
 typedef struct SkillTreeNode
 {
-
+	SkillType type;
+	i32 level;
+	i32 skill_point_cost;
+	Vector2 pos;
+	SkillTreeNode* neighbors[MAX_SKILL_TREE_ADJACENT];
 } SkillTreeNode;
 
 typedef struct SkillData
@@ -400,6 +430,7 @@ typedef struct Skill
 typedef struct SkillHotBar
 {
 	SkillType skills[MAX_HOTBAR_SKILLS];	
+	Rectangle start_location;
 } SkillHotBar;
 
 /* SKILLS */
@@ -498,6 +529,7 @@ typedef struct GameState
 	UIElements* ui_elements;
 
 	Player* player;
+
 } GameState;
 
 /* State */

@@ -31,6 +31,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/shop_data.c.o.d"
   "CMakeFiles/engine.dir/src/skills.c.o"
   "CMakeFiles/engine.dir/src/skills.c.o.d"
+  "CMakeFiles/engine.dir/src/skilltree.c.o"
+  "CMakeFiles/engine.dir/src/skilltree.c.o.d"
   "CMakeFiles/engine.dir/src/sound.c.o"
   "CMakeFiles/engine.dir/src/sound.c.o.d"
   "CMakeFiles/engine.dir/src/state.c.o"
