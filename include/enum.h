@@ -1,6 +1,5 @@
 #pragma once
 
-
 typedef enum MapSoundIndex
 {
 	MAPSOUND_DEFAULT,
@@ -134,6 +133,12 @@ typedef enum
 	INVENTORY_MODE_DELETE,
 } InventoryMode;
 
+#define MAX_SKILLS_IN_SKILLTREE 16
+typedef enum
+{
+	SKILL_TYPE_MAX_COUNT = MAX_SKILLS_IN_SKILLTREE,
+} SkillType;
+
 typedef enum
 {
 	SKILL_TYPE_NONE,
@@ -143,14 +148,15 @@ typedef enum
 	SKILL_TYPE_TWO,
 	SKILL_TYPE_THREE,
 	SKILL_TYPE_FOUR,
-} SkillType;
+	SKILL_TYPE_COUNT = SKILL_TYPE_MAX_COUNT,
+} WarlockSkillType;
 
 typedef enum 
 {
 	CHARACTER_CLASS_WARLOCK,
 	CHARACTER_CLASS_WARRIOR,
 	CHARACTER_CLASS_NONE,
-} CharacterClass;
+} CharacterClassType;
 
 
 

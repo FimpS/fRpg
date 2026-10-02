@@ -25,14 +25,16 @@ void skills_placeholder_activate(Skill* skill, GameState* state, Entity* target)
 }
 
 
-Rectangle skills_get_skill_src(SkillType type, CharacterClass class)
+Rectangle skills_get_skill_src(SkillType type, CharacterClassType class)
 {
 	const u32 length = 16;
 	return (Rectangle) { type * length, class * length, length, length };
 }
 
 
-const SkillData skill_data_table[] = {
+const SkillData skill_data_table[] = { //TODO this needs to be indexed by class or do (classmath indexing this sounds better if it can work)
+	//Type 							castable	activate
+	//Warlock	
 	{SKILL_TYPE_NONE, 				false, 		NULL},
 	{SKILL_TYPE_PLACEHOLDER, 		true, 		skills_placeholder_activate},
 	{SKILL_TYPE_FIREBALL, 			false, 		NULL},
@@ -40,4 +42,5 @@ const SkillData skill_data_table[] = {
 	{SKILL_TYPE_TWO, 				false, 		NULL},
 	{SKILL_TYPE_THREE, 				false, 		NULL},
 	{SKILL_TYPE_FOUR, 				false, 		NULL},
+	//Warlock2
 };

@@ -10,3 +10,4 @@ void skill_tree_render(SkillTreeNode* root, GameState* state);
 
 SkillTree* skill_tree_new();
 SkillTreeNode* skill_tree_warlock_tree();
+SkillTreeNode* skill_tree_get_class_tree();

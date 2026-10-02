@@ -1428,6 +1428,7 @@ CMakeFiles/engine.dir/src/skilltree.c.o: /home/samuel/c/game/fRpgCrawler/src/ski
   /home/samuel/c/game/fRpgCrawler/include/map.h \
   /home/samuel/c/game/fRpgCrawler/include/npc.h \
   /home/samuel/c/game/fRpgCrawler/include/path.h \
+  /home/samuel/c/game/fRpgCrawler/include/skills.h \
   /home/samuel/c/game/fRpgCrawler/include/skilltree.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/include/struct.h \

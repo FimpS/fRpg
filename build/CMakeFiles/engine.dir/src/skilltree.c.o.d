@@ -85,4 +85,5 @@ CMakeFiles/engine.dir/src/skilltree.c.o: \
  /home/samuel/c/game/fRpgCrawler/include/entity.h \
  /usr/local/include/raymath.h \
  /home/samuel/c/game/fRpgCrawler/include/path.h \
- /home/samuel/c/game/fRpgCrawler/include/npc.h
+ /home/samuel/c/game/fRpgCrawler/include/npc.h \
+ /home/samuel/c/game/fRpgCrawler/include/skills.h

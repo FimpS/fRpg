@@ -172,8 +172,12 @@ Player* player_new()
 	player->entity = entity_new(ENTITY_PLAYER, (Vector2) { 10.0, 10.0 } );
 	player->inventory = ui_inventory_new(INVENTORY_TYPE_PLAYER);	
 	player->quest_manager = player_quest_manager_new(player);
-	player->skill_tree = skill_tree_new();
-	player->class = CHARACTER_CLASS_WARLOCK;
+	player->class = (CharacterClass) {
+		CHARACTER_CLASS_WARLOCK,
+		1,
+		2,
+	};
+	player->skill_tree = skill_tree_new(player->class);
 
 	for(i32 i = 0; i < player->quest_manager->quests.len; i++)
 	{

@@ -298,6 +298,13 @@ typedef struct QuestManager
 	} completed[MAX_QUESTS_IN_GAME];
 } QuestManager;
 
+typedef struct CharacterClass
+{
+	CharacterClassType class_1;
+	CharacterClassType class_2;
+	CharacterClassType class_3;
+} CharacterClass;
+
 typedef struct Player
 {
 	Entity* entity;
@@ -385,14 +392,18 @@ typedef struct Skill Skill;
 
 
 
+#define PLAYER_MAX_SKILL_TREES 3
 typedef struct SkillTree
 {
 	bool active;
+	CharacterClassType active_skill_tree;
 	SkillTreeNode* holding_node;
-	SkillTreeNode* root;
+	SkillTreeNode* root[PLAYER_MAX_SKILL_TREES];
 
 	i32 skill_points;
 } SkillTree;
+
+
 
 #define MAX_SKILL_TREE_ADJACENT 4
 typedef struct SkillTreeNode SkillTreeNode;
@@ -404,6 +415,13 @@ typedef struct SkillTreeNodeData
 	Vector2 pos;
 	SkillType neighbors[MAX_SKILL_TREE_ADJACENT];
 } SkillTreeNodeData;
+
+DEFINE_STATIC_LIST(SkillTreeNodeData, SkillTreeClassList, skill_tree_class_list, MAX_SKILLS_IN_SKILLTREE);
+typedef struct SkillTreeNodeDataClass
+{
+	SkillTreeClassList class_list;
+} SkillTreeNodeDataTable;
+
 typedef struct SkillTreeNode
 {
 	SkillType type;

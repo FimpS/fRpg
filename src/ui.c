@@ -1207,6 +1207,12 @@ void ui_smith_tick(Inventory* smith_inventory, GameState* state)
 
 /*--------------------------------- SKILL TREE ---------------------------------*/
 
+const u8* class_to_string_table[] = {
+	[CHARACTER_CLASS_WARLOCK] = "Warlock",
+	[CHARACTER_CLASS_WARRIOR] = "Warrior",
+	[CHARACTER_CLASS_NONE] = "No Class",
+};
+
 static void skill_tree_draw_background(GameState* state)
 {
 	Gfx* gfx = state->gfx;
@@ -1216,6 +1222,62 @@ static void skill_tree_draw_background(GameState* state)
 	const Rectangle dst = { 40, 100, 400, 800 };
 
 	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, dst, (Color) { 220, 210, 160, 255 });
+}
+
+static bool skill_tree_button(GameState* state, const i32 index)
+{
+	Gfx* gfx = state->gfx;
+	const i32 class_type[] = {
+		state->player->class.class_1,
+		state->player->class.class_2,
+		state->player->class.class_3,
+	};
+	const u8* class_name = class_to_string_table[class_type[index]];
+
+	const f32 class_name_font_size = 12.0f;
+	const f32 class_name_font_spacing = 1.0f;
+
+	bool selected = false;
+
+	const Vector2 str_box_len = MeasureTextEx(gfx->ui_font, class_name, class_name_font_size, class_name_font_spacing);
+	const Vector2 mouse_position = GetMousePosition();
+
+	const f32 box_height = 32.0f;
+	const f32 box_width = 92.0f;
+	Rectangle src = { 0, 0, 16, 16 };
+	Rectangle dst = { 100 + (index + 1) * box_width, 100, box_width, box_height };
+
+	if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && AAB(dst, mouse_position))
+	{
+		selected = true;
+	}
+
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, dst, WHITE);
+	ui_draw_text(class_name, (Vector2) {
+			(dst.x + box_width / 2.0) - str_box_len.x / 2.0, 
+			dst.y }, 
+			class_name_font_size, WHITE, state);
+
+	return selected;
+}
+
+#define MAX_SKILL_TREES_PER_CHAR 3
+static void skill_tree_buttons(GameState* state)
+{
+	const u32 len = MAX_SKILL_TREES_PER_CHAR;
+	for(i32 i = 0; i < len; i++)
+	{
+		bool selected = skill_tree_button(state, i);
+		if(selected) 
+		{
+			switch(i)
+			{
+				case 0: state->player->skill_tree->active_skill_tree = state->player->class.class_1; break;
+				case 1: state->player->skill_tree->active_skill_tree = state->player->class.class_2; break;
+				case 2: state->player->skill_tree->active_skill_tree = state->player->class.class_3; break;
+			}
+		}
+	}
 }
 
 void ui_skill_tree_toggle(GameState* state)
@@ -1234,8 +1296,9 @@ void ui_skill_tree_render(GameState* state)
 	if(!tree->active) return; 
 	skill_tree_draw_background(state);
 
-	skill_tree_render(tree->root, state);
+	skill_tree_render(tree->root[state->player->skill_tree->active_skill_tree], state);
 
+	skill_tree_buttons(state);
 	ui_draw_text(TextFormat("Skill Points: %d\n", tree->skill_points), (Vector2) { 200, 50 }, 24, YELLOW, state);
 }
 
@@ -1259,6 +1322,7 @@ static const i32 skill_keys[] = {
 void ui_skill_hotbar_tick(GameState* state)
 {
 	SkillHotBar* hotbar = &state->ui_elements->hotbar;
+	const i32 skill_class = state->player->skill_tree->active_skill_tree;
 
 	const u32 len = MAX_HOTBAR_SKILLS;
 	for(i32 i = 0; i < len; i++)
@@ -1268,7 +1332,7 @@ void ui_skill_hotbar_tick(GameState* state)
 			const SkillType type = hotbar->skills[i];
 			if(type == SKILL_TYPE_NONE) continue;
 			skills_use_skill( (Skill) {
-					.data = skill_data_table[type],
+					.data = skill_data_table[type * (skill_class + 1)],
 					.caster = state->player->entity,
 			},
 			state,
@@ -1291,7 +1355,7 @@ static void ui_skill_hotbar_render_frames(GameState* state)
 		const u8 frame_character[2] = {skill_keys[i] - KEY_A + 'A', '\0'};
 		const SkillType frame_skill_type = hotbar->skills[i]; //TODO no table to find rec, just make it mathematical with a new tilemap
 		const Rectangle frame_src = (Rectangle)	 {0,0,16,16};
-		const Rectangle skill_src = skills_get_skill_src(hotbar->skills[i], state->player->class);
+		const Rectangle skill_src = skills_get_skill_src(hotbar->skills[i], state->player->class.class_1);
 		hotbar->start_location = (Rectangle) { 455, 800, width, width };
 		const Rectangle dst = (Rectangle)	 {455 + (i * (width + 4)),800,width,width};
 

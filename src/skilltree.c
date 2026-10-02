@@ -1,72 +1,204 @@
 #include "skilltree.h"
 #include "struct.h"
 #include "ui.h"
+#include "skills.h"
 #include "map.h"
 #include "enum.h"
 
 /* ----------------------------------- SKILL TREE DATA ----------------------------------- */
 
-const SkillTreeNodeData warlock_skill_tree[] = {
-	[SKILL_TYPE_FIREBALL] = {
-		.type = SKILL_TYPE_FIREBALL,
-		.pos = {350, 200},
-		.level = 0,
-		.skill_point_cost = 15,
-		.neighbors = {
-			0,
-		},
+const SkillTreeNodeDataTable skill_tree_table[] = {
+	//Warlock
+	(SkillTreeClassList) {
+		.len = SKILL_TYPE_COUNT,
+		.data = {
+			[SKILL_TYPE_FIREBALL] = {
+				.type = SKILL_TYPE_FIREBALL,
+				.pos = {350, 200},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					0,
+				},
+			},
+			[SKILL_TYPE_PLACEHOLDER] = {
+				.type = SKILL_TYPE_PLACEHOLDER,
+				.pos = {300, 500},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					SKILL_TYPE_ONE,
+					SKILL_TYPE_TWO,
+					SKILL_TYPE_THREE,
+				},
+			},
+			[SKILL_TYPE_ONE] = {
+				.type = SKILL_TYPE_ONE,
+				.pos = {50, 700},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					0
+				},
+			},
+			[SKILL_TYPE_TWO] = {
+				.type = SKILL_TYPE_TWO,
+				.pos = {100, 200},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					SKILL_TYPE_THREE
+				},
+			},
+			[SKILL_TYPE_THREE] = {
+				.type = SKILL_TYPE_THREE,
+				.pos = {200, 300},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					0
+				},
+			},
+			[SKILL_TYPE_FOUR] = {
+				.type = SKILL_TYPE_FOUR,
+				.pos = {350, 500},
+				.skill_point_cost = 5,
+				.level = 0,
+				.neighbors = {
+					SKILL_TYPE_FIREBALL,
+					0,
+				},
+			},
+		}
 	},
-	[SKILL_TYPE_PLACEHOLDER] = {
-		.type = SKILL_TYPE_PLACEHOLDER,
-		.pos = {300, 500},
-		.level = 0,
-		.skill_point_cost = 15,
-		.neighbors = {
-			SKILL_TYPE_ONE,
-			SKILL_TYPE_TWO,
-			SKILL_TYPE_THREE,
-			//SKILL_TYPE_FOUR,
-		},
+	(SkillTreeClassList) {
+		.len = SKILL_TYPE_COUNT,
+		.data = {
+			[SKILL_TYPE_FIREBALL] = {
+				.type = SKILL_TYPE_FIREBALL,
+				.pos = {350, 200},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					0,
+				},
+			},
+			[SKILL_TYPE_PLACEHOLDER] = {
+				.type = SKILL_TYPE_PLACEHOLDER,
+				.pos = {300, 500},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					SKILL_TYPE_ONE,
+					SKILL_TYPE_TWO,
+					SKILL_TYPE_THREE,
+				},
+			},
+			[SKILL_TYPE_ONE] = {
+				.type = SKILL_TYPE_ONE,
+				.pos = {50, 700},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					0
+				},
+			},
+			[SKILL_TYPE_TWO] = {
+				.type = SKILL_TYPE_TWO,
+				.pos = {100, 200},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					SKILL_TYPE_THREE
+				},
+			},
+			[SKILL_TYPE_THREE] = {
+				.type = SKILL_TYPE_THREE,
+				.pos = {200, 300},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					0
+				},
+			},
+			[SKILL_TYPE_FOUR] = {
+				.type = SKILL_TYPE_FOUR,
+				.pos = {350, 500},
+				.skill_point_cost = 5,
+				.level = 0,
+				.neighbors = {
+					SKILL_TYPE_FIREBALL,
+					0,
+				},
+			},
+		}
 	},
-	[SKILL_TYPE_ONE] = {
-		.type = SKILL_TYPE_ONE,
-		.pos = {50, 700},
-		.level = 0,
-		.skill_point_cost = 15,
-		.neighbors = {
-			0
-		},
-	},
-	[SKILL_TYPE_TWO] = {
-		.type = SKILL_TYPE_TWO,
-		.pos = {100, 200},
-		.level = 0,
-		.skill_point_cost = 15,
-		.neighbors = {
-			SKILL_TYPE_THREE
-		},
-	},
-	[SKILL_TYPE_THREE] = {
-		.type = SKILL_TYPE_THREE,
-		.pos = {200, 300},
-		.level = 0,
-		.skill_point_cost = 15,
-		.neighbors = {
-			0
-		},
-	},
-	[SKILL_TYPE_FOUR] = {
-		.type = SKILL_TYPE_FOUR,
-		.pos = {350, 500},
-		.skill_point_cost = 5,
-		.level = 0,
-		.neighbors = {
-			SKILL_TYPE_FIREBALL,
-			0,
-		},
-	},
-};
 
+	(SkillTreeClassList) {
+		.len = SKILL_TYPE_COUNT,
+		.data = {
+			[SKILL_TYPE_FIREBALL] = {
+				.type = SKILL_TYPE_FIREBALL,
+				.pos = {350, 200},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					0,
+				},
+			},
+			[SKILL_TYPE_PLACEHOLDER] = {
+				.type = SKILL_TYPE_PLACEHOLDER,
+				.pos = {300, 500},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					SKILL_TYPE_ONE,
+					SKILL_TYPE_TWO,
+					SKILL_TYPE_THREE,
+				},
+			},
+			[SKILL_TYPE_ONE] = {
+				.type = SKILL_TYPE_ONE,
+				.pos = {50, 700},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					0
+				},
+			},
+			[SKILL_TYPE_TWO] = {
+				.type = SKILL_TYPE_TWO,
+				.pos = {100, 200},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					SKILL_TYPE_THREE
+				},
+			},
+			[SKILL_TYPE_THREE] = {
+				.type = SKILL_TYPE_THREE,
+				.pos = {200, 300},
+				.level = 0,
+				.skill_point_cost = 15,
+				.neighbors = {
+					0
+				},
+			},
+			[SKILL_TYPE_FOUR] = {
+				.type = SKILL_TYPE_FOUR,
+				.pos = {350, 500},
+				.skill_point_cost = 5,
+				.level = 0,
+				.neighbors = {
+					SKILL_TYPE_FIREBALL,
+					0,
+				},
+			},
+		}
+	},
+	//Mage
+
+};
 
 /* ----------------------------------- SKILL TREE DATA ----------------------------------- */
 
@@ -83,16 +215,21 @@ typedef enum
 	SKILL_TREE_RIGHT,
 } SkillTreeDirection;
 
-SkillTree* skill_tree_new() //TODO change to specify class
+SkillTree* skill_tree_new(CharacterClass class) //TODO change to specify class
 {
 	SkillTree* skill_tree = malloc(sizeof(SkillTree));
 
 	(*skill_tree) = (SkillTree) {
-		.root = skill_tree_warlock_tree(),
+		.active_skill_tree = class.class_1,
+		.root = NULL,
 		.active = false,
 		.holding_node = NULL,
 		.skill_points = 100,
 	};
+
+	skill_tree->root[0] = skill_tree_get_class_tree(class.class_1);
+	skill_tree->root[1] = skill_tree_get_class_tree(class.class_2);
+	skill_tree->root[2] = skill_tree_get_class_tree(class.class_3);
 
 	return skill_tree;
 }
@@ -155,7 +292,7 @@ static void skill_tree_draw_straight_arrow(Vector2 end, Vector2 start, Color lin
 	const f32 outline_thickness = 6.0f;
 
 	const f32 tri_len = 8.0f;
-	const f32 tri_width =4.0f;
+	const f32 tri_width = 4.0f;
 
 	const f32 outline_tri_len = 12.0f;
 	const f32 outline_tri_width = 6.0f;
@@ -307,7 +444,7 @@ static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 	Gfx* gfx = state->gfx;
 	const Vector2 mouse_pos = GetMousePosition();
 	const u32 length = 48;
-	const Rectangle src = { node->type * 16, state->player->class * 16, 16, 16 };
+	const Rectangle src = skills_get_skill_src(node->type, state->player->skill_tree->active_skill_tree);
 	const Rectangle dst = { node->pos.x, node->pos.y, length, length };
 	SkillTreeNode* holder = state->player->skill_tree->holding_node;
 
@@ -414,10 +551,14 @@ static void skill_tree_arrow_line_render(SkillTreeNode* node, GameState* state, 
 	}
 }
 
+static u32 skill_tree_get_amount_skills(GameState* state)
+{
+	return skill_tree_class_list_len(&skill_tree_table[state->player->skill_tree->active_skill_tree].class_list);
+}
 
 static void skill_tree_render_nodes(SkillTreeNode* nodes, GameState* state)
 {
-	const u32 skill_count = sizeof(warlock_skill_tree) / sizeof(warlock_skill_tree[0]);
+	const u32 skill_count = skill_tree_get_amount_skills(state);
 	for(i32 i = 0; i < skill_count; i++)
 	{
 		if(skill_tree_nodes_visited[i]) continue;
@@ -429,7 +570,7 @@ static void skill_tree_render_nodes(SkillTreeNode* nodes, GameState* state)
 
 static void skill_tree_render_arrows(SkillTreeNode* nodes, GameState* state)
 {
-	const u32 skill_count = sizeof(warlock_skill_tree) / sizeof(warlock_skill_tree[0]);
+	const u32 skill_count = skill_tree_get_amount_skills(state);
 	for(i32 i = 0; i < skill_count; i++)
 	{
 		if(skill_tree_nodes_visited[i]) continue;
@@ -450,27 +591,29 @@ void skill_tree_render(SkillTreeNode* root, GameState* state)
 	skill_tree_render_nodes(nodes, state);
 	skill_tree_reset_visited();
 	skill_tree_render_arrows(nodes, state);
-	
+
 
 	SkillTreeNode* holder = state->player->skill_tree->holding_node;
 	const Vector2 mouse_pos = GetMousePosition();
 	const f32 length = 42.0;
 	if(holder != NULL) 
 	{
-		const Rectangle src = { holder->type * 16, state->player->class * 16, 16, 16 };
+		const Rectangle src = skills_get_skill_src(holder->type, state->player->skill_tree->active_skill_tree);
 		ui_draw_element(&gfx->texs[TEXTURE_SKILL_DISPLAY], src,
 				(Rectangle) { mouse_pos.x - length / 4.0, mouse_pos.y - length / 4.0, length, length }, WHITE);
 	}
 }
 
 
-SkillTreeNode* skill_tree_warlock_tree()
+SkillTreeNode* skill_tree_get_class_tree(i32 class)
 {
-	const u32 skill_count = sizeof(warlock_skill_tree) / sizeof(warlock_skill_tree[0]);
+	const u32 skill_count = skill_tree_table[class].class_list.len;
+	P_LOG("%d\n", skill_count);
+
 	SkillTreeNode* skill_nodes = malloc(sizeof(SkillTreeNode) * skill_count);
 	for(i32 i = 0; i < skill_count; i++)
 	{
-		SkillTreeNodeData data = warlock_skill_tree[i];
+		SkillTreeNodeData data = skill_tree_table[class].class_list.data[i];
 		skill_nodes[i] = (SkillTreeNode) {
 			.type = data.type,
 			.level = data.level,
