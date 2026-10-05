@@ -23,3 +23,8 @@ Important Notes/Plans for future structure:
 Ideas:
     - Fulghor boss, which run through the arena casting holy light beneath him
 
+
+
+Tomorry:
+    - Need to fix a better system for skills, having some parts of the system split and some together is gonna get confusing
+
