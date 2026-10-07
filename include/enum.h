@@ -91,6 +91,18 @@ typedef enum EntityStateType
 
 } EntityStateType;
 
+typedef enum
+{
+	ITEM_SLOT_HEAD,
+	ITEM_SLOT_TORSO,
+	ITEM_SLOT_HANDS,
+	ITEM_SLOT_LEGSO,
+	ITEM_SLOT_RING1,
+	ITEM_SLOT_RING2,
+	ITEM_SLOT_RING3,
+	ITEM_Slot_RING4,
+} EquipmentSlot;
+
 typedef enum 
 {
 	ITEM_TYPE_NONE,

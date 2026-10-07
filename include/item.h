@@ -1,8 +1,11 @@
-#pragma once
 
-#include "../lib/types.h"
-#include "enum.h"
+
 #include "struct.h"
+#include "enum.h"
 
-extern const ItemInfo item_info_table[];
 
+EntityEquipment* entity_equipment_new();
+Item item_init(ItemType type, ItemEnchant enchant);
+Item item_empty_init();
+
+Item item_equip_to_equipment_slot(Item* item, EntityEquipment* state);

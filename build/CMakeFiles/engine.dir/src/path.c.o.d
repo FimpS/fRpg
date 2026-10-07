@@ -84,5 +84,5 @@ CMakeFiles/engine.dir/src/path.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/state.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/npc.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/ui.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/item.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/item_data.h \
  /usr/include/assert.h

@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "../include/entity.h"
+#include "../include/item.h"
 #include "../include/player.h"
 #include "../include/entity_data.h"
 #include "../include/global.h"
@@ -384,12 +385,15 @@ Entity* entity_new(EntityType type, Vector2 pos)
 		.experience = 0,
 	};
 
+	newe->equipment = entity_equipment_new();
+
 	return newe;
 }
 
 void entity_destroy(Entity* e)
 {
 	free(e);
+	free(e->equipment);
 }
 
 /* PUBLIC */

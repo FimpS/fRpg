@@ -4,6 +4,7 @@
 
 #include "ui.h"
 #include "ui_data.h"
+#include "item.h"
 #include "shop_data.h"
 #include "skilltree.h"
 #include "text_data.h"
@@ -320,7 +321,7 @@ static Item ui_inventory_get_empty_cell()
 {
 	return (Item) {
 		.type = ITEM_TYPE_NONE,
-		.info = item_info_table[ITEM_TYPE_NONE],
+		.data = item_info_table[ITEM_TYPE_NONE],
 		.enchant = { - 1 },
 	};
 }
@@ -349,7 +350,7 @@ static void ui_inventory_init_cells(Inventory* inventory)
 				dim.x, 
 				dim.y },
 			.item = (Item) {
-				.info = item_info_table[ITEM_TYPE_NONE],
+				.data = item_info_table[ITEM_TYPE_NONE],
 				.enchant = { -1 },
 				.type = ITEM_TYPE_NONE,
 			},
@@ -412,16 +413,46 @@ Inventory* ui_inventory_new(InventoryType type)
 	{
 		ui_inventory_add_item(inv_new, (Item) {
 				.type = ITEM_TYPE_PLACEHOLDER,
-				.info = item_info_table[ITEM_TYPE_PLACEHOLDER],
+				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
 				.enchant = { 1 },
 				} );
+		ui_inventory_add_item(inv_new, (Item) {
+				.type = ITEM_TYPE_PLACEHOLDER,
+				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
+				.enchant = { 1 },
+				} );
+		ui_inventory_add_item(inv_new, (Item) {
+				.type = ITEM_TYPE_PLACEHOLDER,
+				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
+				.enchant = { 1 },
+				} );
+ui_inventory_add_item(inv_new, (Item) {
+				.type = ITEM_TYPE_PLACEHOLDER,
+				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
+				.enchant = { 1 },
+				} );
+
+ui_inventory_add_item(inv_new, (Item) {
+				.type = ITEM_TYPE_PLACEHOLDER,
+				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
+				.enchant = { 1 },
+				} );
+
+
+
+	ui_inventory_add_item(inv_new, (Item) {
+				.type = ITEM_TYPE_PLACEHOLDER,
+				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
+				.enchant = { 1 },
+				} );
+
 
 
 		for(i32 i = 4; i < 20; i+=2)
 		{
 			inv_new->cells[i].item = (Item) {
 				.type = ITEM_TYPE_HELMET,
-				.info = item_info_table[ITEM_TYPE_HELMET],
+				.data = item_info_table[ITEM_TYPE_HELMET],
 				.enchant = { rand() % 4 },
 			};
 		}
@@ -455,10 +486,12 @@ static void ui_inventory_cell_equip_item(InventoryCell* cell, Inventory* invento
 			cell->item.type != ITEM_TYPE_NONE &&
 			AAB(cell->hitbox, mouse_cords) &&
 			IsKeyDown(KEY_LEFT_SHIFT) &&
-			IsMouseButtonPressed(0)
+			IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)
 	  )
 	{
-		P_LOG("TODO: Equip\n");
+		Item swapped_item = item_equip_to_equipment_slot(&cell->item, state->player->entity->equipment);
+		cell->item = swapped_item;
+
 	}
 }
 
@@ -469,7 +502,7 @@ static void ui_inventory_cell_enable_move(InventoryCell* cell, Inventory* invent
 			cell->item.type != ITEM_TYPE_NONE &&
 			!IsKeyDown(KEY_LEFT_SHIFT) &&
 			AAB(cell->hitbox, mouse_cords) && 
-			IsMouseButtonDown(0))
+			IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
 		inventory->mode = INVENTORY_MODE_MOVE;
 		inventory->moved_id = cell->id;
@@ -592,7 +625,7 @@ static void ui_inventory_cell_render(InventoryCell cell, GameState* state)
 				(Vector2) {0}, 
 				0.0, 
 				WHITE);
-		if(cell.item.info.stackable)
+		if(cell.item.data.stackable)
 		{
 			ui_draw_outline_text(TextFormat("x%d", cell.amount),
 					(Vector2) { cell.hitbox.x + cell.hitbox.width - 25, 
@@ -640,7 +673,7 @@ static void ui_item_cell_text_render(Inventory* inventory, GameState* state, con
 		if(cell.item.type == ITEM_TYPE_NONE) return;
 		const Vector2 rpos = gfx_to_monitor_vector( (Vector2) { -200.0, 10.0 } );
 		// Maybe force it to be top left of the box instead of dependent on cellhitbox
-		ui_text_box_render(cell.item.info.name, cell.item.info.description, 
+		ui_text_box_render(cell.item.data.name, cell.item.data.description, 
 				(Vector2) { cell.hitbox.x + rpos.x, cell.hitbox.y + rpos.y}, 
 				state);
 	}
@@ -727,6 +760,60 @@ void ui_inventory_render(Inventory* inventory, GameState* state)
 }
 
 /*--------------------------------- INVENTORY ---------------------------------*/
+
+/*--------------------------------- EQUIPMENT ---------------------------------*/
+
+void ui_equipment_menu_toggle(GameState* state)
+{
+	UIEquipmentMenu* equipment = &state->ui_elements->equipment;
+
+	if(IsKeyPressed(KEY_U))
+	{
+		equipment->active = !equipment->active;
+	}
+}
+
+void ui_equipment_menu_render(GameState* state)
+{
+	UIEquipmentMenu* equipment_menu = &state->ui_elements->equipment;
+	if(!equipment_menu->active) return;
+
+	Gfx* gfx = state->gfx;
+	EntityEquipment* equipment = state->player->entity->equipment;
+
+	const u32 len = MAX_SLOTS_IN_EQUIPMENT;
+	const u32 cell_length = 64;
+	const Vector2 mouse_pos =GetMousePosition();
+	for(i32 i = 0; i < len; i++)
+	{
+		Item* item = &equipment->items[i];
+		Rectangle background_src = { 0, 32, 16, 16 };
+		Rectangle background_dst = { 1000, 200 + i * cell_length, cell_length, cell_length};
+		ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], background_src, background_dst, WHITE);
+
+		
+
+		ItemType item_type = item->type;
+		if(item_type != ITEM_TYPE_NONE)
+		{
+			Rectangle item_src = inventory_item_table[item->type];
+			ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], item_src, background_dst, WHITE);
+		}
+
+		if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && AAB(background_dst, mouse_pos))
+		{
+			ui_inventory_add_item(state->player->inventory, *item);
+			equipment->items[i] = item_empty_init();
+		}
+	}
+}
+
+
+
+
+
+
+/*--------------------------------- EQUIPMENT ---------------------------------*/
 
 
 /*--------------------------------- MENU ---------------------------------*/
@@ -1207,6 +1294,12 @@ void ui_smith_tick(Inventory* smith_inventory, GameState* state)
 
 /*--------------------------------- SKILL TREE ---------------------------------*/
 
+const Color class_to_color_table[] = {
+	[CHARACTER_CLASS_WARLOCK] = { 190, 150, 190, 255 },
+	[CHARACTER_CLASS_WARRIOR] = { 210, 190, 190, 255 },
+	[CHARACTER_CLASS_NONE] = 	{ 255, 255, 255, 255 },
+};
+
 const u8* class_to_string_table[] = {
 	[CHARACTER_CLASS_WARLOCK] = "Warlock",
 	[CHARACTER_CLASS_WARRIOR] = "Warrior",
@@ -1219,9 +1312,18 @@ static void skill_tree_draw_background(GameState* state)
 	SkillTree* tree = state->player->skill_tree;
 
 	const Rectangle src = { 0, 0, 16, 16 };
-	const Rectangle dst = { 40, 100, 400, 800 };
+	const Rectangle src_inner = { 32, 80, 32, 48 };
+	const Rectangle dst = { 35, 124, 286, 100 };
+	const Rectangle dst_inner = { 40, 160, 400, 740 };
+	const Rectangle dst_outer = { 35, 154, 410, 752 };
+	Color class_color = class_to_color_table[state->player->skill_tree->active_skill_tree];
 
-	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, dst, (Color) { 220, 210, 160, 255 });
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, dst_outer, (Color) { 75, 75, 75, 255 });
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, dst, (Color) { 75, 75, 75, 255 });
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src_inner, dst_inner, class_color);
+	DrawLineEx( (Vector2) { dst_inner.x, dst_inner.y }, 
+			(Vector2) { dst_inner.x + dst_inner.width, dst_inner.y }, 
+			6.0, (Color) { 35, 35, 35, 255 });
 }
 
 static bool skill_tree_button(GameState* state, const i32 index)
@@ -1244,18 +1346,22 @@ static bool skill_tree_button(GameState* state, const i32 index)
 
 	const f32 box_height = 32.0f;
 	const f32 box_width = 92.0f;
-	Rectangle src = { 0, 0, 16, 16 };
-	Rectangle dst = { 100 + (index + 1) * box_width, 100, box_width, box_height };
-
-	if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && AAB(dst, mouse_position))
+	Rectangle src = { 0, 128, 16, 16 };
+	Rectangle dst = { 40 + (index) * box_width, 160 - box_height, box_width, box_height };
+	Color button_tint = (Color) { 170, 170, 170, 255 };
+	if(AAB(dst, mouse_position))
 	{
-		selected = true;
+		button_tint = (Color) { 140, 140, 140, 255 };
+		if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+		{
+			selected = true;
+		}
 	}
 
-	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, dst, WHITE);
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, dst, button_tint);
 	ui_draw_text(class_name, (Vector2) {
 			(dst.x + box_width / 2.0) - str_box_len.x / 2.0, 
-			dst.y }, 
+			(dst.y + box_height / 2.0) - str_box_len.y / 2.0 }, 
 			class_name_font_size, WHITE, state);
 
 	return selected;
@@ -1327,17 +1433,19 @@ void ui_skill_hotbar_tick(GameState* state)
 	const u32 len = MAX_HOTBAR_SKILLS;
 	for(i32 i = 0; i < len; i++)
 	{
-		if(IsKeyPressed( skill_keys[i] ))
+		hotbar->skills[i].cooldown_timer ++;
+		if(IsKeyPressed( skill_keys[i] ) && hotbar->skills[i].cooldown_timer >= hotbar->skills[i].data.base_cooldown)
 		{
-			const SkillType type = hotbar->skills[i];
+			const SkillType type = hotbar->skills[i].data.type;
 			if(type == SKILL_TYPE_NONE) continue;
 			skills_use_skill( (Skill) {
-					.data = skill_data_table[type * (skill_class + 1)],
+					.data = skill_data_table[type],
 					.caster = state->player->entity,
-			},
-			state,
-			NULL
-			);
+					},
+					state,
+					NULL
+					);
+			hotbar->skills[i].cooldown_timer = 0;
 		}
 	}
 }
@@ -1349,19 +1457,24 @@ static void ui_skill_hotbar_render_frames(GameState* state)
 
 	const Vector2 mouse_pos = GetMousePosition();
 	const u32 total_len = MAX_HOTBAR_SKILLS;
+
+	const Rectangle outline_src = (Rectangle){0,0,16,16};
+	const Rectangle dst_outline = (Rectangle) {450, 795, 346, 52};
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], outline_src, dst_outline, (Color) { 75, 75, 75, 255 });
 	for(i32 i = 0; i < total_len; i++)
 	{
 		const u32 width = 42;
+		Skill* skill = &hotbar->skills[i];
 		const u8 frame_character[2] = {skill_keys[i] - KEY_A + 'A', '\0'};
-		const SkillType frame_skill_type = hotbar->skills[i]; //TODO no table to find rec, just make it mathematical with a new tilemap
-		const Rectangle frame_src = (Rectangle)	 {0,0,16,16};
-		const Rectangle skill_src = skills_get_skill_src(hotbar->skills[i], state->player->class.class_1);
+		const SkillType frame_skill_type = hotbar->skills[i].data.type; //TODO no table to find rec, just make it mathematical with a new tilemap
+		const Rectangle frame_src = (Rectangle)	 {32,128,16,16};
+		const Rectangle skill_src = skills_get_skill_src(hotbar->skills[i].data.type, state->player->class.class_1);
 		hotbar->start_location = (Rectangle) { 455, 800, width, width };
-		const Rectangle dst = (Rectangle)	 {455 + (i * (width + 4)),800,width,width};
+		const Rectangle dst = (Rectangle)	 {455 + (i * (width)),800,width,width};
 
 		if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && AAB(dst, mouse_pos))
 		{
-			hotbar->skills[i] = SKILL_TYPE_NONE;
+			hotbar->skills[i] = skills_skill_init(SKILL_TYPE_NONE);
 		}
 
 		DrawTexturePro(gfx->texs[TEXTURE_GAME_UI],
@@ -1378,6 +1491,23 @@ static void ui_skill_hotbar_render_frames(GameState* state)
 		}
 
 		ui_draw_text( frame_character, (Vector2) { dst.x + 1, dst.y + 1}, 16, YELLOW, state);
+		if(skill->cooldown_timer < skill->data.base_cooldown)
+		{
+			const f32 timer = (f32) (- skill->cooldown_timer + skill->data.base_cooldown) / 60.0f;
+			const f32 descending_height = ( 1.0f - (f32) skill->cooldown_timer / skill->data.base_cooldown) * dst.height;
+			Rectangle dst_cooldown_cover = { dst.x, dst.y + dst.height - descending_height, dst.width, descending_height };
+			ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], (Rectangle) {0,0,16,16}, dst_cooldown_cover, (Color) {50, 50, 50, 150} );
+			const u8* coolddown_text = timer < 1.0 ? 
+				TextFormat("%.1fs", (f32) timer) : 
+				timer >= 60.0 ? 
+				TextFormat("%dmin", (u32) timer / 60) : TextFormat("%ds", (u32) timer);
+
+			const u32 font_size = 18;
+			const Vector2 text_dim = MeasureTextEx(gfx->ui_font, coolddown_text, font_size, 1.0);
+			ui_draw_text(coolddown_text, (Vector2) { dst.x + dst.width / 2.0 - text_dim.x / 2.0, 
+					dst.y + dst.height / 2.0 - text_dim.y / 2.0}, 
+					font_size, WHITE, state);
+		}
 	}
 }
 
@@ -1402,12 +1532,13 @@ UIElements* ui_elements_new()
 			.skills = {0},
 
 		},
+		.equipment = { .active = false },
 	};
 	for(i32 i = 0; i < MAX_HOTBAR_SKILLS; i++)
 	{
-		ui->hotbar.skills[i] = SKILL_TYPE_NONE;
+		ui->hotbar.skills[i] = skills_skill_init(SKILL_TYPE_NONE);
 	}
-	ui->hotbar.skills[3] = SKILL_TYPE_PLACEHOLDER;
+	ui->hotbar.skills[3] = skills_skill_init(SKILL_TYPE_PLACEHOLDER);
 
 	return ui;
 }
@@ -1447,6 +1578,8 @@ void ui_render(GameState* state)
 	ui_text_display_render(state);
 	npcs_ui_render(npcs, state);
 	ui_skill_tree_render(state);
+	ui_equipment_menu_toggle(state);
+	ui_equipment_menu_render(state);
 
 	if(player_inventory->active)
 	{

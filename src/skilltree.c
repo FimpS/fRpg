@@ -10,9 +10,9 @@
 const SkillTreeNodeDataTable skill_tree_table[] = {
 	//Warlock
 	(SkillTreeClassList) {
-		.len = SKILL_TYPE_COUNT,
+		.len = 6,
 		.data = {
-			[SKILL_TYPE_FIREBALL] = {
+			{
 				.type = SKILL_TYPE_FIREBALL,
 				.pos = {350, 200},
 				.level = 0,
@@ -21,7 +21,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					0,
 				},
 			},
-			[SKILL_TYPE_PLACEHOLDER] = {
+			{
 				.type = SKILL_TYPE_PLACEHOLDER,
 				.pos = {300, 500},
 				.level = 0,
@@ -32,7 +32,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					SKILL_TYPE_THREE,
 				},
 			},
-			[SKILL_TYPE_ONE] = {
+			{
 				.type = SKILL_TYPE_ONE,
 				.pos = {50, 700},
 				.level = 0,
@@ -41,7 +41,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					0
 				},
 			},
-			[SKILL_TYPE_TWO] = {
+			{
 				.type = SKILL_TYPE_TWO,
 				.pos = {100, 200},
 				.level = 0,
@@ -50,7 +50,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					SKILL_TYPE_THREE
 				},
 			},
-			[SKILL_TYPE_THREE] = {
+			{
 				.type = SKILL_TYPE_THREE,
 				.pos = {200, 300},
 				.level = 0,
@@ -59,7 +59,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					0
 				},
 			},
-			[SKILL_TYPE_FOUR] = {
+			{
 				.type = SKILL_TYPE_FOUR,
 				.pos = {350, 500},
 				.skill_point_cost = 5,
@@ -72,9 +72,9 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 		}
 	},
 	(SkillTreeClassList) {
-		.len = SKILL_TYPE_COUNT,
+		.len = 6,
 		.data = {
-			[SKILL_TYPE_FIREBALL] = {
+			{
 				.type = SKILL_TYPE_FIREBALL,
 				.pos = {350, 200},
 				.level = 0,
@@ -83,7 +83,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					0,
 				},
 			},
-			[SKILL_TYPE_PLACEHOLDER] = {
+			{
 				.type = SKILL_TYPE_PLACEHOLDER,
 				.pos = {300, 500},
 				.level = 0,
@@ -94,7 +94,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					SKILL_TYPE_THREE,
 				},
 			},
-			[SKILL_TYPE_ONE] = {
+			{
 				.type = SKILL_TYPE_ONE,
 				.pos = {50, 700},
 				.level = 0,
@@ -103,7 +103,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					0
 				},
 			},
-			[SKILL_TYPE_TWO] = {
+			{
 				.type = SKILL_TYPE_TWO,
 				.pos = {100, 200},
 				.level = 0,
@@ -112,7 +112,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					SKILL_TYPE_THREE
 				},
 			},
-			[SKILL_TYPE_THREE] = {
+			{
 				.type = SKILL_TYPE_THREE,
 				.pos = {200, 300},
 				.level = 0,
@@ -121,7 +121,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					0
 				},
 			},
-			[SKILL_TYPE_FOUR] = {
+			{
 				.type = SKILL_TYPE_FOUR,
 				.pos = {350, 500},
 				.skill_point_cost = 5,
@@ -133,11 +133,10 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 			},
 		}
 	},
-
 	(SkillTreeClassList) {
-		.len = SKILL_TYPE_COUNT,
+		.len = 6,
 		.data = {
-			[SKILL_TYPE_FIREBALL] = {
+			{
 				.type = SKILL_TYPE_FIREBALL,
 				.pos = {350, 200},
 				.level = 0,
@@ -146,7 +145,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					0,
 				},
 			},
-			[SKILL_TYPE_PLACEHOLDER] = {
+			{
 				.type = SKILL_TYPE_PLACEHOLDER,
 				.pos = {300, 500},
 				.level = 0,
@@ -157,7 +156,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					SKILL_TYPE_THREE,
 				},
 			},
-			[SKILL_TYPE_ONE] = {
+			{
 				.type = SKILL_TYPE_ONE,
 				.pos = {50, 700},
 				.level = 0,
@@ -166,7 +165,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					0
 				},
 			},
-			[SKILL_TYPE_TWO] = {
+			{
 				.type = SKILL_TYPE_TWO,
 				.pos = {100, 200},
 				.level = 0,
@@ -175,7 +174,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					SKILL_TYPE_THREE
 				},
 			},
-			[SKILL_TYPE_THREE] = {
+			{
 				.type = SKILL_TYPE_THREE,
 				.pos = {200, 300},
 				.level = 0,
@@ -184,7 +183,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 					0
 				},
 			},
-			[SKILL_TYPE_FOUR] = {
+			{
 				.type = SKILL_TYPE_FOUR,
 				.pos = {350, 500},
 				.skill_point_cost = 5,
@@ -204,6 +203,18 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 
 
 /* --------------------------------- SKILL TREE FUNCTIONS -------------------------------- */
+
+static i32 skill_tree_find_index(const SkillTreeClassList* tree, SkillType type)
+{
+	for(i32 i = 0; i < tree->len; i++)
+	{
+		if(tree->data[i].type == type) return i;
+	}
+
+	return -1;
+}
+
+
 
 
 
@@ -452,7 +463,7 @@ static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 	SkillTree* tree = state->player->skill_tree;
 	if(AAB(dst, mouse_pos))
 	{
-		tint = GREEN;
+		tint = WHITE;
 		if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
 		{
 			if(tree->skill_points >= node->skill_point_cost && skill_tree_prereq_met(node))
@@ -475,10 +486,13 @@ static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 			{
 				const u32 width = 42;
 				const Rectangle start_box = state->ui_elements->hotbar.start_location;
-				const Rectangle box = { start_box.x + (i * (start_box.width + 4)), start_box.y, start_box.width, start_box.width };
+				const Rectangle box = { start_box.x + (i * (start_box.width)), start_box.y, start_box.width, start_box.width };
 				if(AAB(box, mouse_pos))
 				{
-					state->ui_elements->hotbar.skills[i] = holder->type;
+
+					//state->ui_elements->hotbar.skills[i] = holder->type;
+					const SkillType skill_type = holder->type;
+					state->ui_elements->hotbar.skills[i] = skills_skill_init(skill_type);
 				}
 			}
 		}
@@ -561,7 +575,7 @@ static void skill_tree_render_nodes(SkillTreeNode* nodes, GameState* state)
 	const u32 skill_count = skill_tree_get_amount_skills(state);
 	for(i32 i = 0; i < skill_count; i++)
 	{
-		if(skill_tree_nodes_visited[i]) continue;
+		if(skill_tree_nodes_visited[nodes[i].type]) continue;
 		if(nodes[i].type == SKILL_TYPE_NONE) continue;
 
 		skill_tree_node_render(&nodes[i], state);
@@ -573,7 +587,7 @@ static void skill_tree_render_arrows(SkillTreeNode* nodes, GameState* state)
 	const u32 skill_count = skill_tree_get_amount_skills(state);
 	for(i32 i = 0; i < skill_count; i++)
 	{
-		if(skill_tree_nodes_visited[i]) continue;
+		if(skill_tree_nodes_visited[nodes[i].type]) continue;
 		if(nodes[i].type == SKILL_TYPE_NONE) continue;
 
 		skill_tree_arrow_line_render(&nodes[i], state, false);
@@ -586,7 +600,7 @@ void skill_tree_render(SkillTreeNode* root, GameState* state)
 	skill_tree_reset_visited();
 	skill_tree_node_render(root, state);	
 
-	SkillTreeNode* nodes = root - root->type;
+	SkillTreeNode* nodes = root;
 
 	skill_tree_render_nodes(nodes, state);
 	skill_tree_reset_visited();
@@ -624,18 +638,20 @@ SkillTreeNode* skill_tree_get_class_tree(i32 class)
 		for(i32 j = 0; j < MAX_SKILL_TREE_ADJACENT; j++)
 		{
 			SkillType neighbor_type = data.neighbors[j];
-			if(neighbor_type == SKILL_TYPE_NONE)
+			i32 neighbor_index = skill_tree_find_index(&skill_tree_table[class].class_list, neighbor_type);
+			if(neighbor_index == -1)
 			{
 				skill_nodes[i].neighbors[j] = NULL;
+				
 			}
 			else
 			{
-				skill_nodes[i].neighbors[j] = &skill_nodes[neighbor_type];
+				skill_nodes[i].neighbors[j] = &skill_nodes[neighbor_index];
 			}
 		}
 	}
 
-	return &skill_nodes[SKILL_TYPE_FIREBALL];
+	return &skill_nodes[0];
 }
 
 /* --------------------------------- SKILL TREE FUNCTIONS -------------------------------- */

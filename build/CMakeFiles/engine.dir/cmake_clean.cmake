@@ -17,6 +17,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/engine.dir/src/global.c.o.d"
   "CMakeFiles/engine.dir/src/item.c.o"
   "CMakeFiles/engine.dir/src/item.c.o.d"
+  "CMakeFiles/engine.dir/src/item_data.c.o"
+  "CMakeFiles/engine.dir/src/item_data.c.o.d"
   "CMakeFiles/engine.dir/src/map.c.o"
   "CMakeFiles/engine.dir/src/map.c.o.d"
   "CMakeFiles/engine.dir/src/npc.c.o"

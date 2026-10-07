@@ -195,10 +195,24 @@ CMakeFiles/engine.dir/src/item.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/engine.dir/src/item.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/samuel/c/game/fRpgCrawler/src/item.c -o CMakeFiles/engine.dir/src/item.c.s
 
+CMakeFiles/engine.dir/src/item_data.c.o: CMakeFiles/engine.dir/flags.make
+CMakeFiles/engine.dir/src/item_data.c.o: /home/samuel/c/game/fRpgCrawler/src/item_data.c
+CMakeFiles/engine.dir/src/item_data.c.o: CMakeFiles/engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/engine.dir/src/item_data.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/item_data.c.o -MF CMakeFiles/engine.dir/src/item_data.c.o.d -o CMakeFiles/engine.dir/src/item_data.c.o -c /home/samuel/c/game/fRpgCrawler/src/item_data.c
+
+CMakeFiles/engine.dir/src/item_data.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/engine.dir/src/item_data.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/samuel/c/game/fRpgCrawler/src/item_data.c > CMakeFiles/engine.dir/src/item_data.c.i
+
+CMakeFiles/engine.dir/src/item_data.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/engine.dir/src/item_data.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/samuel/c/game/fRpgCrawler/src/item_data.c -o CMakeFiles/engine.dir/src/item_data.c.s
+
 CMakeFiles/engine.dir/src/map.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/map.c.o: /home/samuel/c/game/fRpgCrawler/src/map.c
 CMakeFiles/engine.dir/src/map.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/engine.dir/src/map.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/engine.dir/src/map.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/map.c.o -MF CMakeFiles/engine.dir/src/map.c.o.d -o CMakeFiles/engine.dir/src/map.c.o -c /home/samuel/c/game/fRpgCrawler/src/map.c
 
 CMakeFiles/engine.dir/src/map.c.i: cmake_force
@@ -212,7 +226,7 @@ CMakeFiles/engine.dir/src/map.c.s: cmake_force
 CMakeFiles/engine.dir/src/npc.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/npc.c.o: /home/samuel/c/game/fRpgCrawler/src/npc.c
 CMakeFiles/engine.dir/src/npc.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/engine.dir/src/npc.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/engine.dir/src/npc.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/npc.c.o -MF CMakeFiles/engine.dir/src/npc.c.o.d -o CMakeFiles/engine.dir/src/npc.c.o -c /home/samuel/c/game/fRpgCrawler/src/npc.c
 
 CMakeFiles/engine.dir/src/npc.c.i: cmake_force
@@ -226,7 +240,7 @@ CMakeFiles/engine.dir/src/npc.c.s: cmake_force
 CMakeFiles/engine.dir/src/path.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/path.c.o: /home/samuel/c/game/fRpgCrawler/src/path.c
 CMakeFiles/engine.dir/src/path.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/engine.dir/src/path.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/engine.dir/src/path.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/path.c.o -MF CMakeFiles/engine.dir/src/path.c.o.d -o CMakeFiles/engine.dir/src/path.c.o -c /home/samuel/c/game/fRpgCrawler/src/path.c
 
 CMakeFiles/engine.dir/src/path.c.i: cmake_force
@@ -240,7 +254,7 @@ CMakeFiles/engine.dir/src/path.c.s: cmake_force
 CMakeFiles/engine.dir/src/player.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/player.c.o: /home/samuel/c/game/fRpgCrawler/src/player.c
 CMakeFiles/engine.dir/src/player.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/engine.dir/src/player.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/engine.dir/src/player.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/player.c.o -MF CMakeFiles/engine.dir/src/player.c.o.d -o CMakeFiles/engine.dir/src/player.c.o -c /home/samuel/c/game/fRpgCrawler/src/player.c
 
 CMakeFiles/engine.dir/src/player.c.i: cmake_force
@@ -254,7 +268,7 @@ CMakeFiles/engine.dir/src/player.c.s: cmake_force
 CMakeFiles/engine.dir/src/quest_data.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/quest_data.c.o: /home/samuel/c/game/fRpgCrawler/src/quest_data.c
 CMakeFiles/engine.dir/src/quest_data.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/engine.dir/src/quest_data.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/engine.dir/src/quest_data.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/quest_data.c.o -MF CMakeFiles/engine.dir/src/quest_data.c.o.d -o CMakeFiles/engine.dir/src/quest_data.c.o -c /home/samuel/c/game/fRpgCrawler/src/quest_data.c
 
 CMakeFiles/engine.dir/src/quest_data.c.i: cmake_force
@@ -268,7 +282,7 @@ CMakeFiles/engine.dir/src/quest_data.c.s: cmake_force
 CMakeFiles/engine.dir/src/shop_data.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/shop_data.c.o: /home/samuel/c/game/fRpgCrawler/src/shop_data.c
 CMakeFiles/engine.dir/src/shop_data.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/engine.dir/src/shop_data.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/engine.dir/src/shop_data.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/shop_data.c.o -MF CMakeFiles/engine.dir/src/shop_data.c.o.d -o CMakeFiles/engine.dir/src/shop_data.c.o -c /home/samuel/c/game/fRpgCrawler/src/shop_data.c
 
 CMakeFiles/engine.dir/src/shop_data.c.i: cmake_force
@@ -282,7 +296,7 @@ CMakeFiles/engine.dir/src/shop_data.c.s: cmake_force
 CMakeFiles/engine.dir/src/skills.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/skills.c.o: /home/samuel/c/game/fRpgCrawler/src/skills.c
 CMakeFiles/engine.dir/src/skills.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/engine.dir/src/skills.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/engine.dir/src/skills.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/skills.c.o -MF CMakeFiles/engine.dir/src/skills.c.o.d -o CMakeFiles/engine.dir/src/skills.c.o -c /home/samuel/c/game/fRpgCrawler/src/skills.c
 
 CMakeFiles/engine.dir/src/skills.c.i: cmake_force
@@ -296,7 +310,7 @@ CMakeFiles/engine.dir/src/skills.c.s: cmake_force
 CMakeFiles/engine.dir/src/skilltree.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/skilltree.c.o: /home/samuel/c/game/fRpgCrawler/src/skilltree.c
 CMakeFiles/engine.dir/src/skilltree.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/engine.dir/src/skilltree.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/engine.dir/src/skilltree.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/skilltree.c.o -MF CMakeFiles/engine.dir/src/skilltree.c.o.d -o CMakeFiles/engine.dir/src/skilltree.c.o -c /home/samuel/c/game/fRpgCrawler/src/skilltree.c
 
 CMakeFiles/engine.dir/src/skilltree.c.i: cmake_force
@@ -310,7 +324,7 @@ CMakeFiles/engine.dir/src/skilltree.c.s: cmake_force
 CMakeFiles/engine.dir/src/sound.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/sound.c.o: /home/samuel/c/game/fRpgCrawler/src/sound.c
 CMakeFiles/engine.dir/src/sound.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/engine.dir/src/sound.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/engine.dir/src/sound.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/sound.c.o -MF CMakeFiles/engine.dir/src/sound.c.o.d -o CMakeFiles/engine.dir/src/sound.c.o -c /home/samuel/c/game/fRpgCrawler/src/sound.c
 
 CMakeFiles/engine.dir/src/sound.c.i: cmake_force
@@ -324,7 +338,7 @@ CMakeFiles/engine.dir/src/sound.c.s: cmake_force
 CMakeFiles/engine.dir/src/state.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/state.c.o: /home/samuel/c/game/fRpgCrawler/src/state.c
 CMakeFiles/engine.dir/src/state.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/engine.dir/src/state.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/engine.dir/src/state.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/state.c.o -MF CMakeFiles/engine.dir/src/state.c.o.d -o CMakeFiles/engine.dir/src/state.c.o -c /home/samuel/c/game/fRpgCrawler/src/state.c
 
 CMakeFiles/engine.dir/src/state.c.i: cmake_force
@@ -338,7 +352,7 @@ CMakeFiles/engine.dir/src/state.c.s: cmake_force
 CMakeFiles/engine.dir/src/text_data.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/text_data.c.o: /home/samuel/c/game/fRpgCrawler/src/text_data.c
 CMakeFiles/engine.dir/src/text_data.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/engine.dir/src/text_data.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/engine.dir/src/text_data.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/text_data.c.o -MF CMakeFiles/engine.dir/src/text_data.c.o.d -o CMakeFiles/engine.dir/src/text_data.c.o -c /home/samuel/c/game/fRpgCrawler/src/text_data.c
 
 CMakeFiles/engine.dir/src/text_data.c.i: cmake_force
@@ -352,7 +366,7 @@ CMakeFiles/engine.dir/src/text_data.c.s: cmake_force
 CMakeFiles/engine.dir/src/ui.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/ui.c.o: /home/samuel/c/game/fRpgCrawler/src/ui.c
 CMakeFiles/engine.dir/src/ui.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/engine.dir/src/ui.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building C object CMakeFiles/engine.dir/src/ui.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/ui.c.o -MF CMakeFiles/engine.dir/src/ui.c.o.d -o CMakeFiles/engine.dir/src/ui.c.o -c /home/samuel/c/game/fRpgCrawler/src/ui.c
 
 CMakeFiles/engine.dir/src/ui.c.i: cmake_force
@@ -366,7 +380,7 @@ CMakeFiles/engine.dir/src/ui.c.s: cmake_force
 CMakeFiles/engine.dir/src/ui_data.c.o: CMakeFiles/engine.dir/flags.make
 CMakeFiles/engine.dir/src/ui_data.c.o: /home/samuel/c/game/fRpgCrawler/src/ui_data.c
 CMakeFiles/engine.dir/src/ui_data.c.o: CMakeFiles/engine.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building C object CMakeFiles/engine.dir/src/ui_data.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building C object CMakeFiles/engine.dir/src/ui_data.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/engine.dir/src/ui_data.c.o -MF CMakeFiles/engine.dir/src/ui_data.c.o.d -o CMakeFiles/engine.dir/src/ui_data.c.o -c /home/samuel/c/game/fRpgCrawler/src/ui_data.c
 
 CMakeFiles/engine.dir/src/ui_data.c.i: cmake_force
@@ -388,6 +402,7 @@ engine_OBJECTS = \
 "CMakeFiles/engine.dir/src/gfx.c.o" \
 "CMakeFiles/engine.dir/src/global.c.o" \
 "CMakeFiles/engine.dir/src/item.c.o" \
+"CMakeFiles/engine.dir/src/item_data.c.o" \
 "CMakeFiles/engine.dir/src/map.c.o" \
 "CMakeFiles/engine.dir/src/npc.c.o" \
 "CMakeFiles/engine.dir/src/path.c.o" \
@@ -414,6 +429,7 @@ libengine.a: CMakeFiles/engine.dir/src/entity_states.c.o
 libengine.a: CMakeFiles/engine.dir/src/gfx.c.o
 libengine.a: CMakeFiles/engine.dir/src/global.c.o
 libengine.a: CMakeFiles/engine.dir/src/item.c.o
+libengine.a: CMakeFiles/engine.dir/src/item_data.c.o
 libengine.a: CMakeFiles/engine.dir/src/map.c.o
 libengine.a: CMakeFiles/engine.dir/src/npc.c.o
 libengine.a: CMakeFiles/engine.dir/src/path.c.o
@@ -429,7 +445,7 @@ libengine.a: CMakeFiles/engine.dir/src/ui.c.o
 libengine.a: CMakeFiles/engine.dir/src/ui_data.c.o
 libengine.a: CMakeFiles/engine.dir/build.make
 libengine.a: CMakeFiles/engine.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Linking C static library libengine.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/samuel/c/game/fRpgCrawler/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Linking C static library libengine.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/engine.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/engine.dir/link.txt --verbose=$(VERBOSE)
 

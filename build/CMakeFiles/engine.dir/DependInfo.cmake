@@ -17,6 +17,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/samuel/c/game/fRpgCrawler/src/gfx.c" "CMakeFiles/engine.dir/src/gfx.c.o" "gcc" "CMakeFiles/engine.dir/src/gfx.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/global.c" "CMakeFiles/engine.dir/src/global.c.o" "gcc" "CMakeFiles/engine.dir/src/global.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/item.c" "CMakeFiles/engine.dir/src/item.c.o" "gcc" "CMakeFiles/engine.dir/src/item.c.o.d"
+  "/home/samuel/c/game/fRpgCrawler/src/item_data.c" "CMakeFiles/engine.dir/src/item_data.c.o" "gcc" "CMakeFiles/engine.dir/src/item_data.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/map.c" "CMakeFiles/engine.dir/src/map.c.o" "gcc" "CMakeFiles/engine.dir/src/map.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/npc.c" "CMakeFiles/engine.dir/src/npc.c.o" "gcc" "CMakeFiles/engine.dir/src/npc.c.o.d"
   "/home/samuel/c/game/fRpgCrawler/src/path.c" "CMakeFiles/engine.dir/src/path.c.o" "gcc" "CMakeFiles/engine.dir/src/path.c.o.d"

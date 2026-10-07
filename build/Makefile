@@ -371,6 +371,30 @@ src/item.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/item.c.s
 .PHONY : src/item.c.s
 
+src/item_data.o: src/item_data.c.o
+.PHONY : src/item_data.o
+
+# target to build an object file
+src/item_data.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/item_data.c.o
+.PHONY : src/item_data.c.o
+
+src/item_data.i: src/item_data.c.i
+.PHONY : src/item_data.i
+
+# target to preprocess a source file
+src/item_data.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/item_data.c.i
+.PHONY : src/item_data.c.i
+
+src/item_data.s: src/item_data.c.s
+.PHONY : src/item_data.s
+
+# target to generate assembly for a file
+src/item_data.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/src/item_data.c.s
+.PHONY : src/item_data.c.s
+
 src/main.o: src/main.c.o
 .PHONY : src/main.o
 
@@ -769,6 +793,9 @@ help:
 	@echo "... src/item.o"
 	@echo "... src/item.i"
 	@echo "... src/item.s"
+	@echo "... src/item_data.o"
+	@echo "... src/item_data.i"
+	@echo "... src/item_data.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

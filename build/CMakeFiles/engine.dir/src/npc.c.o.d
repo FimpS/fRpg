@@ -83,7 +83,7 @@ CMakeFiles/engine.dir/src/npc.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/statList.h \
  /home/samuel/c/game/fRpgCrawler/include/ui.h \
- /home/samuel/c/game/fRpgCrawler/include/item.h \
+ /home/samuel/c/game/fRpgCrawler/include/item_data.h \
  /home/samuel/c/game/fRpgCrawler/include/path.h \
  /home/samuel/c/game/fRpgCrawler/include/player.h \
  /home/samuel/c/game/fRpgCrawler/include/shop_data.h \

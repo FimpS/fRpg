@@ -78,4 +78,4 @@ CMakeFiles/engine.dir/src/shop_data.c.o: \
  /home/samuel/c/game/fRpgCrawler/include/gfx.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/dynList.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/statList.h \
- /home/samuel/c/game/fRpgCrawler/include/item.h
+ /home/samuel/c/game/fRpgCrawler/include/item_data.h

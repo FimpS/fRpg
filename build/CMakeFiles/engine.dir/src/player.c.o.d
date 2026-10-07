@@ -84,7 +84,7 @@ CMakeFiles/engine.dir/src/player.c.o: \
  /home/samuel/c/game/fRpgCrawler/include/path.h \
  /home/samuel/c/game/fRpgCrawler/include/npc.h \
  /home/samuel/c/game/fRpgCrawler/include/ui.h \
- /home/samuel/c/game/fRpgCrawler/include/item.h \
+ /home/samuel/c/game/fRpgCrawler/include/item_data.h \
  /home/samuel/c/game/fRpgCrawler/include/skilltree.h \
  /home/samuel/c/game/fRpgCrawler/include/quest_data.h \
  /home/samuel/c/game/fRpgCrawler/include/skills.h

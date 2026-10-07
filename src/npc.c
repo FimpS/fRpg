@@ -89,7 +89,7 @@ static void npc_give_quest_reward(NPC* npc, Quest* quest, GameState* state)
 	{
 		ui_inventory_add_item(player_inventory, (Item) {
 				.type = reward.item_rewards[i],
-				.info = item_info_table[ reward.item_rewards[i] ],
+				.data = item_info_table[ reward.item_rewards[i] ],
 				.enchant = 1,
 				} );
 	}
@@ -185,7 +185,7 @@ static void npc_add_shop_stock(NPC* npc)
 		ItemType type = data.shop_item_types[i];
 		stock->cells[i].item = (Item) {
 			.type = type,
-			.info = item_info_table[type],
+			.data = item_info_table[type],
 			.enchant = 1, //TODO
 		};
 	}

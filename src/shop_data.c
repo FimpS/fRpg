@@ -1,6 +1,6 @@
 
 #include "shop_data.h"
-#include "item.h"
+#include "item_data.h"
 
 const NPCShopType npc_to_shop_table[] = {
 	[NPC_TYPE_TOWN_MERCHANT] = NPC_SHOP_TOWN,

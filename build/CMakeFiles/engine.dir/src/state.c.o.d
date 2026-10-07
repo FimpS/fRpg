@@ -86,6 +86,6 @@ CMakeFiles/engine.dir/src/state.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/../lib/statList.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/npc.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/ui.h \
- /home/samuel/c/game/fRpgCrawler/src/../include/item.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/item_data.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/player.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/sound.h

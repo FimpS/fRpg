@@ -3,7 +3,7 @@ CMakeFiles/engine.dir/src/ui_data.c.o: \
  /home/samuel/c/game/fRpgCrawler/include/ui.h \
  /home/samuel/c/game/fRpgCrawler/lib/dynList.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdbool.h \
- /home/samuel/c/game/fRpgCrawler/include/item.h \
+ /home/samuel/c/game/fRpgCrawler/include/item_data.h \
  /home/samuel/c/game/fRpgCrawler/include/../lib/types.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \

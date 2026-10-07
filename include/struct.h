@@ -34,11 +34,26 @@ typedef struct ItemEnchant
 typedef struct Item
 {
 	ItemType type;
-	ItemInfo info;
+	ItemInfo data;
 	ItemEnchant enchant;
 } Item;
 
 /* ITEM */
+
+/* Equipment */
+
+typedef struct UIEquipmentMenu
+{
+	bool active;
+} UIEquipmentMenu;
+
+#define MAX_SLOTS_IN_EQUIPMENT 8
+typedef struct EntityEquipment
+{
+	Item items[MAX_SLOTS_IN_EQUIPMENT];
+} EntityEquipment;
+
+/* Equipment */
 
 /* PATH */
 
@@ -145,6 +160,7 @@ typedef struct Entity
 	EntityState state;
 
 	EntityStats stats;
+	EntityEquipment* equipment;
 
 	f32 speed;
 	f32 facing_angle;
@@ -435,19 +451,22 @@ typedef struct SkillData
 {
 	SkillType type;
 	bool castable;
+	u32 base_cooldown;
 	void (*activate)(Skill* skill, GameState* state, Entity* target);
 } SkillData;
 
 typedef struct Skill
 {
 	SkillData data;
+	u32 cooldown_timer;
 	Entity* caster;
 } Skill;
 
 #define MAX_HOTBAR_SKILLS 8
 typedef struct SkillHotBar
 {
-	SkillType skills[MAX_HOTBAR_SKILLS];	
+	//SkillType skills[MAX_HOTBAR_SKILLS];	//TODO this should be gone
+	Skill skills[MAX_HOTBAR_SKILLS];
 	Rectangle start_location;
 } SkillHotBar;
 
@@ -458,6 +477,7 @@ typedef struct SkillHotBar
 typedef struct UIElements
 {
 	SkillHotBar hotbar;
+	UIEquipmentMenu equipment;
 } UIElements;
 
 typedef struct TextDisplay

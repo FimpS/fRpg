@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dynList.h"
-#include "item.h"
+#include "item_data.h"
 #include "state.h"
 #include "../lib/types.h"
 #include "../lib/v2.h"
