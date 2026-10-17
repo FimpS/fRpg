@@ -270,11 +270,6 @@ NPC* npc_new(NPCType type, Vector2 pos)
 
 	npc->menu = npc_menu_init(npc);
 
-	for(i32 i = 0; i < npc->menu.len; i++)
-	{
-		P_LOG("[%d] - %s\n", i, npc->menu.option_strings[i]);
-	}
-
 	if(npc->data.inventory == INVENTORY_TYPE_SHOP)
 	{
 		npc_add_shop_stock(npc);

@@ -107,7 +107,6 @@ void quest_register_entry(Player* player, QuestObjectiveType type, QuestObjectiv
 			}
 		}
 	}
-	P_LOG("Entry happened\n");
 	quests_are_updated = true;
 }
 

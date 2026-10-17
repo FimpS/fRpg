@@ -33,6 +33,22 @@ void skills_placeholder_activate(Skill* skill, GameState* state, Entity* target)
 		);
 }
 
+void skills_fireball_active(Skill* skill, GameState* state, Entity* target)
+{
+	Vector2 mouse_pos = map_get_mouse_cords(state->map);
+
+	DynList* ents = state->map->entities;
+	const u32 len = ents->len;
+	for(i32 i = 0; i < len; i++)
+	{
+		Entity* ent = dynList_get(ents, i);
+		const Rectangle r = { ent->pos.x, ent->pos.y, ent->data.dim.x, ent->data.dim.y };
+		if(AAB(r, mouse_pos))
+		{
+			entity_do_damage(state->player->entity, ent, skill->data.flat_damage, skill->data.mult_damage,state);
+		}
+	}
+}
 
 Rectangle skills_get_skill_src(SkillType type, CharacterClassType class)
 {
@@ -42,12 +58,21 @@ Rectangle skills_get_skill_src(SkillType type, CharacterClassType class)
 
 
 const SkillData skill_data_table[] = {
-	//Type 							castable	BaseCD				activate
-	{SKILL_TYPE_NONE, 				false, 		0000,					NULL},
-	{SKILL_TYPE_PLACEHOLDER, 		true, 		6000,					skills_placeholder_activate},
-	{SKILL_TYPE_FIREBALL, 			false, 		0060,					NULL},
+	//Type 							castable	BaseCD				activate							//flat
+	{SKILL_TYPE_NONE, 				false, 		0000,					NULL,							{0, 100, 0, 0, 0, 0},		{1,1,1,1,1,1}},
+	{SKILL_TYPE_PLACEHOLDER, 		true, 		0010,					skills_fireball_active},
+	{SKILL_TYPE_FIREBALL, 			true, 		0060,					skills_fireball_active,			{0, 300, 0, 0, 0, 0},		{0,50,0,0,0,0}},
 	{SKILL_TYPE_ONE, 				false, 		0200,					NULL},
 	{SKILL_TYPE_TWO, 				false, 		1000,					NULL},
 	{SKILL_TYPE_THREE, 				false, 		1000,					NULL},
 	{SKILL_TYPE_FOUR, 				false, 		1000,					NULL},
 };
+
+
+
+
+
+
+
+
+

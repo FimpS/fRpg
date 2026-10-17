@@ -37,6 +37,7 @@ const Rectangle inventory_item_table[] =
 	{0, 0, 16, 16},
 	{16, 0, 16, 16},
 	{16, 16, 16, 16},
+	{0, 64, 16, 16},
 };
 
 const InventoryData inventory_data_table[] = {

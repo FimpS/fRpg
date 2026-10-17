@@ -1523,6 +1523,7 @@ CMakeFiles/engine.dir/src/skilltree.c.o: /home/samuel/c/game/fRpgCrawler/src/ski
   /home/samuel/c/game/fRpgCrawler/include/skilltree.h \
   /home/samuel/c/game/fRpgCrawler/include/state.h \
   /home/samuel/c/game/fRpgCrawler/include/struct.h \
+  /home/samuel/c/game/fRpgCrawler/include/text_data.h \
   /home/samuel/c/game/fRpgCrawler/include/ui.h \
   /home/samuel/c/game/fRpgCrawler/lib/types.h \
   /usr/include/alloca.h \
@@ -2091,13 +2092,13 @@ CMakeFiles/engine.dir/src/ui_data.c.o: /home/samuel/c/game/fRpgCrawler/src/ui_da
   /usr/local/include/raymath.h
 
 
-/home/samuel/c/game/fRpgCrawler/include/text_data.h:
-
 /usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
 
 /usr/include/x86_64-linux-gnu/bits/dirent_ext.h:
 
 /usr/include/dirent.h:
+
+/home/samuel/c/game/fRpgCrawler/include/text_data.h:
 
 /home/samuel/c/game/fRpgCrawler/src/skills.c:
 

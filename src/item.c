@@ -40,8 +40,20 @@ static i32 item_get_equip_index(EntityEquipment* equipment, ItemClass item_class
 	const u32 ring_len = 4;
 	switch(item_class)
 	{
+		case ITEM_CLASS_WEAPON:
+			final_index = ITEM_SLOT_WEAPON;
+			break;
 		case ITEM_CLASS_HELMET:
 			final_index = ITEM_SLOT_HEAD;
+			break;
+		case ITEM_CLASS_TORSO:
+			final_index = ITEM_SLOT_TORSO;
+			break;
+		case ITEM_CLASS_HANDS:
+			final_index = ITEM_SLOT_HANDS;
+			break;
+		case ITEM_CLASS_LEGS:
+			final_index = ITEM_SLOT_LEGS;
 			break;
 		case ITEM_CLASS_RING:
 			final_index = ITEM_SLOT_RING1;
@@ -56,6 +68,7 @@ static i32 item_get_equip_index(EntityEquipment* equipment, ItemClass item_class
 		case ITEM_CLASS_NONE:
 			final_index = -1;
 			break;
+		default: final_index = -1; break;
 	}
 	return final_index;
 }

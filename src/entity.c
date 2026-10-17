@@ -92,6 +92,58 @@ f32 entity_calculate_speed(Entity* self, GameState* state)
 }
 
 
+/*--------------------------------- Damage ---------------------------------*/
+
+static u32 entity_elemental_damage_calculation(u32 atk, u32 def, u32 dmg, u32 mul)
+{
+	return ( ( (f32) dmg ) + ( ( (f32) atk) * ( (f32) (mul) / 100.0 )) ) * (1.0 - (f32) def / 100.0); //bad
+}
+
+static const Color damage_color_table[] = {
+	WHITE,
+	BLUE,
+	ORANGE,
+	YELLOW,
+	GOLD,
+	BLACK,
+};
+static Color entity_determine_damage_tint(u32 phys, u32 fire, u32 magic, u32 bolt, u32 holy, u32 dark)
+{
+	u32 highest = phys;
+	u32 index = 0;
+	if(magic >= highest) { highest = magic; index = 1; }
+	if(fire >= highest) { highest = fire; index = 2; }
+	if(bolt >= highest) { highest = bolt; index = 3; }
+	if(holy >= highest) { highest = holy; index = 4; }
+	if(dark >= highest) { highest = dark; index = 5; }
+
+	return damage_color_table[index];
+}
+
+void entity_do_damage(Entity* attacker, Entity* defender, const ElementalPower damage, const ElementalPower multipler, GameState* state)
+{
+	const ElementalPower def = defender->stats.defense;
+	const ElementalPower atk = attacker->stats.attack;
+	const ElementalPower dmg = damage;
+	const ElementalPower mul = multipler;
+	const u32 total_phys = entity_elemental_damage_calculation(atk.physical, def.physical, dmg.physical, mul.physical);
+	const u32 total_fire = entity_elemental_damage_calculation(atk.fire, def.fire, dmg.fire, mul.fire);
+	const u32 total_magic = entity_elemental_damage_calculation(atk.magic, def.magic, dmg.magic, mul.magic);
+	const u32 total_lightning = entity_elemental_damage_calculation(atk.lightning, def.lightning, dmg.lightning, mul.lightning);
+	const u32 total_holy = entity_elemental_damage_calculation(atk.holy, def.holy, dmg.holy, mul.holy);
+	const u32 total_dark = entity_elemental_damage_calculation(atk.dark, def.dark, dmg.dark, mul.dark);
+
+	const u32 total_damage = total_phys + total_fire + total_magic + total_lightning + total_holy + total_dark;
+	Color tint = entity_determine_damage_tint(total_phys, total_fire, total_magic, total_lightning, total_holy, total_dark);
+	ui_text_damage_add(total_damage, defender->pos, defender->data.dim, tint, state);
+	defender->stats.health -= total_damage;
+
+}
+
+/*--------------------------------- Damage ---------------------------------*/
+
+
+
 //Speed multiplier for states which multiplied with self->speed.base?
 //
 //Better do maybe have a few fields that are multipliers which are addative
@@ -297,6 +349,38 @@ Rectangle entity_get_render_frame(Entity* self, GameState* state)
 	return animation->frames[ frame_index ];
 }
 
+static void entity_healthbar_render(Entity* self, GameState* state)
+{
+	if(self->stats.health < 0) return;
+	Gfx* gfx = state->gfx;
+	MapCamera* cam = state->map->camera;
+	Rectangle src = {0,0,16,16};
+	Color health_tint = RED;
+	Color outline_tint = GRAY;
+	Vector2 box_dim = { 100, 16 };
+	Vector2 box_dim_health = { box_dim.x * ( (f32) self->stats.health / self->data.base_health), 16 };
+	DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
+			src, 
+			(Rectangle) {
+			(self->pos.x - cam->offset.x) * cam->tile_len    - (box_dim.x / 2.0 - (self->data.dim.x * TILE_LEN) / 2.0), 
+			(self->pos.y - cam->offset.y) * cam->tile_len    - 40, 
+			box_dim.x, box_dim.y
+			}, 
+			(Vector2) {0}, 
+			0.0, 
+			outline_tint);
+	DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
+			src, 
+			(Rectangle) {
+			(self->pos.x - cam->offset.x) * cam->tile_len    - (box_dim.x / 2.0 - (self->data.dim.x * TILE_LEN) / 2.0), 
+			(self->pos.y - cam->offset.y) * cam->tile_len    - 40, 
+			box_dim_health.x, box_dim.y
+			}, 
+			(Vector2) {0}, 
+			0.0, 
+			health_tint);
+}
+
 void entity_render(Entity* self, GameState* state)
 {
 	MapCamera* cam = state->map->camera;
@@ -325,6 +409,7 @@ void entities_render(DynList* entities, GameState* state)
 	{
 		Entity* e = dynList_get(entities, i);
 		entity_render(e, state);
+		entity_healthbar_render(e, state);
 	}
 }
 
@@ -383,6 +468,9 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	newe->stats = (EntityStats) {
 		.level = 20,
 		.experience = 0,
+		.defense = 0,
+		.attack = { 100, 30, 0, 0, 0, 0 },
+		.health = newe->data.base_health,
 	};
 
 	newe->equipment = entity_equipment_new();

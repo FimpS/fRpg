@@ -36,6 +36,10 @@ void ui_queues_destroy(UIQueues* q);
 void ui_text_display_push(TextDisplay text_display, GameState* state);
 void ui_text_display_render(GameState* state);
 
+void ui_text_entity_status_add(const u8* text, const Vector2 pos, const Vector2 dim, Color tint, GameState* state);
+void ui_text_damage_add(const u32 damage, const Vector2 pos, const Vector2 dim, Color tint, GameState* state);
+void ui_text_damage_render(GameState* state);
+
 UIElements* ui_elements_new();
 
 

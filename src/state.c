@@ -61,9 +61,9 @@ void state_render(GameState* state)
 	Map* map = state->map;
 	map_render(map, &state->gfx->texs[TEXTURE_TILEMAP]); 
 	player_render(state->player, state);
-	entities_render(state->map->entities, state);
 	npcs_render(map->npcs, state);
 	map_render_light(map, state);
+	entities_render(state->map->entities, state); //TODO is this legal?
 	npcs_ui_render(map->npcs, state);
 	ui_render(state);
 }

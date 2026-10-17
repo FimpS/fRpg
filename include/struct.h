@@ -14,17 +14,40 @@ typedef struct SkillTree SkillTree;
 typedef struct GameState GameState;
 typedef struct Inventory Inventory;
 
+
+/* Damage */
+
+typedef struct ElementalPower
+{
+	i32 physical;
+	i32 magic;
+	i32 fire;
+	i32 lightning;
+	i32 holy;
+	i32 dark;
+} ElementalPower;
+
+/* Damage */
+
 /* ITEM */
+
+typedef struct ItemEquipment
+{
+	bool equipable;
+	ElementalPower attack;
+	ElementalPower defense;
+} ItemEquipment;
 
 #define MAX_NAME_LEN 32
 #define MAX_DESC_LEN 128
-typedef struct ItemInfo
+typedef struct ItemData
 {
 	u8 name[MAX_NAME_LEN];
 	u8 description[MAX_DESC_LEN];
 	ItemClass class;
 	bool stackable;
-} ItemInfo;
+	ItemEquipment equipment;
+} ItemData;
 
 typedef struct ItemEnchant
 {
@@ -33,8 +56,9 @@ typedef struct ItemEnchant
 
 typedef struct Item
 {
+	ItemEquipment equip_data;
 	ItemType type;
-	ItemInfo data;
+	ItemData data;
 	ItemEnchant enchant;
 } Item;
 
@@ -47,7 +71,7 @@ typedef struct UIEquipmentMenu
 	bool active;
 } UIEquipmentMenu;
 
-#define MAX_SLOTS_IN_EQUIPMENT 8
+#define MAX_SLOTS_IN_EQUIPMENT 9
 typedef struct EntityEquipment
 {
 	Item items[MAX_SLOTS_IN_EQUIPMENT];
@@ -139,6 +163,7 @@ typedef struct EntityData
 
 	Vector2 dim;
 	f32 base_speed;
+	i32 base_health;
 	EntityLightData light;
 } EntityData;
 
@@ -146,9 +171,15 @@ typedef struct EntityStats
 {
 	i32 level;
 	u64 experience;
+
+	ElementalPower attack;
+	ElementalPower defense;
+
+	i32 health;
 } EntityStats;
 
-//Decent idea to have separate every Data/changing so you have LighData and Light
+
+
 typedef struct Entity
 {
 	Vector2 pos;
@@ -414,6 +445,7 @@ typedef struct SkillTree
 	bool active;
 	CharacterClassType active_skill_tree;
 	SkillTreeNode* holding_node;
+	SkillTreeNode* text_box_node;
 	SkillTreeNode* root[PLAYER_MAX_SKILL_TREES];
 
 	i32 skill_points;
@@ -453,6 +485,8 @@ typedef struct SkillData
 	bool castable;
 	u32 base_cooldown;
 	void (*activate)(Skill* skill, GameState* state, Entity* target);
+	ElementalPower flat_damage;
+	ElementalPower mult_damage;
 } SkillData;
 
 typedef struct Skill
@@ -474,8 +508,20 @@ typedef struct SkillHotBar
 
 /* UI */
 
+#define MAX_ENTITY_STATUS_TEXT_LEN 16
+typedef struct UIEntityStatusText
+{
+	u8 text[MAX_ENTITY_STATUS_TEXT_LEN];
+	i32 timer;
+	Vector2 pos;
+	Color tint;
+} UIEntityStatusText;
+
+#define MAX_UI_DAMAGE_TEXT 32
+DEFINE_STATIC_LIST(UIEntityStatusText, UIEntityStatusTextList, ui_entity_status_text_list, MAX_UI_DAMAGE_TEXT);
 typedef struct UIElements
 {
+	UIEntityStatusTextList status_text_list;
 	SkillHotBar hotbar;
 	UIEquipmentMenu equipment;
 } UIElements;

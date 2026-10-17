@@ -2,6 +2,7 @@
 #include "struct.h"
 #include "ui.h"
 #include "skills.h"
+#include "text_data.h"
 #include "map.h"
 #include "enum.h"
 
@@ -76,7 +77,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 		.data = {
 			{
 				.type = SKILL_TYPE_FIREBALL,
-				.pos = {350, 200},
+				.pos = {550, 200},
 				.level = 0,
 				.skill_point_cost = 15,
 				.neighbors = {
@@ -446,6 +447,18 @@ static void skill_tree_draw_arrow(Vector2 end, Vector2 start, Color line_tint, C
 	}
 }
 
+static bool skill_tree_skill_not_in_hotbar(SkillType type, GameState* state)
+{
+	SkillHotBar* hotbar = &state->ui_elements->hotbar;
+
+	const u32 len = MAX_HOTBAR_SKILLS;
+	for(i32 i = 0; i < len; i++)
+	{
+		if(hotbar->skills[i].data.type == type) return false;
+	}
+	return true;
+}
+
 static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 {
 	if(node == NULL) return;
@@ -458,6 +471,7 @@ static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 	const Rectangle src = skills_get_skill_src(node->type, state->player->skill_tree->active_skill_tree);
 	const Rectangle dst = { node->pos.x, node->pos.y, length, length };
 	SkillTreeNode* holder = state->player->skill_tree->holding_node;
+	SkillTreeNode* text_box_node = state->player->skill_tree->text_box_node;
 
 	Color tint = DARKGRAY;
 	SkillTree* tree = state->player->skill_tree;
@@ -472,10 +486,18 @@ static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 				node->level ++;
 			}
 		}
+		if(IsKeyPressed(KEY_TAB) && text_box_node == NULL)
+		{
+			text_box_node = node;
+		}
 		if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && holder == NULL)
 		{
 			holder = node;
 		}
+	} 
+	if(IsKeyReleased(KEY_TAB))
+	{
+		text_box_node= NULL;
 	}
 	if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) 
 	{
@@ -492,7 +514,10 @@ static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 
 					//state->ui_elements->hotbar.skills[i] = holder->type;
 					const SkillType skill_type = holder->type;
-					state->ui_elements->hotbar.skills[i] = skills_skill_init(skill_type);
+					if(skill_tree_skill_not_in_hotbar(skill_type, state))
+					{
+						state->ui_elements->hotbar.skills[i] = skills_skill_init(skill_type);
+					}
 				}
 			}
 		}
@@ -507,6 +532,7 @@ static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 
 	const u32 len = MAX_SKILL_TREE_ADJACENT;
 	state->player->skill_tree->holding_node = holder;
+	state->player->skill_tree->text_box_node = text_box_node;
 	for(i32 i = 0; i < len; i++)
 	{
 		SkillTreeNode* neighbor = node->neighbors[i];
@@ -608,6 +634,7 @@ void skill_tree_render(SkillTreeNode* root, GameState* state)
 
 
 	SkillTreeNode* holder = state->player->skill_tree->holding_node;
+	SkillTreeNode* node = state->player->skill_tree->text_box_node;
 	const Vector2 mouse_pos = GetMousePosition();
 	const f32 length = 42.0;
 	if(holder != NULL) 
@@ -616,13 +643,16 @@ void skill_tree_render(SkillTreeNode* root, GameState* state)
 		ui_draw_element(&gfx->texs[TEXTURE_SKILL_DISPLAY], src,
 				(Rectangle) { mouse_pos.x - length / 4.0, mouse_pos.y - length / 4.0, length, length }, WHITE);
 	}
+	if(node != NULL)
+	{
+		ui_text_box_render(text_skill_data_table[node->type], "Placeholder", node->pos, state);
+	}
 }
 
 
 SkillTreeNode* skill_tree_get_class_tree(i32 class)
 {
 	const u32 skill_count = skill_tree_table[class].class_list.len;
-	P_LOG("%d\n", skill_count);
 
 	SkillTreeNode* skill_nodes = malloc(sizeof(SkillTreeNode) * skill_count);
 	for(i32 i = 0; i < skill_count; i++)

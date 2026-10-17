@@ -13,3 +13,22 @@ const TextData text_data_table[] = {
 };
 
 
+
+
+
+
+
+
+
+
+
+
+const u8* text_skill_data_table[] = {
+	"This skill is none",
+	"Summons a placeholder entity",
+	"Fireball skill that fires a fireball",
+	"One",
+	"Two",
+	"Three",
+	"Four",
+};

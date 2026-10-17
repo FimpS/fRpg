@@ -4,5 +4,5 @@
 #include "enum.h"
 #include "struct.h"
 
-extern const ItemInfo item_info_table[];
+extern const ItemData item_info_table[];
 

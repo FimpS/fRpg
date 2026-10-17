@@ -93,10 +93,11 @@ typedef enum EntityStateType
 
 typedef enum
 {
+	ITEM_SLOT_WEAPON,
 	ITEM_SLOT_HEAD,
 	ITEM_SLOT_TORSO,
 	ITEM_SLOT_HANDS,
-	ITEM_SLOT_LEGSO,
+	ITEM_SLOT_LEGS,
 	ITEM_SLOT_RING1,
 	ITEM_SLOT_RING2,
 	ITEM_SLOT_RING3,
@@ -108,13 +109,20 @@ typedef enum
 	ITEM_TYPE_NONE,
 	ITEM_TYPE_PLACEHOLDER,
 	ITEM_TYPE_HELMET,
+	ITEM_TYPE_SWORD,
 } ItemType;
+
+
 
 typedef enum
 {
 	ITEM_CLASS_NONE,
+	ITEM_CLASS_WEAPON,
 	ITEM_CLASS_RING,
 	ITEM_CLASS_HELMET,
+	ITEM_CLASS_TORSO,
+	ITEM_CLASS_HANDS,
+	ITEM_CLASS_LEGS,
 } ItemClass;
 
 typedef enum TileType //Not needed probably, But some kind of list of what A tile should look like idk last part to think about...
@@ -170,7 +178,11 @@ typedef enum
 	CHARACTER_CLASS_NONE,
 } CharacterClassType;
 
-
+typedef enum
+{
+	TEXT_BOX_ORIENTATION_LEFT,
+	TEXT_BOX_ORIENTATION_RIGHT,
+} TextBoxOrientation;
 
 typedef enum SoundTypeGlobal
 {

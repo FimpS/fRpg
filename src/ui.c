@@ -141,7 +141,14 @@ void ui_wrap_text_render(const u8* text,
 	}
 }
 
-void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState* state)
+static Vector2 ui_text_box_adjust_position(Vector2 pos, Vector2 dim)
+{
+	return pos.x >= GetScreenWidth() / 2.0 ? 
+		(Vector2) { pos.x - dim.x + 16, pos.y + 32 } :
+		(Vector2) { pos.x + 32, pos.y + 32};
+}
+
+void ui_text_box_render_old_fast(const u8* title, const u8* text, Vector2 pos, GameState* state)
 {
 	Gfx* gfx = state->gfx;
 	Vector2 box_dim = gfx_to_monitor_vector( (Vector2) {200, 400} );
@@ -150,16 +157,116 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 	const i32 line_len = box_dim.x - 40;
 
 	const i32 padding = 20;
-	const i32 max_width = box_dim.x - padding * 2 -40;
+	const i32 max_width = box_dim.x - padding * 2 - 40;
 
+	pos = ui_text_box_adjust_position(pos, box_dim);
 	DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
 			(Rectangle) {0, 80, 32, 48},
 			(Rectangle) {pos.x, pos.y, box_dim.x, box_dim.y}, 
 			(Vector2) {0},
 			0.0,
-			WHITE);
+			(Color) { 255, 255, 255, 225 });
 	ui_wrap_text_render(title, pos, max_width, padding, size, state);
 	pos.y += padding * 4;
+	ui_wrap_text_render(text, pos, max_width, padding, size, state);
+}
+
+void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState* state)
+{
+	Gfx* gfx = state->gfx;
+
+	const i32 padding = 20;
+	const i32 size = gfx_to_monitor(16);
+	const i32 width = gfx_to_monitor(200);
+	const i32 max_width = width - padding * 2 - 40;
+
+	const u32 title_len = strlen(title);
+	const u32 max_str_len = 128;
+	i32 title_index = 0;
+	i32 title_lines = 1;
+	u8 title_string[max_str_len];
+
+	for(i32 i = 0; i < title_len; i++)
+	{
+		title_string[title_index++] = title[i];
+
+		if(title[i] == ' ')
+		{
+			title_string[title_index] = '\0';
+
+			Vector2 line_width =
+				MeasureTextEx(gfx->ui_font, title_string, size, 0.0);
+
+			if(line_width.x >= max_width)
+			{
+				title_lines++;
+				title_index = 0;
+			}
+		}
+		else if(title[i] == '\n')
+		{
+			title_lines++;
+			title_index = 0;
+		}
+	}
+
+	const u32 text_len = strlen(text);
+	i32 text_index = 0;
+	i32 text_lines = 1;
+	u8 text_string[max_str_len];
+
+	for(i32 i = 0; i < text_len; i++)
+	{
+		text_string[text_index++] = text[i];
+
+		if(text[i] == ' ')
+		{
+			text_string[text_index] = '\0';
+
+			Vector2 line_width =
+				MeasureTextEx(gfx->ui_font, text_string, size, 0.0);
+
+			if(line_width.x >= max_width)
+			{
+				text_lines++;
+				text_index = 0;
+			}
+		}
+		else if(text[i] == '\n')
+		{
+			text_lines++;
+			text_index = 0;
+		}
+	}
+
+	const i32 line_height = size + 8;
+
+	const i32 title_height = title_lines * line_height;
+	const i32 text_height = text_lines * line_height;
+
+	const i32 box_height =
+		padding * 2 +
+		title_height +
+		padding * 2 +
+		text_height +
+		padding;
+
+	Vector2 box_dim = gfx_to_monitor_vector(
+			(Vector2) {200, box_height});
+
+	pos = ui_text_box_adjust_position(pos, box_dim);
+
+	DrawTexturePro(gfx->texs[TEXTURE_GAME_UI],
+			(Rectangle) {0, 80, 32, 48},
+			(Rectangle) {pos.x, pos.y, box_dim.x, box_dim.y},
+			(Vector2) {0},
+			0.0,
+			(Color) {255, 255, 255, 225});
+
+	ui_wrap_text_render(title, pos, max_width, padding, size, state);
+
+	pos.y += title_height + padding * 2;
+
 	ui_wrap_text_render(text, pos, max_width, padding, size, state);
 }
 
@@ -440,10 +547,10 @@ ui_inventory_add_item(inv_new, (Item) {
 
 
 
-	ui_inventory_add_item(inv_new, (Item) {
-				.type = ITEM_TYPE_PLACEHOLDER,
-				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
-				.enchant = { 1 },
+		ui_inventory_add_item(inv_new, (Item) {
+				.type = ITEM_TYPE_SWORD,
+				.data = item_info_table[ITEM_TYPE_SWORD],
+				.enchant = { 3 },
 				} );
 
 
@@ -655,14 +762,14 @@ void ui_inventory_add_item(Inventory* inventory, Item item)
 static void ui_inventory_background_render(Inventory* inventory, GameState* state)
 {
 	Gfx* gfx = state->gfx;
-	Rectangle r = {0, 0, 16, 16};
+	Rectangle r = {32, 80, 32, 48};
 	Rectangle tr = inventory->hitbox;
 	DrawTexturePro(gfx->texs[TEXTURE_GAME_UI], 
 			r, 
 			inventory->hitbox, 
 			(Vector2) {0}, 
 			0.0, 
-			WHITE);
+			(Color) { 255, 255, 255, 175 });
 }
 
 static void ui_item_cell_text_render(Inventory* inventory, GameState* state, const i32 id)
@@ -674,7 +781,7 @@ static void ui_item_cell_text_render(Inventory* inventory, GameState* state, con
 		const Vector2 rpos = gfx_to_monitor_vector( (Vector2) { -200.0, 10.0 } );
 		// Maybe force it to be top left of the box instead of dependent on cellhitbox
 		ui_text_box_render(cell.item.data.name, cell.item.data.description, 
-				(Vector2) { cell.hitbox.x + rpos.x, cell.hitbox.y + rpos.y}, 
+				(Vector2) { cell.hitbox.x , cell.hitbox.y }, 
 				state);
 	}
 }
@@ -787,8 +894,10 @@ void ui_equipment_menu_render(GameState* state)
 	for(i32 i = 0; i < len; i++)
 	{
 		Item* item = &equipment->items[i];
-		Rectangle background_src = { 0, 32, 16, 16 };
-		Rectangle background_dst = { 1000, 200 + i * cell_length, cell_length, cell_length};
+		const Rectangle background_src = { 0, 32, 16, 16 };
+		const Rectangle color_src = { 0, 16, 16, 16 };
+		Rectangle background_dst = { 1840, 200 + i * cell_length, cell_length, cell_length};
+		ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], color_src, background_dst, enchant_to_color_table[item->enchant.level]);
 		ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], background_src, background_dst, WHITE);
 
 		
@@ -799,12 +908,21 @@ void ui_equipment_menu_render(GameState* state)
 			Rectangle item_src = inventory_item_table[item->type];
 			ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], item_src, background_dst, WHITE);
 		}
-
-		if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && AAB(background_dst, mouse_pos))
+		if(AAB(background_dst, mouse_pos))
 		{
-			ui_inventory_add_item(state->player->inventory, *item);
-			equipment->items[i] = item_empty_init();
+			if(item->type != ITEM_TYPE_NONE)
+			{
+				ui_text_box_render(item->data.name, item->data.description, 
+						(Vector2) { background_dst.x , background_dst.y }, 
+						state);
+			}
+			if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+			{
+				ui_inventory_add_item(state->player->inventory, *item);
+				equipment->items[i] = item_empty_init();
+			}
 		}
+
 	}
 }
 
@@ -847,7 +965,6 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 			quest_register_entry(state->player, QUEST_OBJECTIVE_TALK, (QuestObjectiveData) {
 					.talk.talk_to_type = npc->type,
 					} );
-			P_LOG("%s\n", text_data_table[ npc->text.generic ].text);
 		}
 		menu->active = false;
 	}
@@ -916,7 +1033,6 @@ void ui_render_npc_menu(NPC* npc, GameState* state)
 
 
 		DrawTexturePro(state->gfx->texs[TEXTURE_GAME_UI], src, box, (Vector2) { 0 }, 0.0f, tint);
-		//P_LOG("String length of option [%d]: (%f,%f)\n", i, str_len.x, str_len.y);
 
 		ui_draw_text(str, text_pos, font_size, WHITE, state);
 	}
@@ -1122,7 +1238,6 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 		}
 	}
 
-	//P_LOG("%d\n", available_quests_len);
 	for(i32 i = 0; i < available_quests_len ; i++)
 	{
 		const Vector2 pos = { first_pos.x, first_pos.y + (i) * (font_size + 1) };
@@ -1190,7 +1305,6 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 		}
 
 		DrawTexturePro(state->gfx->texs[TEXTURE_GAME_UI], src, box, (Vector2) { 0 }, 0.0f, tint);
-		//P_LOG("String length of option [%d]: (%f,%f)\n", i, str_len.x, str_len.y);
 		ui_draw_text(str, text_pos, font_size, text_tint, state);
 	}
 
@@ -1212,11 +1326,9 @@ static void ui_shop_buy_item(InventoryCell* cell, Inventory* shop_inventory, Gam
 	const Vector2 mouse_cords = GetMousePosition();
 	Inventory* player_inventory = state->player->inventory;
 
-	//P_LOG("%f %f\n", cell->hitbox.x, cell->hitbox.y);
 	if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && 
 			AAB(cell->hitbox, mouse_cords) )
 	{
-		P_LOG("Added\n");
 		ui_inventory_add_item(player_inventory, item_to_buy);
 	}
 }
@@ -1523,6 +1635,57 @@ void ui_skill_hotbar_render(GameState* state)
 
 /*--------------------------------- UIQUEUES ---------------------------------*/
 
+void ui_text_entity_status_add(const u8* text, const Vector2 pos, const Vector2 dim, Color tint, GameState* state)
+{
+	if(strlen(text) >= MAX_ENTITY_STATUS_TEXT_LEN) return;
+
+
+	UIEntityStatusText entry = (UIEntityStatusText) {
+				.pos = (Vector2) { pos.x + dim.x / 2.0 + frand(-1.0, 1.0), pos.y + dim.y / 2.0 + frand(-1.0, 1.0) },
+				.timer = 0,
+				.tint = tint,
+			};
+	strcpy(entry.text, text);
+	ui_entity_status_text_list_push(&state->ui_elements->status_text_list, entry);
+}
+
+void ui_text_damage_add(const u32 damage, const Vector2 pos, const Vector2 dim, Color tint, GameState* state)
+{
+	ui_text_entity_status_add(TextFormat("%u", damage), pos, dim, tint, state);
+}
+
+#define MAX_TEXT_DAMAGE_TIMER 64
+void ui_text_damage_render(GameState* state)
+{	
+	Gfx* gfx = state->gfx;
+	UIEntityStatusTextList* list = &state->ui_elements->status_text_list;
+	const u32 len = ui_entity_status_text_list_len(list);
+	u32 remove_len = 0;
+	i32 indeces[MAX_UI_DAMAGE_TEXT];
+	for(i32 i = 0; i < len; i++)
+	{
+		UIEntityStatusText* current = ui_entity_status_text_list_get(list, i);
+		const Vector2 map_pos = map_convert_map_to_screen(current->pos, state->map);
+		const Vector2 text_dim = MeasureTextEx(gfx->font, current->text, 16, 1.0);
+		const Vector2 final_pos = Vector2Subtract(map_pos, Vector2Scale(text_dim, 0.5));
+
+		const u32 fade = 255 - (current->timer + 1)*3;
+		const Color base = current->tint;
+		const Color tint = { base.r, base.g, base.b, fade };
+
+		ui_draw_text(current->text, final_pos, 16, tint, state);
+		if(current->timer ++ >= MAX_TEXT_DAMAGE_TIMER) 
+		{
+			indeces[remove_len ++] = i;
+		}
+	}
+	for(i32 i = 0; i < remove_len; i++)
+	{
+		ui_entity_status_text_list_del(list, indeces[i]);
+	}
+}
+
+
 UIElements* ui_elements_new()
 {
 	UIElements* ui = malloc(sizeof(UIElements));
@@ -1538,7 +1701,7 @@ UIElements* ui_elements_new()
 	{
 		ui->hotbar.skills[i] = skills_skill_init(SKILL_TYPE_NONE);
 	}
-	ui->hotbar.skills[3] = skills_skill_init(SKILL_TYPE_PLACEHOLDER);
+	ui->hotbar.skills[6] = skills_skill_init(SKILL_TYPE_FIREBALL);
 
 	return ui;
 }
@@ -1578,13 +1741,14 @@ void ui_render(GameState* state)
 	ui_text_display_render(state);
 	npcs_ui_render(npcs, state);
 	ui_skill_tree_render(state);
-	ui_equipment_menu_toggle(state);
-	ui_equipment_menu_render(state);
 
 	if(player_inventory->active)
 	{
 		ui_inventory_render(player_inventory, state);
 	}
+	ui_equipment_menu_toggle(state);
+	ui_equipment_menu_render(state);
+	ui_text_damage_render(state);
 	gfx_render_mouse(state->gfx);
 }
 

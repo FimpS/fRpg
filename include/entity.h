@@ -37,6 +37,7 @@ void entity_move(Entity* self, GameState* state);
 bool entity_path_blocked(Vector2 pos, GameState* state);
 f32 entity_calculate_speed(Entity* self, GameState* state);
 void entity_gain_experience(Entity* self, const u32 experience);
+void entity_do_damage(Entity* attacker, Entity* defender, const ElementalPower damage, const ElementalPower multiplier, GameState* state);
 
 Entity* entity_player_init(GameState* state);
 
