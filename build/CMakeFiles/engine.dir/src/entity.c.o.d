@@ -88,5 +88,6 @@ CMakeFiles/engine.dir/src/entity.c.o: \
  /home/samuel/c/game/fRpgCrawler/src/../include/item_data.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/path.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/item.h \
+ /home/samuel/c/game/fRpgCrawler/src/../include/skills.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/player.h \
  /home/samuel/c/game/fRpgCrawler/src/../include/entity_data.h

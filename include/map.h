@@ -18,7 +18,7 @@ Vector2 map_convert_map_to_screen(Vector2 v, Map* map);
 Map* map_new(V2 dim);
 void map_destroy(Map* map);
 
-bool map_load_level(Map* map, const char* filepath);
+bool map_load_level(GameState* state, const char* filepath);
 Tile map_get_tile(Map* map, V2 pos);
 void map_set_tile(Map* map, V2 pos, Tile tile);
 void map_render(Map* map, Texture2D* texp);

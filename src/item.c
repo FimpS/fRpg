@@ -73,14 +73,63 @@ static i32 item_get_equip_index(EntityEquipment* equipment, ItemClass item_class
 	return final_index;
 }
 
-Item item_equip_to_equipment_slot(Item* item, EntityEquipment* equipment)
+void elemental_power_add(ElementalPower* reciever, const ElementalPower power)
+{
+	reciever->physical += power.physical;
+	reciever->magic += power.magic;
+	reciever->fire += power.fire;
+	reciever->bolt += power.bolt;
+	reciever->holy += power.holy;
+	reciever->dark += power.dark;
+}
+
+void elemental_power_sub(ElementalPower* reciever, const ElementalPower power)
+{
+	reciever->physical -= power.physical;
+	reciever->magic -= power.magic;
+	reciever->fire -= power.fire;
+	reciever->bolt -= power.bolt;
+	reciever->holy -= power.holy;
+	reciever->dark -= power.dark;
+}
+
+void elemental_power_log(const ElementalPower power)
+{
+	P_LOG("Physical: %d\n", power.physical);
+	P_LOG("Magic: %d\n", power.magic);
+	P_LOG("Fire: %d\n", power.fire);
+	P_LOG("Bolt: %d\n", power.bolt);
+	P_LOG("Holy: %d\n", power.holy);
+	P_LOG("Dark: %d\n", power.dark);
+}
+
+void item_equip_stats(Item* item, GameState* state)
+{
+	Entity* player = state->player->entity;
+
+	elemental_power_add(&player->stats.attack, item->data.equipment.attack);
+	elemental_power_add(&player->stats.defense, item->data.equipment.defense);
+}
+
+void item_unequip_stats(Item* item, GameState* state)
+{
+	Entity* player = state->player->entity;
+
+	elemental_power_sub(&player->stats.attack, item->data.equipment.attack);
+	elemental_power_sub(&player->stats.defense, item->data.equipment.defense);
+}
+
+Item item_equip_to_equipment_slot(Item* item, EntityEquipment* equipment, GameState* state)
 {
 	const ItemClass class = item->data.class;
 	const i32 equip_index = item_get_equip_index(equipment, class);
 	if(equip_index == -1) return item_empty_init();
 
 	Item return_item = equipment->items[equip_index];
+	item_unequip_stats(&return_item, state);
+
 	memcpy(&equipment->items[equip_index], item, sizeof(Item));
+	item_equip_stats(item, state);
 
 	return return_item;
 }

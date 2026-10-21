@@ -193,6 +193,7 @@ void player_tick(Player* player, GameState* state)
 	player_entity->mid_pos = Vector2Midpoint(player_entity->pos, player_entity->data.dim);
 
 	//ui_inventory_tick(player->inventory, state);
+	skills_tick_all(player_entity, state);
 	ui_inventory_player_toggle(player->inventory, state);
 	ui_skill_tree_toggle(state);
 

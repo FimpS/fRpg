@@ -101,7 +101,7 @@ typedef enum
 	ITEM_SLOT_RING1,
 	ITEM_SLOT_RING2,
 	ITEM_SLOT_RING3,
-	ITEM_Slot_RING4,
+	ITEM_SLOT_RING4,
 } EquipmentSlot;
 
 typedef enum 
@@ -110,6 +110,7 @@ typedef enum
 	ITEM_TYPE_PLACEHOLDER,
 	ITEM_TYPE_HELMET,
 	ITEM_TYPE_SWORD,
+	ITEM_TYPE_KEK_BOOTS,
 } ItemType;
 
 

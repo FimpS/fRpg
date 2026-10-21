@@ -137,6 +137,10 @@ Map* map_new(V2 dim)
 		.ambient_light = 0.15,
 		.fade = WHITE,
 	};
+	new_map->active_grid = (MapEntityActiveGrid) {
+		.entities = dynList_new(),
+		.range = 48,
+	};
 	new_map->camera = cam_new();
 	return new_map;
 }
@@ -144,14 +148,16 @@ Map* map_new(V2 dim)
 void map_destroy(Map* map)
 {
 	free(map->camera);
+	dynList_destroy(map->active_grid.entities);
 	//free(map->sound);
 	free(map->content);
 	free(map->camera);
 	free(map);
 }
 
-bool map_load_level(Map* map, const char* filepath)
+bool map_load_level(GameState* state, const char* filepath)
 {
+	Map* map = state->map;
 	FILE* fp = NULL;
 	u32 read; //Tmp to silence compiler
 
@@ -179,6 +185,12 @@ bool map_load_level(Map* map, const char* filepath)
 		read = fread(allocated_entity, sizeof(Entity), 1, fp);
 		dynList_push(map->entities, allocated_entity);
 	}
+	for(i32 i = 0; i < entity_list_len; i++)
+	{
+		Entity* ent = dynList_get(map->entities, i);
+		entity_check_active_grid_range(ent, state);
+	}
+	P_LOG("After init\n");
 	fclose(fp);
 	return true;
 }

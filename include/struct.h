@@ -17,12 +17,18 @@ typedef struct Inventory Inventory;
 
 /* Damage */
 
+typedef struct UtilityPower 
+{
+	i32 agility;
+	
+} UtilityPower;
+
 typedef struct ElementalPower
 {
 	i32 physical;
 	i32 magic;
 	i32 fire;
-	i32 lightning;
+	i32 bolt;
 	i32 holy;
 	i32 dark;
 } ElementalPower;
@@ -36,6 +42,7 @@ typedef struct ItemEquipment
 	bool equipable;
 	ElementalPower attack;
 	ElementalPower defense;
+	UtilityPower utility;
 } ItemEquipment;
 
 #define MAX_NAME_LEN 32
@@ -56,7 +63,6 @@ typedef struct ItemEnchant
 
 typedef struct Item
 {
-	ItemEquipment equip_data;
 	ItemType type;
 	ItemData data;
 	ItemEnchant enchant;
@@ -90,6 +96,86 @@ typedef struct WalkPath
 } WalkPath;
 
 /* PATH */
+
+
+/* SKILLS */
+
+typedef struct Skill Skill;
+
+
+
+#define PLAYER_MAX_SKILL_TREES 3
+typedef struct SkillTree
+{
+	bool active;
+	CharacterClassType active_skill_tree;
+	SkillTreeNode* holding_node;
+	SkillTreeNode* text_box_node;
+	SkillTreeNode* root[PLAYER_MAX_SKILL_TREES];
+
+	i32 skill_points;
+} SkillTree;
+
+
+
+#define MAX_SKILL_TREE_ADJACENT 4
+typedef struct SkillTreeNode SkillTreeNode;
+typedef struct SkillTreeNodeData
+{
+	SkillType type;
+	i32 level;
+	i32 skill_point_cost;
+	Vector2 pos;
+	SkillType neighbors[MAX_SKILL_TREE_ADJACENT];
+} SkillTreeNodeData;
+
+
+DEFINE_STATIC_LIST(SkillTreeNodeData, SkillTreeClassList, skill_tree_class_list, MAX_SKILLS_IN_SKILLTREE);
+typedef struct SkillTreeNodeDataClass
+{
+	SkillTreeClassList class_list;
+} SkillTreeNodeDataTable;
+
+typedef struct SkillTreeNode
+{
+	SkillType type;
+	i32 level;
+	i32 skill_point_cost;
+	Vector2 pos;
+	SkillTreeNode* neighbors[MAX_SKILL_TREE_ADJACENT];
+} SkillTreeNode;
+
+typedef struct SkillData
+{
+	SkillType type;
+	bool castable;
+	u32 base_cooldown;
+	void (*activate)(Skill* skill, GameState* state, Entity* target);
+	i32 limit;
+	void (*channel)(Skill* skill, GameState* state);
+	ElementalPower flat_damage;
+	ElementalPower mult_damage;
+} SkillData;
+
+typedef struct Skill
+{
+	SkillData data;
+	u32 cooldown_timer;
+	i32 skill_timer;
+	bool channel_complete;
+	Entity* caster;
+} Skill;
+
+#define MAX_HOTBAR_SKILLS 8
+typedef struct SkillHotBar
+{
+	//SkillType skills[MAX_HOTBAR_SKILLS];	//TODO this should be gone
+	Skill skills[MAX_HOTBAR_SKILLS];
+	Rectangle start_location;
+} SkillHotBar;
+
+/* SKILLS */
+
 
 /* ENTITY */
 
@@ -174,12 +260,20 @@ typedef struct EntityStats
 
 	ElementalPower attack;
 	ElementalPower defense;
+	UtilityPower utility;
 
 	i32 health;
 } EntityStats;
 
+typedef struct EntityGridStatus
+{
+	bool active;
+	u32 index;
+} EntityGridStatus;
 
 
+#define MAX_ENTITY_SKILLS 24
+DEFINE_STATIC_LIST(Skill, EntitySkillChannels, entity_skill_channels, MAX_ENTITY_SKILLS);
 typedef struct Entity
 {
 	Vector2 pos;
@@ -190,10 +284,16 @@ typedef struct Entity
 	EntityType type;
 	EntityState state;
 
+	i32 health_display_timer;
 	EntityStats stats;
+	EntitySkillChannels skill_channels;
 	EntityEquipment* equipment;
 
+	EntityGridStatus grid_status;
+
+
 	f32 speed;
+	f32 speed_multiplier;
 	f32 facing_angle;
 
 	f32 aggro_range;
@@ -420,11 +520,18 @@ typedef struct SoundManager
 	u32 len;
 } SoundManager;
 
+typedef struct MapEntityActiveGrid
+{
+	DynList* entities;
+	u32 range;
+} MapEntityActiveGrid;
+
 typedef struct Map
 {
 	MapCamera* camera;
 	Tile* content;
 	DynList* entities;
+	MapEntityActiveGrid active_grid;
 	DynList* npcs;
 	//SoundManager* sound;
 	LightSettings light_settings;
@@ -433,78 +540,7 @@ typedef struct Map
 
 /* MAP */
 
-/* SKILLS */
 
-typedef struct Skill Skill;
-
-
-
-#define PLAYER_MAX_SKILL_TREES 3
-typedef struct SkillTree
-{
-	bool active;
-	CharacterClassType active_skill_tree;
-	SkillTreeNode* holding_node;
-	SkillTreeNode* text_box_node;
-	SkillTreeNode* root[PLAYER_MAX_SKILL_TREES];
-
-	i32 skill_points;
-} SkillTree;
-
-
-
-#define MAX_SKILL_TREE_ADJACENT 4
-typedef struct SkillTreeNode SkillTreeNode;
-typedef struct SkillTreeNodeData
-{
-	SkillType type;
-	i32 level;
-	i32 skill_point_cost;
-	Vector2 pos;
-	SkillType neighbors[MAX_SKILL_TREE_ADJACENT];
-} SkillTreeNodeData;
-
-DEFINE_STATIC_LIST(SkillTreeNodeData, SkillTreeClassList, skill_tree_class_list, MAX_SKILLS_IN_SKILLTREE);
-typedef struct SkillTreeNodeDataClass
-{
-	SkillTreeClassList class_list;
-} SkillTreeNodeDataTable;
-
-typedef struct SkillTreeNode
-{
-	SkillType type;
-	i32 level;
-	i32 skill_point_cost;
-	Vector2 pos;
-	SkillTreeNode* neighbors[MAX_SKILL_TREE_ADJACENT];
-} SkillTreeNode;
-
-typedef struct SkillData
-{
-	SkillType type;
-	bool castable;
-	u32 base_cooldown;
-	void (*activate)(Skill* skill, GameState* state, Entity* target);
-	ElementalPower flat_damage;
-	ElementalPower mult_damage;
-} SkillData;
-
-typedef struct Skill
-{
-	SkillData data;
-	u32 cooldown_timer;
-	Entity* caster;
-} Skill;
-
-#define MAX_HOTBAR_SKILLS 8
-typedef struct SkillHotBar
-{
-	//SkillType skills[MAX_HOTBAR_SKILLS];	//TODO this should be gone
-	Skill skills[MAX_HOTBAR_SKILLS];
-	Rectangle start_location;
-} SkillHotBar;
-
-/* SKILLS */
 
 /* UI */
 

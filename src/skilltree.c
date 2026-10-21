@@ -555,10 +555,12 @@ static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 	}
 
 	Vector2 skill_level_pos = { node->pos.x, node->pos.y };
-	Rectangle box_end = { skill_level_pos.x, skill_level_pos.y, length, length / 2.0 };
+	Rectangle box_end = { skill_level_pos.x + 30, skill_level_pos.y + 35, length / 1.5, length / 2.0 };
 	Rectangle src_end = { 16, 128, 16, 16 };
 	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src_end, box_end, WHITE);
-	ui_draw_text(TextFormat("%d / 5", node->level), (Vector2) { skill_level_pos.x + length / 2 - 12, skill_level_pos.y }, 16, WHITE, state);
+	const u8* text = TextFormat("%d / 5", node->level);
+	const Vector2 text_dim = ui_center_text( (Vector2) { box_end.x, box_end.y }, text, 15, state);
+	ui_draw_text(text, (Vector2) { text_dim.x + box_end.width / 2.0 , text_dim.y + box_end.height / 2.0 - 4}, 15, WHITE, state);
 
 
 }

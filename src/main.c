@@ -36,12 +36,10 @@ int main(void) {
     float speed = 4.0f;
 	GameState* state = state_new();
 
-
-	state->player = player_new();
 	//dynList_push(state->map->entities, state->player->entity); //This won't work later
-#if 1
 	dynList_push(state->map->npcs, npc_new(NPC_TYPE_TOWN_MERCHANT, (Vector2) { 17.0, 4.0 } ));
-	for(i32 i = 0; i < 10; i++)
+#if 1
+	for(i32 i = 0; i < 3; i++)
 	{
 	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0 + i} );
 	enemy->target = state->player->entity; //TODO well this is really bad that is why it fails
@@ -59,6 +57,10 @@ int main(void) {
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {33.0, 10.0} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 12.5} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 39.0} ));
+	for(i32 i = 0; i < state->map->entities->len; i++)
+	{
+		entity_check_active_grid_range(dynList_get(state->map->entities, i), state);
+	}
 
 	P_LOG("Width: %d, Height: %d\n", GetScreenWidth(), GetScreenHeight());
 	//state->player->path = entity_find_path(state->player, (Vector2) {16.0, 16.0}, state);

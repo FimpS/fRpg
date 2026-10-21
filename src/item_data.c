@@ -14,12 +14,20 @@ const ItemData item_info_table[] = {
 		.description = "Description\nfor Place\nholder the gods may not test us yet\nchildren but its for us Ring",
 		.class = ITEM_CLASS_RING,
 		.stackable = false,
+		.equipment = {
+			.equipable = true,
+
+		},
 	},
 	(ItemData) {
 		.name = "Placeholder Helmet",
 		.description = "Description0000 for Placeholder Helmet",
 		.class = ITEM_CLASS_HELMET,
 		.stackable = true,
+		.equipment = {
+			.defense = { 50, 50, 50, 0, 0 },
+			.equipable = true,
+		},
 	},
 	(ItemData) {
 		.name = "Placeholder Sword",
@@ -30,5 +38,17 @@ const ItemData item_info_table[] = {
 			.defense = { 0 },
 			.equipable = true,
 		},
+	},
+	(ItemData) {
+		.name = "Boots of kek",
+		.class = ITEM_CLASS_LEGS,
+		.description = "idk kek i guess",
+		.equipment = {
+			.equipable = true,
+			.utility = { 50 },
+			.defense = { 30, 15, 15, 2, 10, 0 },
+			.attack = { 0 },
+		},
+
 	},
 };

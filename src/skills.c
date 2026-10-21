@@ -50,19 +50,57 @@ void skills_fireball_active(Skill* skill, GameState* state, Entity* target)
 	}
 }
 
+void skills_skill_one_activate(Skill* skill, GameState* state, Entity* target)
+{
+	Entity* player = state->player->entity;
+
+	player->speed_multiplier -= 0.75;
+	entity_skill_channels_push(&player->skill_channels, *skill);
+
+}
+
+
+void skills_skill_one_channel(Skill* skill, GameState* state)
+{
+	if(skill->channel_complete)
+	{
+		Entity* player = state->player->entity;
+		player->speed_multiplier += 0.75;
+		return;
+	}
+}
+
 Rectangle skills_get_skill_src(SkillType type, CharacterClassType class)
 {
 	const u32 length = 16;
 	return (Rectangle) { type * length, class * length, length, length };
 }
 
+static void skills_channel_exit(Skill* skill)
+{
+	if(skill->skill_timer ++ >= skill->data.limit)
+	{
+		skill->channel_complete = true;
+	}
+}
+
+void skills_tick_all(Entity* entity, GameState* state)
+{
+	for(i32 i = 0; i < entity_skill_channels_len(&entity->skill_channels); i++)
+	{
+		Skill* skill = entity_skill_channels_get(&entity->skill_channels, i);
+		skills_channel_exit(skill);
+		if(skill != NULL) skill->data.channel(skill, state);
+		if(skill->channel_complete) entity_skill_channels_pop_swap(&entity->skill_channels, i);
+	}
+}
 
 const SkillData skill_data_table[] = {
 	//Type 							castable	BaseCD				activate							//flat
-	{SKILL_TYPE_NONE, 				false, 		0000,					NULL,							{0, 100, 0, 0, 0, 0},		{1,1,1,1,1,1}},
+	{SKILL_TYPE_NONE, 				false, 		0000,					NULL,							0,	NULL,	{0, 100, 0, 0, 0, 0},		{1,1,1,1,1,1}},
 	{SKILL_TYPE_PLACEHOLDER, 		true, 		0010,					skills_fireball_active},
-	{SKILL_TYPE_FIREBALL, 			true, 		0060,					skills_fireball_active,			{0, 300, 0, 0, 0, 0},		{0,50,0,0,0,0}},
-	{SKILL_TYPE_ONE, 				false, 		0200,					NULL},
+	{SKILL_TYPE_FIREBALL, 			true, 		0060,					skills_fireball_active,			0,	NULL,	{0, 300, 0, 0, 0, 0},		{0,50,0,0,0,0}},
+	{SKILL_TYPE_ONE, 				true, 		1600,					skills_skill_one_activate,							300,			skills_skill_one_channel},
 	{SKILL_TYPE_TWO, 				false, 		1000,					NULL},
 	{SKILL_TYPE_THREE, 				false, 		1000,					NULL},
 	{SKILL_TYPE_FOUR, 				false, 		1000,					NULL},

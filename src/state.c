@@ -27,10 +27,11 @@ GameState* state_new()
 		.global_sound_manager = sound_manager_new(),
 		.ui = ui_queues_new(),
 		.ui_elements = ui_elements_new(),
+		.player = player_new(),
 	};
 
 	sound_manager_global_init(newstate->global_sound_manager);
-	map_load_level(newstate->map, "../maps/test.tmp");
+	map_load_level(newstate, "../maps/test.tmp");
 	return newstate;
 }
 

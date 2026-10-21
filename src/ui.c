@@ -87,6 +87,7 @@ void ui_wrap_text_render(const u8* text,
 	u8 current_string[max_str_len];
 
 	i32 y_offset = 0;
+	const i32 extra_offset = 2;
 	for(i32 i = 0; i < text_len; i++)
 	{
 		u8 current_char = text[i];
@@ -106,7 +107,7 @@ void ui_wrap_text_render(const u8* text,
 						BLACK,
 						WHITE,
 						state);
-				y_offset += font_size + 8;
+				y_offset += font_size + extra_offset;
 				index = 0;
 			}
 		}
@@ -123,7 +124,7 @@ void ui_wrap_text_render(const u8* text,
 					state);
 			while(text[newline_index++] == '\n') 
 			{
-				y_offset += font_size + 8;
+				y_offset += font_size + extra_offset;
 			}
 			index = 0;
 
@@ -175,9 +176,9 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 {
 	Gfx* gfx = state->gfx;
 
-	const i32 padding = 20;
-	const i32 size = gfx_to_monitor(16);
-	const i32 width = gfx_to_monitor(200);
+	const i32 size = gfx_to_monitor(15);
+	const i32 width = (300);
+	const i32 padding = width / 10;
 	const i32 max_width = width - padding * 2 - 40;
 
 	const u32 title_len = strlen(title);
@@ -252,7 +253,7 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 		padding;
 
 	Vector2 box_dim = gfx_to_monitor_vector(
-			(Vector2) {200, box_height});
+			(Vector2) {width, box_height});
 
 	pos = ui_text_box_adjust_position(pos, box_dim);
 
@@ -456,11 +457,7 @@ static void ui_inventory_init_cells(Inventory* inventory)
 				pos.y + ( (i / inventory->cols) * dim.y ), 
 				dim.x, 
 				dim.y },
-			.item = (Item) {
-				.data = item_info_table[ITEM_TYPE_NONE],
-				.enchant = { -1 },
-				.type = ITEM_TYPE_NONE,
-			},
+			.item = item_empty_init(),
 			.focused = false,
 			.id = i,
 		};
@@ -554,7 +551,11 @@ ui_inventory_add_item(inv_new, (Item) {
 				} );
 
 
-
+		inv_new->cells[37].item = (Item) {
+				.type = ITEM_TYPE_KEK_BOOTS,
+				.data = item_info_table[ITEM_TYPE_KEK_BOOTS],
+				.enchant = { rand() % 4 },
+			};
 		for(i32 i = 4; i < 20; i+=2)
 		{
 			inv_new->cells[i].item = (Item) {
@@ -563,6 +564,7 @@ ui_inventory_add_item(inv_new, (Item) {
 				.enchant = { rand() % 4 },
 			};
 		}
+		inv_new->cells[4].item.data.equipment.defense.fire += 400;
 	}
 
 	return inv_new;
@@ -596,9 +598,11 @@ static void ui_inventory_cell_equip_item(InventoryCell* cell, Inventory* invento
 			IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)
 	  )
 	{
-		Item swapped_item = item_equip_to_equipment_slot(&cell->item, state->player->entity->equipment);
-		cell->item = swapped_item;
-
+		if(cell->item.data.equipment.equipable)
+		{
+			Item swapped_item = item_equip_to_equipment_slot(&cell->item, state->player->entity->equipment, state);
+			cell->item = swapped_item;
+		}
 	}
 }
 
@@ -772,6 +776,26 @@ static void ui_inventory_background_render(Inventory* inventory, GameState* stat
 			(Color) { 255, 255, 255, 175 });
 }
 
+const u8* ui_get_item_stats_description(Item* item, GameState* state)
+{
+	return TextFormat("Attack:\nPhys: %d\nMagic: %d\nFire: %d\nBolt: %d\nHoly: %d\nDark: %d\nDefense:\nPhys: %d\nMagic: %d\nFire: %d\nBolt: %d\nHoly: %d\nDark: %d\n", 
+				item->data.equipment.attack.physical,
+				item->data.equipment.attack.magic,
+				item->data.equipment.attack.fire,
+				item->data.equipment.attack.bolt,
+				item->data.equipment.attack.holy,
+				item->data.equipment.attack.dark,
+
+				item->data.equipment.defense.physical,
+				item->data.equipment.defense.magic,
+				item->data.equipment.defense.fire,
+				item->data.equipment.defense.bolt,
+				item->data.equipment.defense.holy,
+				item->data.equipment.defense.dark
+				);
+
+}
+
 static void ui_item_cell_text_render(Inventory* inventory, GameState* state, const i32 id)
 {
 	if(id != -1) 
@@ -779,8 +803,8 @@ static void ui_item_cell_text_render(Inventory* inventory, GameState* state, con
 		InventoryCell cell = inventory->cells[id];
 		if(cell.item.type == ITEM_TYPE_NONE) return;
 		const Vector2 rpos = gfx_to_monitor_vector( (Vector2) { -200.0, 10.0 } );
-		// Maybe force it to be top left of the box instead of dependent on cellhitbox
-		ui_text_box_render(cell.item.data.name, cell.item.data.description, 
+		const u8* text = ui_get_item_stats_description(&cell.item, state);
+		ui_text_box_render(cell.item.data.name, text, 
 				(Vector2) { cell.hitbox.x , cell.hitbox.y }, 
 				state);
 	}
@@ -900,8 +924,6 @@ void ui_equipment_menu_render(GameState* state)
 		ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], color_src, background_dst, enchant_to_color_table[item->enchant.level]);
 		ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], background_src, background_dst, WHITE);
 
-		
-
 		ItemType item_type = item->type;
 		if(item_type != ITEM_TYPE_NONE)
 		{
@@ -912,7 +934,7 @@ void ui_equipment_menu_render(GameState* state)
 		{
 			if(item->type != ITEM_TYPE_NONE)
 			{
-				ui_text_box_render(item->data.name, item->data.description, 
+				ui_text_box_render(item->data.name, ui_get_item_stats_description(item, state), 
 						(Vector2) { background_dst.x , background_dst.y }, 
 						state);
 			}
@@ -971,7 +993,6 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 }
 
 
-//LOOKS OKAY BUT YOU NEED TO DISABLE SPACE WHEN TALKING AND INIT IT SOMEWAY
 static void ui_check_keys_npc_menu(GameState* state, u32 len, i8* pick, i8* selected)
 {
 	if(IsKeyReleased(KEY_DOWN) && ui_local_key_timer>= 4)
@@ -995,8 +1016,9 @@ void ui_render_npc_menu(NPC* npc, GameState* state)
 	NPCMenu* menu = &npc->menu;
 	const f32 font_size = 16.0f;
 	const Vector2 npc_dim = map_convert_map_to_screen(npc->entity->data.dim, state->map);
+	const f32 menu_offset = 40.0;
 	const Vector2 first_pos = Vector2Add(map_convert_map_to_screen(npc->entity->pos, state->map), 
-			(Vector2) { npc_dim.x + 10.0, npc_dim.y / 2.0 });
+			(Vector2) { menu_offset, menu_offset });
 
 	const f32 box_height = font_size + 2.0;
 	const f32 box_width = 120.0;
@@ -1121,6 +1143,8 @@ void ui_player_quest_log_render(Player* player, GameState* state)
 	const f32 font_size = 20.0;
 
 	char text[COMMON_UI_LABEL_MAX_LEN];
+	ui_draw_text("Quest Log:", (Vector2) {x_offset, y_offset}, font_size, WHITE, state);
+	y_offset += font_size + 4.0;
 	for(i32 i = 0; i < quest_amount; i++)
 	{
 		Quest* quest = &qm->quests.data[i];
@@ -1438,6 +1462,14 @@ static void skill_tree_draw_background(GameState* state)
 			6.0, (Color) { 35, 35, 35, 255 });
 }
 
+Vector2 ui_center_text(Vector2 pos, const u8* text, const f32 font_size, GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	Vector2 text_dim = MeasureTextEx(gfx->ui_font, text, font_size, 0.0);
+
+	return 	(Vector2) { pos.x - text_dim.x / 2.0, pos.y - text_dim.y / 2.0 };
+}
+
 static bool skill_tree_button(GameState* state, const i32 index)
 {
 	Gfx* gfx = state->gfx;
@@ -1639,9 +1671,10 @@ void ui_text_entity_status_add(const u8* text, const Vector2 pos, const Vector2 
 {
 	if(strlen(text) >= MAX_ENTITY_STATUS_TEXT_LEN) return;
 
+	const f32 rand_offset = 0.5;
 
 	UIEntityStatusText entry = (UIEntityStatusText) {
-				.pos = (Vector2) { pos.x + dim.x / 2.0 + frand(-1.0, 1.0), pos.y + dim.y / 2.0 + frand(-1.0, 1.0) },
+				.pos = (Vector2) { pos.x + dim.x / 2.0 + frand(-rand_offset, rand_offset), pos.y + dim.y / 2.0 + frand(-rand_offset, rand_offset) },
 				.timer = 0,
 				.tint = tint,
 			};
@@ -1658,6 +1691,7 @@ void ui_text_damage_add(const u32 damage, const Vector2 pos, const Vector2 dim, 
 void ui_text_damage_render(GameState* state)
 {	
 	Gfx* gfx = state->gfx;
+	const f32 offset_speed = 0.015;
 	UIEntityStatusTextList* list = &state->ui_elements->status_text_list;
 	const u32 len = ui_entity_status_text_list_len(list);
 	u32 remove_len = 0;
@@ -1665,6 +1699,7 @@ void ui_text_damage_render(GameState* state)
 	for(i32 i = 0; i < len; i++)
 	{
 		UIEntityStatusText* current = ui_entity_status_text_list_get(list, i);
+		current->pos.y -= offset_speed;
 		const Vector2 map_pos = map_convert_map_to_screen(current->pos, state->map);
 		const Vector2 text_dim = MeasureTextEx(gfx->font, current->text, 16, 1.0);
 		const Vector2 final_pos = Vector2Subtract(map_pos, Vector2Scale(text_dim, 0.5));

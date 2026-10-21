@@ -31,6 +31,7 @@ void entity_move_along_path(Entity* self, GameState* state);
 void entity_handle_standard_pathing(Entity* self, GameState* state, bool condition);
 f32 entity_calculate_speed(Entity* self, GameState* state);
 void entity_player_determine_movement_direction(Entity* self, GameState* state);
+void entity_check_active_grid_range(Entity* self, GameState* state);
 Vector2 entity_get_midpoint(Entity* self);
 bool entity_in_range(Vector2 p, Vector2 u, f32 range);
 void entity_move(Entity* self, GameState* state);
