@@ -39,6 +39,8 @@ void skills_fireball_active(Skill* skill, GameState* state, Entity* target)
 
 	DynList* ents = state->map->entities;
 	const u32 len = ents->len;
+	entity_consume_mana(state->player->entity, 100, state);
+	dynList_push(ents, entity_new(ENTITY_PLACEHOLDER2, state->player->entity->pos));
 	for(i32 i = 0; i < len; i++)
 	{
 		Entity* ent = dynList_get(ents, i);

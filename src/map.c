@@ -190,7 +190,6 @@ bool map_load_level(GameState* state, const char* filepath)
 		Entity* ent = dynList_get(map->entities, i);
 		entity_check_active_grid_range(ent, state);
 	}
-	P_LOG("After init\n");
 	fclose(fp);
 	return true;
 }

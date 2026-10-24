@@ -30,6 +30,10 @@ GameState* state_new()
 		.player = player_new(),
 	};
 
+	newstate->ui_elements->stats = (UIPlayerStats) { 
+		.health_display = newstate->player->entity->stats.health,
+		.mana_display = newstate->player->entity->stats.mana,
+	};
 	sound_manager_global_init(newstate->global_sound_manager);
 	map_load_level(newstate, "../maps/test.tmp");
 	return newstate;

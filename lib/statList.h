@@ -52,7 +52,7 @@
 	static inline void Prefix##_pop_swap(Name *l, u32 index) 		 \
 	{                												 \
         if (l->len == 0) return;                                   	 \
-		l->data[index] = l->data[l->len --];						 \
+		l->data[index] = l->data[-- l->len];						 \
     }																 \
                                                                      \
     static inline T *Prefix##_get(Name *l, u32 index) 				 \

@@ -5,6 +5,7 @@
 #include "../include/item.h"
 #include "../include/skills.h"
 #include "../include/player.h"
+#include "../include/skilltree.h"
 #include "../include/entity_data.h"
 #include "../include/global.h"
 
@@ -212,6 +213,18 @@ static Color entity_determine_damage_tint(u32 phys, u32 fire, u32 magic, u32 bol
 	return damage_color_table[index];
 }
 
+
+void entity_heal(Entity* target, const u32 amount, GameState* state)
+{
+	target->stats.health += amount;
+}
+
+void entity_consume_mana(Entity* self, const u32 cost, GameState* state)
+{
+	self->stats.mana -= cost;
+	state->ui_elements->stats.mana_decay_timer = 0;
+}
+
 void entity_do_damage(Entity* attacker, Entity* defender, const ElementalPower damage, const ElementalPower multipler, GameState* state)
 {
 	const ElementalPower def = defender->stats.defense;
@@ -227,6 +240,7 @@ void entity_do_damage(Entity* attacker, Entity* defender, const ElementalPower d
 
 	const u32 total_damage = total_phys + total_fire + total_magic + total_bolt + total_holy + total_dark;
 	Color tint = entity_determine_damage_tint(total_phys, total_fire, total_magic, total_bolt, total_holy, total_dark);
+	state->ui_elements->stats.health_decay_timer = 0;
 	ui_text_damage_add(total_damage, defender->pos, defender->data.dim, tint, state);
 	defender->health_display_timer = 0;
 	defender->stats.health -= total_damage;
@@ -392,9 +406,22 @@ void entity_handle_target(Entity* self)
 	}
 }
 
-void entity_gain_experience(Entity* self, const u32 experience)
+void entity_level_up(Entity* self, GameState* state)
+{
+	const u32 diff = self->stats.experience - experience_level_table[self->stats.level];
+	self->stats.experience = 0;
+	self->stats.level ++;
+	entity_gain_experience(self, diff, state);
+	state->player->skill_tree->skill_points += 25;
+}
+
+void entity_gain_experience(Entity* self, const u32 experience, GameState* state)
 {
 	self->stats.experience += experience;
+	if(self->stats.experience >= experience_level_table[self->stats.level])
+	{
+		entity_level_up(self, state);
+	}
 }
 
 static void entity_die(Entity* self, GameState* state)
@@ -402,6 +429,7 @@ static void entity_die(Entity* self, GameState* state)
 	quest_register_entry(state->player, QUEST_OBJECTIVE_KILL, (QuestObjectiveData) {
 			.kill.kill_type = self->type,
 			} );
+	entity_gain_experience(state->player->entity, 7, state);
 }
 
 #define HEALTH_DISPLAY_LIMIT 300
@@ -413,7 +441,6 @@ void entity_pre_tick(Entity* self, GameState* state)
 	skills_tick_all(self, state);
 	if(get_tick() % 300 == 0)
 	{
-		P_LOG("%p\n", self);
 		entity_check_active_grid_range(self, state);
 	}
 
@@ -426,17 +453,47 @@ void entity_pre_tick(Entity* self, GameState* state)
 	entity_handle_target(self);	
 }
 
+static Entity* entities_to_delete[128];
+static i32 entities_to_index[128];
+static i32 entity_to_delete_len = 0;
+
+
+void entities_delete_cleared(DynList* entities)
+{
+	if(get_tick() % 300 == 0)
+	{
+		for(i32 i = 0; i < entity_to_delete_len; i++)
+		{
+			Entity* e = entities_to_delete[i];
+			for(i32 j = 0; j < dynList_len(entities); j++)
+			{
+				if(dynList_get(entities, j) == e)
+				{
+					entity_destroy(e);
+					break;
+				}
+			}
+		}
+		entity_to_delete_len = 0;
+	}
+}
 
 void entities_tick(DynList* entities, GameState* state)
 {
+	
 	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
 		Entity* e = dynList_get(entities, i);
-
-		if(e->state.type == ESTYPE_CLEAR) continue;
-		if(IsKeyPressed(KEY_K))
+		if(e->state.type == ESTYPE_CLEAR) 
+		{
+			dynList_pop_swap(entities, i --);
+			entity_destroy(e);
+			continue;
+		}
+		if(IsKeyPressed(KEY_O))
 		{
 			e->state.type = ESTYPE_DEAD;
+			continue;
 			//P_LOG("Killed all entities, in map->entities\n");
 		}
 
@@ -599,12 +656,15 @@ Entity* entity_new(EntityType type, Vector2 pos)
 	newe->skill_channels = (EntitySkillChannels) { 0 };
 
 	newe->stats = (EntityStats) {
-		.level = 20,
+		.level = 1,
 		.experience = 0,
 		.defense = 0,
 		.attack = { 100, 30, 0, 0, 0, 0 },
 		.utility = { 10 },
+		.max_health = newe->data.base_health,
 		.health = newe->data.base_health,
+		.max_mana = 1000,
+		.mana = 832,
 	};
 
 	newe->equipment = entity_equipment_new();

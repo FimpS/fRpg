@@ -3,6 +3,7 @@
 #include "struct.h"
 #include "enum.h"
 
+extern const u32 experience_level_table[];
 
 //extern const SkillTreeNodeData warlock_skill_tree[];
 

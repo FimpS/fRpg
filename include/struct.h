@@ -262,7 +262,11 @@ typedef struct EntityStats
 	ElementalPower defense;
 	UtilityPower utility;
 
+	i32 max_health;
+	i32 max_mana;
+
 	i32 health;
+	i32 mana;
 } EntityStats;
 
 typedef struct EntityGridStatus
@@ -553,6 +557,14 @@ typedef struct UIEntityStatusText
 	Color tint;
 } UIEntityStatusText;
 
+typedef struct UIPlayerStats
+{
+	i32 health_display;
+	i32 health_decay_timer;
+	i32 mana_display;
+	i32 mana_decay_timer;
+} UIPlayerStats;
+
 #define MAX_UI_DAMAGE_TEXT 32
 DEFINE_STATIC_LIST(UIEntityStatusText, UIEntityStatusTextList, ui_entity_status_text_list, MAX_UI_DAMAGE_TEXT);
 typedef struct UIElements
@@ -560,6 +572,7 @@ typedef struct UIElements
 	UIEntityStatusTextList status_text_list;
 	SkillHotBar hotbar;
 	UIEquipmentMenu equipment;
+	UIPlayerStats stats;
 } UIElements;
 
 typedef struct TextDisplay

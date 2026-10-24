@@ -51,6 +51,14 @@ void dynList_pop(DynList* l)
 	}
 }
 
+void dynList_pop_swap(DynList* l, unsigned index)
+{
+	if(!dynList_empty(l))
+	{
+		l->v[index] = l->v[-- l->len];
+	}
+}
+
 void dynList_add(DynList* l, void* key, unsigned index)
 {
 	if( index <= l->len )

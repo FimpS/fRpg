@@ -1552,8 +1552,134 @@ void ui_skill_tree_render(GameState* state)
 	ui_draw_text(TextFormat("Skill Points: %d\n", tree->skill_points), (Vector2) { 200, 50 }, 24, YELLOW, state);
 }
 
+void ui_draw_progress_bar_outline(GameState* state, const u8* label, const Rectangle box)
+{
+	Gfx* gfx = state->gfx;
+	const Rectangle back_src = { 64, 0, 320, 16 };
+	const Rectangle label_src = { 64, 16, 32, 16 };
+	const Rectangle label_dst = { box.x - 32, box.y, 32, 16 };
+	const f32 font_size = 14.0;
 
+	if(label[0] != '\0') 
+	{
+		Vector2 label_dim = ui_center_text( (Vector2) { label_dst.x + label_dst.width / 2.0, 
+				label_dst.y + label_dst.height / 2.0}, 
+				label, font_size, state);
+
+		ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], label_src, label_dst, WHITE);
+		ui_draw_text(label, label_dim, font_size, WHITE, state);
+	}
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], back_src, box, WHITE);
+
+}
 /*--------------------------------- SKILL TREE ---------------------------------*/
+
+/*--------------------------------- STATUSEFFECTS / PLAYERHEALTH ---------------------------------*/
+
+#define HEALTH_DECAY_LIMIT 32
+
+void ui_player_healthmana_render(GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	Entity* player = state->player->entity;
+
+	const u32 start_x = 100;
+	const u32 start_y = 1000 - 16;
+	const u32 max_width = 480;
+	const Rectangle src = { 0, 0, 16, 16 };
+	const Rectangle back_mp_dst = { start_x, start_y, max_width, 16 };
+	const Rectangle back_hp_dst = { start_x, start_y - back_mp_dst.height, max_width, 16 };
+	
+
+	i32 *health_display = &state->ui_elements->stats.health_display;
+	i32 *mana_display = &state->ui_elements->stats.mana_display;
+	const i32 speed = 8;
+	if(state->ui_elements->stats.health_decay_timer ++ >= HEALTH_DECAY_LIMIT && player->stats.health < *health_display)
+	{
+		state->ui_elements->stats.health_display = maxi32(*health_display - speed, player->stats.health);
+	}
+	if(player->stats.health > *health_display)
+	{
+		state->ui_elements->stats.health_display = mini32(*health_display + speed, player->stats.health);
+	}
+	
+	if(state->ui_elements->stats.mana_decay_timer ++ >= HEALTH_DECAY_LIMIT && player->stats.mana < *mana_display)
+	{
+		state->ui_elements->stats.mana_display = maxi32(*mana_display - speed, player->stats.mana);
+	}
+	if(player->stats.mana > *mana_display)
+	{
+		state->ui_elements->stats.mana_display = mini32(*mana_display + speed, player->stats.mana);
+	}
+
+	const u32 hp_dyn_width = (back_hp_dst.width) * state->ui_elements->stats.health_display / player->data.base_health;
+	const Rectangle health_dyn_dst = { back_hp_dst.x, back_hp_dst.y, hp_dyn_width, back_hp_dst.height };
+
+	const u32 mp_dyn_width = (back_mp_dst.width) * state->ui_elements->stats.mana_display / player->data.base_health;
+	const Rectangle mana_dyn_dst = { back_mp_dst.x, back_mp_dst.y, mp_dyn_width, back_mp_dst.height };
+
+	const u32 hp_width = (back_hp_dst.width) * player->stats.health / player->data.base_health;
+	const Rectangle health_dst = { back_hp_dst.x, back_hp_dst.y, hp_width, back_hp_dst.height };
+	const Rectangle mana_dst = { back_hp_dst.x, back_hp_dst.y + 16, (back_hp_dst.width) * player->stats.mana / 1000, back_hp_dst.height };
+
+	const f32 font_size = 15.0;
+	const u8* health_text = TextFormat("%d / %d", player->stats.health, player->stats.max_health);
+	const u8* mana_text = TextFormat("%d / %d", player->stats.mana, player->stats.max_mana);
+	const Vector2 health_text_dim = ui_center_text( (Vector2) { back_hp_dst.x + back_hp_dst.width / 2.0, back_hp_dst.y + back_hp_dst.height / 2.0 }, health_text, font_size, state);
+	const Vector2 mana_text_dim = ui_center_text( (Vector2) { back_mp_dst.x + back_mp_dst.width / 2.0, back_mp_dst.y + back_mp_dst.height / 2.0 }, mana_text, font_size, state);
+
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, health_dyn_dst, (Color) { 230, 60, 60, 160} );
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, health_dst, (Color) { 230, 60, 60, 255 } );
+	ui_draw_text(health_text, health_text_dim, font_size, WHITE, state);
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, mana_dyn_dst, (Color) { 70, 70, 230, 160} );
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], src, mana_dst, (Color) { 70, 70, 230, 255 } );
+	ui_draw_text(mana_text, mana_text_dim, font_size, WHITE, state);
+	ui_draw_progress_bar_outline(state, "MP", back_mp_dst);
+	ui_draw_progress_bar_outline(state, "HP", back_hp_dst);
+}
+
+/*--------------------------------- STATUSEFFECTS / PLAYERHEALTH ---------------------------------*/
+
+
+
+/*--------------------------------- EXPERIENCE/LEVEL ---------------------------------*/
+
+void ui_experience_render(GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	Entity* player = state->player->entity;
+	const u32 max_width = 800;
+	const u32 exp = player->stats.experience;
+	const u32 exp_max = experience_level_table[player->stats.level];
+
+	const u32 start_x = 100;
+	const u32 start_y = 1000;
+
+	const Rectangle experience_bar = { start_x, start_y, max_width, 16 };
+	const Rectangle experience_progress_bar = { start_x, start_y, (max_width) * (f32) exp / exp_max, 16 };
+	const Rectangle experience_src = { 0, 0, 16, 16 };
+
+	const u8* text = TextFormat("%.1f%%", 100*(f32) player->stats.experience / experience_level_table[player->stats.level]);
+	Vector2 text_dim = ui_center_text( (Vector2) { start_x + experience_bar.width / 2.0, start_y + experience_bar.height / 2.0}, text, 16.0, state);
+
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], experience_src, experience_progress_bar, GREEN);
+	ui_draw_progress_bar_outline(state, "EXP", experience_bar);
+	ui_draw_text(text,
+			(Vector2) { text_dim.x, text_dim.y }, 16.0, WHITE, state);
+	ui_draw_text(TextFormat("%d", player->stats.level, experience_level_table[player->stats.level]),
+			(Vector2) { experience_bar.x, experience_bar.y + 20.0 }, 16.0, WHITE, state);
+
+	ui_player_healthmana_render(state);
+
+
+
+}
+
+
+
+
+
+/*--------------------------------- EXPERIENCE/LEVEL ---------------------------------*/
 
 /*--------------------------------- SKILL HOTBAR ---------------------------------*/
 
@@ -1674,10 +1800,10 @@ void ui_text_entity_status_add(const u8* text, const Vector2 pos, const Vector2 
 	const f32 rand_offset = 0.5;
 
 	UIEntityStatusText entry = (UIEntityStatusText) {
-				.pos = (Vector2) { pos.x + dim.x / 2.0 + frand(-rand_offset, rand_offset), pos.y + dim.y / 2.0 + frand(-rand_offset, rand_offset) },
-				.timer = 0,
-				.tint = tint,
-			};
+		.pos = (Vector2) { pos.x + dim.x / 2.0 + frand(-rand_offset, rand_offset), pos.y + dim.y / 2.0 + frand(-rand_offset, rand_offset) },
+		.timer = 0,
+		.tint = tint,
+	};
 	strcpy(entry.text, text);
 	ui_entity_status_text_list_push(&state->ui_elements->status_text_list, entry);
 }
@@ -1731,6 +1857,10 @@ UIElements* ui_elements_new()
 
 		},
 		.equipment = { .active = false },
+		.stats = {
+			.health_display = 0,
+			.mana_display = 0,
+		},
 	};
 	for(i32 i = 0; i < MAX_HOTBAR_SKILLS; i++)
 	{
@@ -1773,7 +1903,6 @@ void ui_render(GameState* state)
 	ui_player_quest_log_render(player, state);
 	ui_skill_hotbar_render(state);
 
-	ui_text_display_render(state);
 	npcs_ui_render(npcs, state);
 	ui_skill_tree_render(state);
 
@@ -1784,6 +1913,8 @@ void ui_render(GameState* state)
 	ui_equipment_menu_toggle(state);
 	ui_equipment_menu_render(state);
 	ui_text_damage_render(state);
+	ui_experience_render(state);
+	ui_text_display_render(state);
 	gfx_render_mouse(state->gfx);
 }
 

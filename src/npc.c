@@ -82,7 +82,7 @@ static void npc_give_quest_reward(NPC* npc, Quest* quest, GameState* state)
 	QuestManager* qm = state->player->quest_manager;
 	QuestReward reward = quest_reward_table[quest->data.type];
 
-	entity_gain_experience(state->player->entity, reward.experience);
+	entity_gain_experience(state->player->entity, reward.experience, state);
 
 	const u32 len = reward.item_rewards_len;
 	for(i32 i = 0; i < len; i++)

@@ -16,6 +16,7 @@ void* dynList_get(DynList* l, unsigned index);
 void dynList_set(DynList* l, void* key, unsigned index);
 void dynList_push(DynList* l, void* key);
 void dynList_pop(DynList* l);
+void dynList_pop_swap(DynList* l, unsigned index);
 void dynList_add(DynList* l, void* key, unsigned index);
 void dynList_del(DynList* l, unsigned index);
 void dynList_clear(DynList *l);

@@ -20,6 +20,7 @@
 
 int main(void) {
 	srand(time(NULL));
+	P_LOG("%ld\n", sizeof(Entity));
 	SetTraceLogLevel(LOG_ERROR);
 	//HashMap* map = hmap_new(32);
 	SetConfigFlags(FLAG_VSYNC_HINT);
