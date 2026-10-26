@@ -149,8 +149,9 @@ typedef struct SkillData
 {
 	SkillType type;
 	bool castable;
+	u32 base_cost;
 	u32 base_cooldown;
-	void (*activate)(Skill* skill, GameState* state, Entity* target);
+	void (*activate)(Skill* skill, GameState* state, Entity* caster);
 	i32 limit;
 	void (*channel)(Skill* skill, GameState* state);
 	ElementalPower flat_damage;
@@ -251,6 +252,7 @@ typedef struct EntityData
 	f32 base_speed;
 	i32 base_health;
 	EntityLightData light;
+	bool targetable;
 } EntityData;
 
 typedef struct EntityStats

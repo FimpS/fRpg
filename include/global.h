@@ -26,6 +26,13 @@ static inline bool AAB(Rectangle r, Vector2 p)
 		&& p.y >= r.y 
 		&& p.y <= r.y + r.height;
 }
+static inline bool AABB(Rectangle r, Rectangle v)
+{
+	return v.x + v.width >= r.x 
+		&& v.x <= r.x + r.width
+		&& v.y + v.height >= r.y 
+		&& v.y <= r.y + r.height;
+}
 static inline Vector2 GetScreenPosition() { return (Vector2) { GetScreenWidth(), GetScreenHeight() }; }
 static inline u32 vector2_to_vector_index(u32 x, u32 y, u32 width) { return x + y * width; }
 static inline i32 mini32(const i32 x, const i32 y) { return x < y ? x : y; }

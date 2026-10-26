@@ -5,12 +5,15 @@
 
 
 
-void skills_use_skill(Skill skill, GameState* state, Entity* target)
+void skills_use_skill(Skill* skill, GameState* state, Entity* caster)
 {
-	if(skill.data.type == SKILL_TYPE_NONE) return;
-	if(!skill.data.castable) return;
+	if(skill->data.type == SKILL_TYPE_NONE) return;
+	if(!skill->data.castable) return;
+	if(!entity_consume_mana(caster, skill->data.base_cost, state)) return;
 
-	skill.data.activate(&skill, state, target);
+
+	skill->cooldown_timer = 0;
+	skill->data.activate(skill, state, caster);
 
 }
 
@@ -24,35 +27,32 @@ Skill skills_skill_init(SkillType type)
 }
 
 
-void skills_placeholder_activate(Skill* skill, GameState* state, Entity* target)
+void skills_placeholder_activate(Skill* skill, GameState* state, Entity* caster)
 {
-	if(target != NULL) return;
+	if(caster != NULL) return;
 
 	dynList_push(state->map->entities, 
 			entity_new(ENTITY_PLACEHOLDER, skill->caster->mid_pos)
 		);
 }
 
-void skills_fireball_active(Skill* skill, GameState* state, Entity* target)
+void skills_fireball_active(Skill* skill, GameState* state, Entity* caster)
 {
-	Vector2 mouse_pos = map_get_mouse_cords(state->map);
+	const Vector2 mouse_pos = map_get_mouse_cords(state->map);
 
 	DynList* ents = state->map->entities;
 	const u32 len = ents->len;
-	entity_consume_mana(state->player->entity, 100, state);
 	dynList_push(ents, entity_new(ENTITY_PLACEHOLDER2, state->player->entity->pos));
-	for(i32 i = 0; i < len; i++)
+
+	Entity* target = entity_get_entity_AAB(state, mouse_pos);
+
+	if(target != NULL) 
 	{
-		Entity* ent = dynList_get(ents, i);
-		const Rectangle r = { ent->pos.x, ent->pos.y, ent->data.dim.x, ent->data.dim.y };
-		if(AAB(r, mouse_pos))
-		{
-			entity_do_damage(state->player->entity, ent, skill->data.flat_damage, skill->data.mult_damage,state);
-		}
+		entity_do_damage(caster, target, skill->data.flat_damage, skill->data.mult_damage,state);
 	}
 }
 
-void skills_skill_one_activate(Skill* skill, GameState* state, Entity* target)
+void skills_skill_one_activate(Skill* skill, GameState* state, Entity* caster)
 {
 	Entity* player = state->player->entity;
 
@@ -98,14 +98,14 @@ void skills_tick_all(Entity* entity, GameState* state)
 }
 
 const SkillData skill_data_table[] = {
-	//Type 							castable	BaseCD				activate							//flat
-	{SKILL_TYPE_NONE, 				false, 		0000,					NULL,							0,	NULL,	{0, 100, 0, 0, 0, 0},		{1,1,1,1,1,1}},
-	{SKILL_TYPE_PLACEHOLDER, 		true, 		0010,					skills_fireball_active},
-	{SKILL_TYPE_FIREBALL, 			true, 		0060,					skills_fireball_active,			0,	NULL,	{0, 300, 0, 0, 0, 0},		{0,50,0,0,0,0}},
-	{SKILL_TYPE_ONE, 				true, 		1600,					skills_skill_one_activate,							300,			skills_skill_one_channel},
-	{SKILL_TYPE_TWO, 				false, 		1000,					NULL},
-	{SKILL_TYPE_THREE, 				false, 		1000,					NULL},
-	{SKILL_TYPE_FOUR, 				false, 		1000,					NULL},
+	//Type 							castable	Mana				BaseCD					activate							//flat
+	{SKILL_TYPE_NONE, 				false, 		100,				0000,					NULL,							0,	NULL,	{0, 100, 0, 0, 0, 0},		{1,1,1,1,1,1}},
+	{SKILL_TYPE_PLACEHOLDER, 		true, 		100,				0010,					skills_fireball_active},
+	{SKILL_TYPE_FIREBALL, 			true, 		10,					0060,					skills_fireball_active,			0,	NULL,	{0, 300, 0, 0, 0, 0},		{0,50,0,0,0,0}},
+	{SKILL_TYPE_ONE, 				true, 		40,					1600,					skills_skill_one_activate,							300,			skills_skill_one_channel},
+	{SKILL_TYPE_TWO, 				false, 		20,					1000,					NULL},
+	{SKILL_TYPE_THREE, 				false, 		20,					1000,					NULL},
+	{SKILL_TYPE_FOUR, 				false, 		10,					1000,					NULL},
 };
 
 

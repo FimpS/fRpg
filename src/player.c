@@ -187,6 +187,28 @@ Player* player_new()
 	return player;
 }
 
+void player_die(Player* player, GameState* state)
+{
+	P_LOG("Player died\n");
+}
+
+void player_pre_tick_checks(Player* player, GameState* state)
+{
+	Entity* entity = player->entity;
+
+
+	if(entity->stats.health >= entity->stats.max_health)
+	{
+		entity->stats.health = entity->stats.max_health;
+	}
+
+	if(entity->stats.health <= 0 && entity->state.type != ESTYPE_DEAD)
+	{
+		player_die(player, state);
+		entity->state.type = ESTYPE_DEAD;
+	}
+}
+
 void player_tick(Player* player, GameState* state)
 {
 	Entity* player_entity = player->entity;
@@ -195,6 +217,9 @@ void player_tick(Player* player, GameState* state)
 	if(IsKeyDown(KEY_L)) entity_gain_experience(player_entity, 30, state);
 	if(IsKeyPressed(KEY_P)) entity_heal(player_entity, 50, state);
 	//ui_inventory_tick(player->inventory, state);
+	
+	player_pre_tick_checks(player, state);
+
 	skills_tick_all(player_entity, state);
 	ui_inventory_player_toggle(player->inventory, state);
 	ui_skill_tree_toggle(state);

@@ -101,6 +101,38 @@ static void entity_move_collision(Entity* self, GameState* state)
 	self->pos = Vector2Add(self->pos, Vector2Scale(push, 01.1));
 }
 
+Entity* entity_get_entity_AAB(GameState* state, const Vector2 pos)
+{
+	MapEntityActiveGrid* grid = &state->map->active_grid;
+
+	for(i32 i = 0; i < grid->entities->len; i++)
+	{
+		Entity* entity = dynList_get(grid->entities, i);
+		const Rectangle hitbox = { entity->pos.x, entity->pos.y, entity->data.dim.x, entity->data.dim.y };
+		if(AAB(hitbox, pos))
+		{
+			return entity;
+		}
+	}
+	return NULL;
+}
+
+Entity* entity_get_entity_AABB(GameState* state, const Rectangle rec)
+{
+	MapEntityActiveGrid* grid = &state->map->active_grid;
+
+	for(i32 i = 0; i < grid->entities->len; i++)
+	{
+		Entity* entity = dynList_get(grid->entities, i);
+		const Rectangle hitbox = { entity->pos.x, entity->pos.y, entity->data.dim.x, entity->data.dim.y };
+		if(AABB(hitbox, rec))
+		{
+			return entity;
+		}
+	}
+	return NULL;
+}
+
 void entity_move_along_path(Entity* self, GameState* state)
 {
 	Map* map = state->map;
@@ -219,14 +251,21 @@ void entity_heal(Entity* target, const u32 amount, GameState* state)
 	target->stats.health += amount;
 }
 
-void entity_consume_mana(Entity* self, const u32 cost, GameState* state)
+
+// Returns false if not enough mana
+bool entity_consume_mana(Entity* self, const u32 cost, GameState* state)
 {
+	if(self->stats.mana < cost) return false;
+
 	self->stats.mana -= cost;
 	state->ui_elements->stats.mana_decay_timer = 0;
+
+	return true;
 }
 
 void entity_do_damage(Entity* attacker, Entity* defender, const ElementalPower damage, const ElementalPower multipler, GameState* state)
 {
+	if(defender->stats.health <= 0) return;
 	const ElementalPower def = defender->stats.defense;
 	const ElementalPower atk = attacker->stats.attack;
 	const ElementalPower dmg = damage;
@@ -381,11 +420,6 @@ bool entity_AAB(Entity* e, Vector2 p)
 		&& p.y <= e->pos.y + e->data.dim.y;
 }
 
-bool AABB(Entity* s, Entity* t)
-{
-	return true;
-}
-
 Entity* entity_get_vector(GameState* state, Vector2 pos)
 {
 	DynList* entities = state->map->entities;
@@ -444,6 +478,11 @@ void entity_pre_tick(Entity* self, GameState* state)
 		entity_check_active_grid_range(self, state);
 	}
 
+	if(self->data.targetable && self->stats.health <= 0)
+	{
+		self->state.type = ESTYPE_DEAD;
+	}
+
 	if(self->state.type == ESTYPE_DEAD)
 	{
 		entity_die(self, state);
@@ -453,34 +492,9 @@ void entity_pre_tick(Entity* self, GameState* state)
 	entity_handle_target(self);	
 }
 
-static Entity* entities_to_delete[128];
-static i32 entities_to_index[128];
-static i32 entity_to_delete_len = 0;
-
-
-void entities_delete_cleared(DynList* entities)
-{
-	if(get_tick() % 300 == 0)
-	{
-		for(i32 i = 0; i < entity_to_delete_len; i++)
-		{
-			Entity* e = entities_to_delete[i];
-			for(i32 j = 0; j < dynList_len(entities); j++)
-			{
-				if(dynList_get(entities, j) == e)
-				{
-					entity_destroy(e);
-					break;
-				}
-			}
-		}
-		entity_to_delete_len = 0;
-	}
-}
-
 void entities_tick(DynList* entities, GameState* state)
 {
-	
+
 	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
 		Entity* e = dynList_get(entities, i);

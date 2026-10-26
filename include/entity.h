@@ -39,8 +39,11 @@ bool entity_path_blocked(Vector2 pos, GameState* state);
 f32 entity_calculate_speed(Entity* self, GameState* state);
 void entity_gain_experience(Entity* self, const u32 experience, GameState* state);
 void entity_do_damage(Entity* attacker, Entity* defender, const ElementalPower damage, const ElementalPower multiplier, GameState* state);
-void entity_consume_mana(Entity* attacker, const u32 amount, GameState* state);
+bool entity_consume_mana(Entity* attacker, const u32 amount, GameState* state);
 void entity_heal(Entity* target, const u32 amount, GameState* state);
+
+Entity* entity_get_entity_AAB(GameState* state, const Vector2 pos);
+Entity* entity_get_entity_AABB(GameState* state, const Rectangle pos);
 
 Entity* entity_player_init(GameState* state);
 

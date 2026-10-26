@@ -1612,19 +1612,25 @@ void ui_player_healthmana_render(GameState* state)
 		state->ui_elements->stats.mana_display = mini32(*mana_display + speed, player->stats.mana);
 	}
 
-	const u32 hp_dyn_width = (back_hp_dst.width) * state->ui_elements->stats.health_display / player->data.base_health;
+	const i32 dyn_health = maxi32(state->ui_elements->stats.health_display, 0);
+	const i32 dyn_mana = maxi32(state->ui_elements->stats.mana_display, 0);
+
+	const u32 hp_dyn_width = (back_hp_dst.width) * dyn_health / player->data.base_health;
 	const Rectangle health_dyn_dst = { back_hp_dst.x, back_hp_dst.y, hp_dyn_width, back_hp_dst.height };
 
-	const u32 mp_dyn_width = (back_mp_dst.width) * state->ui_elements->stats.mana_display / player->data.base_health;
+	const u32 mp_dyn_width = (back_mp_dst.width) * dyn_mana / player->data.base_health;
 	const Rectangle mana_dyn_dst = { back_mp_dst.x, back_mp_dst.y, mp_dyn_width, back_mp_dst.height };
 
-	const u32 hp_width = (back_hp_dst.width) * player->stats.health / player->data.base_health;
+	const i32 health = maxi32(player->stats.health, 0);
+	const i32 mana = maxi32(player->stats.mana, 0);
+
+	const u32 hp_width = (back_hp_dst.width) * health / player->data.base_health;
 	const Rectangle health_dst = { back_hp_dst.x, back_hp_dst.y, hp_width, back_hp_dst.height };
-	const Rectangle mana_dst = { back_hp_dst.x, back_hp_dst.y + 16, (back_hp_dst.width) * player->stats.mana / 1000, back_hp_dst.height };
+	const Rectangle mana_dst = { back_hp_dst.x, back_hp_dst.y + 16, (back_hp_dst.width) * mana / 1000, back_hp_dst.height };
 
 	const f32 font_size = 15.0;
-	const u8* health_text = TextFormat("%d / %d", player->stats.health, player->stats.max_health);
-	const u8* mana_text = TextFormat("%d / %d", player->stats.mana, player->stats.max_mana);
+	const u8* health_text = TextFormat("%d / %d", health, player->stats.max_health);
+	const u8* mana_text = TextFormat("%d / %d", mana, player->stats.max_mana);
 	const Vector2 health_text_dim = ui_center_text( (Vector2) { back_hp_dst.x + back_hp_dst.width / 2.0, back_hp_dst.y + back_hp_dst.height / 2.0 }, health_text, font_size, state);
 	const Vector2 mana_text_dim = ui_center_text( (Vector2) { back_mp_dst.x + back_mp_dst.width / 2.0, back_mp_dst.y + back_mp_dst.height / 2.0 }, mana_text, font_size, state);
 
@@ -1669,10 +1675,12 @@ void ui_experience_render(GameState* state)
 	ui_draw_text(TextFormat("%d", player->stats.level, experience_level_table[player->stats.level]),
 			(Vector2) { experience_bar.x, experience_bar.y + 20.0 }, 16.0, WHITE, state);
 
+}
+
+void ui_player_stats_render(GameState* state)
+{
+	ui_experience_render(state);
 	ui_player_healthmana_render(state);
-
-
-
 }
 
 
@@ -1708,14 +1716,8 @@ void ui_skill_hotbar_tick(GameState* state)
 		{
 			const SkillType type = hotbar->skills[i].data.type;
 			if(type == SKILL_TYPE_NONE) continue;
-			skills_use_skill( (Skill) {
-					.data = skill_data_table[type],
-					.caster = state->player->entity,
-					},
-					state,
-					NULL
-					);
-			hotbar->skills[i].cooldown_timer = 0;
+
+			skills_use_skill(&hotbar->skills[i], state, state->player->entity);
 		}
 	}
 }
@@ -1758,9 +1760,14 @@ static void ui_skill_hotbar_render_frames(GameState* state)
 		if(frame_skill_type != SKILL_TYPE_NONE) 
 		{
 			ui_draw_element(&gfx->texs[TEXTURE_SKILL_DISPLAY], skill_src, dst, WHITE);
+			const u8* mana_text = TextFormat("%d", skill->data.base_cost);
+			//const Vector2 text_pos = ui_center_text( (Vector2) { dst.x + dst.width - 6, dst.y + 8 }, mana_text, 16.0, state);
+			const Vector2 text_dim = MeasureTextEx(gfx->ui_font, mana_text, 16, 1.0);
+			const Vector2 text_pos = { dst.x + dst.width - text_dim.x, dst.y  };
+			ui_draw_text(mana_text, text_pos, 16, WHITE, state);
 		}
 
-		ui_draw_text( frame_character, (Vector2) { dst.x + 1, dst.y + 1}, 16, YELLOW, state);
+		ui_draw_text( frame_character, (Vector2) { dst.x + 1, dst.y + dst.height - 16}, 16, YELLOW, state);
 		if(skill->cooldown_timer < skill->data.base_cooldown)
 		{
 			const f32 timer = (f32) (- skill->cooldown_timer + skill->data.base_cooldown) / 60.0f;
@@ -1913,7 +1920,7 @@ void ui_render(GameState* state)
 	ui_equipment_menu_toggle(state);
 	ui_equipment_menu_render(state);
 	ui_text_damage_render(state);
-	ui_experience_render(state);
+	ui_player_stats_render(state);
 	ui_text_display_render(state);
 	gfx_render_mouse(state->gfx);
 }
