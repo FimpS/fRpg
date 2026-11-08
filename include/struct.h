@@ -53,6 +53,7 @@ typedef struct ItemData
 	u8 description[MAX_DESC_LEN];
 	ItemClass class;
 	bool stackable;
+	i32 cost;
 	ItemEquipment equipment;
 } ItemData;
 
@@ -241,6 +242,10 @@ typedef struct EntityLightData
 	Color tint;
 } EntityLightData;
 
+#define MAX_ENTITY_DROPS 8
+DEFINE_STATIC_LIST(ItemType, EntityDropList, entity_drop_list, MAX_ENTITY_DROPS);
+#define MAX_HITBOXES_PER_ENTITY 4
+DEFINE_STATIC_LIST(Rectangle, Hitbox, hitbox, MAX_HITBOXES_PER_ENTITY);
 typedef struct EntityData
 {
 	EntityType type;
@@ -248,11 +253,16 @@ typedef struct EntityData
 	EntityStateType start_state;
 	TextureIndex spritesheet_index;
 
+	
 	Vector2 dim;
 	f32 base_speed;
 	i32 base_health;
 	EntityLightData light;
 	bool targetable;
+	bool elusive;
+	bool show_name;
+	EntityDropList drops;
+	Hitbox hitbox;
 } EntityData;
 
 typedef struct EntityStats
@@ -458,6 +468,12 @@ typedef struct CharacterClass
 	CharacterClassType class_3;
 } CharacterClass;
 
+typedef struct BoundItems 
+{
+	i32 gold;
+	i32 something_else;
+} BoundItems;
+
 typedef struct Player
 {
 	Entity* entity;
@@ -466,6 +482,11 @@ typedef struct Player
 	QuestManager* quest_manager;
 	CharacterClass class;
 	SkillTree* skill_tree;
+	BoundItems bound_items;
+
+
+
+	bool item_collecting;
 } Player;
 
 
@@ -556,6 +577,7 @@ typedef struct UIEntityStatusText
 	u8 text[MAX_ENTITY_STATUS_TEXT_LEN];
 	i32 timer;
 	Vector2 pos;
+	f32 acceleration;
 	Color tint;
 } UIEntityStatusText;
 

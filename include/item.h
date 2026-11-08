@@ -14,4 +14,7 @@ EntityEquipment* entity_equipment_new();
 Item item_init(ItemType type, ItemEnchant enchant);
 Item item_empty_init();
 
+void item_drop_push(Entity* entity, GameState* state);
+ItemEnchant item_get_drop_enchant(Entity* self, GameState* state);
+
 Item item_equip_to_equipment_slot(Item* item, EntityEquipment* equipment, GameState* state);

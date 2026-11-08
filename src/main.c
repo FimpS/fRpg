@@ -47,6 +47,7 @@ int main(void) {
 	dynList_push(state->map->entities, enemy);
 	}
 #endif
+#if 0
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {5.0, 5.0} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {6.0, 5.0} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {10.0, 5.0} ));
@@ -58,6 +59,7 @@ int main(void) {
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {33.0, 10.0} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 12.5} ));
 	dynList_push(state->map->entities, entity_new(ENTITY_PLACEHOLDER2, (Vector2) {17.0, 39.0} ));
+#endif
 	for(i32 i = 0; i < state->map->entities->len; i++)
 	{
 		entity_check_active_grid_range(dynList_get(state->map->entities, i), state);

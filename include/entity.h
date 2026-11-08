@@ -42,6 +42,10 @@ void entity_do_damage(Entity* attacker, Entity* defender, const ElementalPower d
 bool entity_consume_mana(Entity* attacker, const u32 amount, GameState* state);
 void entity_heal(Entity* target, const u32 amount, GameState* state);
 
+bool entity_hitbox_vector_collision(Entity* entity, Vector2 pos);
+bool entity_hitbox_rectangle_collision(Entity* entity, Rectangle rec);
+bool entity_hitbox_collision(Entity* source, Entity* target);
+
 Entity* entity_get_entity_AAB(GameState* state, const Vector2 pos);
 Entity* entity_get_entity_AABB(GameState* state, const Rectangle pos);
 

@@ -142,6 +142,8 @@ void ui_wrap_text_render(const u8* text,
 	}
 }
 
+//void ui_draw_error_text(const 
+
 static Vector2 ui_text_box_adjust_position(Vector2 pos, Vector2 dim)
 {
 	return pos.x >= GetScreenWidth() / 2.0 ? 
@@ -628,7 +630,7 @@ static void ui_inventory_cell_delete_item(InventoryCell* cell, Inventory* invent
 			IsMouseButtonPressed(0) &&
 			AAB(cell->hitbox, mouse_cords))
 	{
-		cell->item = ui_inventory_get_empty_cell();
+		cell->item = item_empty_init();
 	}
 }
 
@@ -739,9 +741,9 @@ static void ui_inventory_cell_render(InventoryCell cell, GameState* state)
 		if(cell.item.data.stackable)
 		{
 			ui_draw_outline_text(TextFormat("x%d", cell.amount),
-					(Vector2) { cell.hitbox.x + cell.hitbox.width - 25, 
-					cell.hitbox.y + cell.hitbox.height - 25 }, 
-					22,
+					(Vector2) { cell.hitbox.x + cell.hitbox.width - 24, 
+					cell.hitbox.y + cell.hitbox.height - 20 }, 
+					18.0,
 					BLACK,
 					WHITE,
 					state);
@@ -750,17 +752,43 @@ static void ui_inventory_cell_render(InventoryCell cell, GameState* state)
 
 }
 
-void ui_inventory_add_item(Inventory* inventory, Item item)
+static InventoryCell* ui_inventory_get_type_cell(Inventory* inventory, ItemType type)
+{
+	const u32 len = ui_inventory_cap(inventory);
+	const u32 max_stack_amount = 99;
+	for(i32 i = 0; i < len; i++)
+	{
+		InventoryCell* cell = &inventory->cells[i];
+		if(cell->item.type == type) if(cell->amount < max_stack_amount) return cell;
+	}
+	return NULL;
+}
+
+bool ui_inventory_add_item(Inventory* inventory, Item item)
 {
 	const u32 cap = ui_inventory_cap(inventory);
+
+	if(item.data.stackable)
+	{
+		InventoryCell* item_cell = ui_inventory_get_type_cell(inventory, item.type);
+		if(item_cell != NULL)
+		{
+			item_cell->amount ++;
+			return true;
+		}
+	}
+
 	for(i32 i = 0; i < cap; i++)
 	{
 		InventoryCell* cell = &inventory->cells[i];
 		if(cell->item.type == ITEM_TYPE_NONE)
 		{
-			cell->item = item; break;
+			cell->item = item;
+			
+			return true;
 		}
 	}
+	return false;
 }
 
 static void ui_inventory_background_render(Inventory* inventory, GameState* state)
@@ -1350,9 +1378,12 @@ static void ui_shop_buy_item(InventoryCell* cell, Inventory* shop_inventory, Gam
 	const Vector2 mouse_cords = GetMousePosition();
 	Inventory* player_inventory = state->player->inventory;
 
+	const u32 cost = item_to_buy.data.cost;
 	if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && 
 			AAB(cell->hitbox, mouse_cords) )
 	{
+		state->player->bound_items.gold -= cost;
+		//PlaySound
 		ui_inventory_add_item(player_inventory, item_to_buy);
 	}
 }
@@ -1677,8 +1708,17 @@ void ui_experience_render(GameState* state)
 
 }
 
+static void ui_player_render_bounded_items(GameState* state)
+{
+	Player* player = state->player;
+
+	const u8* text = TextFormat("Gold: %d", player->bound_items.gold);
+	ui_draw_text(text, (Vector2) { 100, 100 }, 18.0, GOLD, state);
+}
+
 void ui_player_stats_render(GameState* state)
 {
+	ui_player_render_bounded_items(state);
 	ui_experience_render(state);
 	ui_player_healthmana_render(state);
 }
@@ -1809,6 +1849,7 @@ void ui_text_entity_status_add(const u8* text, const Vector2 pos, const Vector2 
 	UIEntityStatusText entry = (UIEntityStatusText) {
 		.pos = (Vector2) { pos.x + dim.x / 2.0 + frand(-rand_offset, rand_offset), pos.y + dim.y / 2.0 + frand(-rand_offset, rand_offset) },
 		.timer = 0,
+		.acceleration = 1.0,
 		.tint = tint,
 	};
 	strcpy(entry.text, text);
@@ -1824,24 +1865,30 @@ void ui_text_damage_add(const u32 damage, const Vector2 pos, const Vector2 dim, 
 void ui_text_damage_render(GameState* state)
 {	
 	Gfx* gfx = state->gfx;
-	const f32 offset_speed = 0.015;
+	const f32 offset_speed = 0.045;
+	const f32 deacceleration = 0.025;
 	UIEntityStatusTextList* list = &state->ui_elements->status_text_list;
 	const u32 len = ui_entity_status_text_list_len(list);
 	u32 remove_len = 0;
-	i32 indeces[MAX_UI_DAMAGE_TEXT];
+	static i32 indeces[MAX_UI_DAMAGE_TEXT];
 	for(i32 i = 0; i < len; i++)
 	{
 		UIEntityStatusText* current = ui_entity_status_text_list_get(list, i);
-		current->pos.y -= offset_speed;
+
+		current->pos.y -= maxf32(0.0, offset_speed * current->acceleration); //TODO
+		current->acceleration = maxf32(0.0, current->acceleration - deacceleration);
+
 		const Vector2 map_pos = map_convert_map_to_screen(current->pos, state->map);
 		const Vector2 text_dim = MeasureTextEx(gfx->font, current->text, 16, 1.0);
 		const Vector2 final_pos = Vector2Subtract(map_pos, Vector2Scale(text_dim, 0.5));
 
-		const u32 fade = 255 - (current->timer + 1)*3;
+		const u32 fade = maxu32(0, 255 - (current->timer + 1)*3);
 		const Color base = current->tint;
 		const Color tint = { base.r, base.g, base.b, fade };
 
-		ui_draw_text(current->text, final_pos, 16, tint, state);
+		const f32 font_size = 24.0;
+
+		ui_draw_text(current->text, final_pos, font_size, tint, state);
 		if(current->timer ++ >= MAX_TEXT_DAMAGE_TIMER) 
 		{
 			indeces[remove_len ++] = i;

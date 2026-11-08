@@ -168,6 +168,9 @@ void player_tick_level(Player* self, GameState* state)
 Player* player_new()
 {
 	Player* player = malloc(sizeof(Player));
+	*player = (Player) {
+		0,
+	};
 	player->entity = entity_new(ENTITY_PLAYER, (Vector2) { 10.0, 10.0 } );
 	player->inventory = ui_inventory_new(INVENTORY_TYPE_PLAYER);	
 	player->quest_manager = player_quest_manager_new(player);
@@ -177,6 +180,12 @@ Player* player_new()
 		2,
 	};
 	player->skill_tree = skill_tree_new(player->class);
+	player->bound_items = (BoundItems) {
+		//.gold = 0,
+		.gold = 456,
+		.something_else = 0,
+	};
+	player->item_collecting = false;
 
 	for(i32 i = 0; i < player->quest_manager->quests.len; i++)
 	{
@@ -213,6 +222,8 @@ void player_tick(Player* player, GameState* state)
 {
 	Entity* player_entity = player->entity;
 	player_entity->mid_pos = Vector2Midpoint(player_entity->pos, player_entity->data.dim);
+
+	if(IsKeyDown(KEY_H)) player->item_collecting = true; else player->item_collecting = false;
 
 	if(IsKeyDown(KEY_L)) entity_gain_experience(player_entity, 30, state);
 	if(IsKeyPressed(KEY_P)) entity_heal(player_entity, 50, state);

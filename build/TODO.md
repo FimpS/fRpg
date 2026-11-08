@@ -26,5 +26,11 @@ Ideas:
 
 
 Soon:
-    - fix descriptions of skills with hover, just like with items
-    - items equip
+    - fix descriptions of skills with hover, just like with items | Done
+    - items equip | Done
+
+    - Gold system | done (minimal)
+    - Entity drop system | done
+    - (maybe) remove all the monster data from entity so entity can bereused, and instead make like a Character/Monster struct
+    - fix the shop stacks
+    - hitboxes sstay after death???

@@ -665,6 +665,7 @@ void skill_tree_render(SkillTreeNode* root, GameState* state)
 	}
 	if(node != NULL)
 	{
+		// Need to press tab KEKP
 		ui_text_box_render(text_skill_data_table[node->type], "Placeholder", node->pos, state);
 	}
 }

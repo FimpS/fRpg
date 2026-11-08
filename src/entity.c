@@ -89,7 +89,7 @@ static void entity_move_collision(Entity* self, GameState* state)
 	for(i32 i = 0; i < grid->entities->len; i++)
 	{
 		Entity* other = dynList_get(grid->entities, i);
-		if(other == self) continue;
+		if(other == self || other->data.elusive) continue;
 		Vector2 distpos = Vector2Subtract(self->mid_pos, other->mid_pos);
 		f32 dist = Vector2Length(distpos);
 		f32 body = other->data.dim.x >= other->data.dim.y ? other->data.dim.x : other->data.dim.y;
@@ -458,12 +458,74 @@ void entity_gain_experience(Entity* self, const u32 experience, GameState* state
 	}
 }
 
+static void entity_give_gold(Entity* entity, GameState* state)
+{
+	state->player->bound_items.gold += 7; //TODO
+}
+
 static void entity_die(Entity* self, GameState* state)
 {
 	quest_register_entry(state->player, QUEST_OBJECTIVE_KILL, (QuestObjectiveData) {
 			.kill.kill_type = self->type,
 			} );
 	entity_gain_experience(state->player->entity, 7, state);
+	entity_give_gold(self, state);
+	item_drop_push(self, state);
+}
+
+bool entity_hitbox_vector_collision(Entity* entity, Vector2 pos)
+{
+	Hitbox* hitbox_entity = &entity->data.hitbox;
+	const u32 len_entity = hitbox_entity->len;
+
+	for(i32 i = 0; i < len_entity; i++)
+	{
+		Rectangle* box_entity = hitbox_get(hitbox_entity, i);
+		Rectangle entity_rec = { entity->pos.x + box_entity->x, entity->pos.y + box_entity->y, box_entity->width, box_entity->height };
+		P_LOG("x: %f, y: %f, w: %f, h: %f\n", entity_rec.x, entity_rec.y, entity_rec.width, entity_rec.height);
+		if(AAB(entity_rec, pos)) return true;
+	}
+	P_LOG("\n");
+	return false;
+}
+
+bool entity_hitbox_rectangle_collision(Entity* entity, Rectangle rec)
+{
+	Hitbox* hitbox_entity = &entity->data.hitbox;
+	const u32 len_entity = hitbox_entity->len;
+
+	for(i32 i = 0; i < len_entity; i++)
+	{
+		Rectangle* box_entity = hitbox_get(hitbox_entity, i);
+		Rectangle entity_rec = { entity->pos.x + box_entity->x, entity->pos.y + box_entity->y, box_entity->width, box_entity->height };
+		if(AABB(entity_rec, rec)) return true;
+	}
+	return false;
+}
+
+bool entity_hitbox_collision(Entity* source, Entity* target)
+{
+	Hitbox* hitbox_source = &source->data.hitbox;
+	Hitbox* hitbox_target = &target->data.hitbox;
+
+	const u32 len_source = hitbox_source->len;
+	const u32 len_target = hitbox_target->len;
+
+	for(i32 i = 0; i < len_source; i++)
+	{
+		Rectangle* box_source = hitbox_get(hitbox_source, i);
+		for(i32 j = 0; j < len_target; j++)
+		{
+			Rectangle* box_target = hitbox_get(hitbox_target, j);
+			Rectangle source_rec = { source->pos.x + box_source->x, source->pos.y + box_source->y, box_source->width, box_source->height };
+			Rectangle target_rec = { target->pos.x + box_target->x, target->pos.y + box_target->y, box_target->width, box_target->height };
+			if(AABB(source_rec, target_rec))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 #define HEALTH_DISPLAY_LIMIT 300
@@ -559,16 +621,20 @@ static void entity_healthbar_render(Entity* self, GameState* state)
 
 static void entity_name_render(Entity* self, GameState* state)
 {
+	if(!self->data.show_name) return;
+
 	MapCamera* cam = state->map->camera;
-	const u8* name = entity_get_name(self->data.type);
-	const u8* pool = TextFormat("%s [lvl:%d]", name, self->stats.level);
+	const u8* name = self->data.name; //entity_get_name(self->data.type);
+	const u8* pool = self->data.targetable ? TextFormat("%s [lvl:%d]", name, self->stats.level) : TextFormat("%s", name);
 	const Vector2 pos1 = ui_center_text(map_convert_map_to_screen(self->mid_pos, state->map),
 			pool,
 			20.0,
 			state);
-	const Vector2 pos = Vector2Subtract(pos1, (Vector2) { 0.0, 60.0 });	
+	const Vector2 pos = Vector2Subtract(pos1, (Vector2) { 0.0, self->data.dim.y * state->map->camera->tile_len + 25 });	
+	f32 font_size = 20.0;
+	if(self->type == ENTITY_ITEM_DROP) font_size = 16.0;
 
-	ui_draw_text(pool, pos, 20.0, WHITE, state);
+	ui_draw_text(pool, pos, font_size, WHITE, state);
 	//ui_draw_element(&state->gfx->texs[TEXTURE_GAME_UI], (Rectangle) {0,0,16,16}, (Rectangle) {self->mid_pos.x, self->mid_pos.y, 1, 1}, RED);
 }
 
@@ -673,7 +739,7 @@ Entity* entity_new(EntityType type, Vector2 pos)
 		.level = 1,
 		.experience = 0,
 		.defense = 0,
-		.attack = { 100, 30, 0, 0, 0, 0 },
+		.attack = { 100, 500, 0, 0, 0, 0 },
 		.utility = { 10 },
 		.max_health = newe->data.base_health,
 		.health = newe->data.base_health,

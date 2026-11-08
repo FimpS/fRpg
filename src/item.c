@@ -1,6 +1,7 @@
 
 #include "item.h"
 #include "item_data.h"
+#include "entity.h"
 
 
 EntityEquipment* entity_equipment_new()
@@ -101,6 +102,53 @@ void elemental_power_log(const ElementalPower power)
 	P_LOG("Bolt: %d\n", power.bolt);
 	P_LOG("Holy: %d\n", power.holy);
 	P_LOG("Dark: %d\n", power.dark);
+}
+
+ItemEnchant item_get_drop_enchant(Entity* self, GameState* state)
+{
+	//TODO
+	
+
+	return (ItemEnchant) { .level = 1 };
+}
+
+static Vector2 item_drop_pos(Entity* entity, GameState* state)
+{
+	f32 lower = -1.0, upper = 1.0;
+	const f32 delta = 0.2;
+	Vector2 pos;
+	const u32 max_tries = 4;
+	for(i32 i = 0; i < max_tries; i++)
+	{
+		const Vector2 offset = { frand(lower, upper), frand(lower, upper) };
+		pos = (Vector2) { entity->pos.x + offset.x, entity->pos.y + offset.y};
+		lower += delta;
+		upper -= delta;
+		if(!map_get_tile(state->map, Vector2V2(pos)).solid) break;
+	}
+	P_LOG("Drop pos: (%f,%f)\n", pos.x, pos.y);
+	return pos;
+}
+
+void item_drop_push(Entity* entity, GameState* state)
+{
+	DynList* entities = state->map->entities;
+	if(entity->type == ENTITY_ITEM_DROP) return;
+
+	const u32 len = entity_drop_list_len(&entity->data.drops);
+	for(i32 i = 0; i < len; i++)
+	{
+		ItemType type = *entity_drop_list_get(&entity->data.drops, i);
+		//Item item = item_init(type, item_get_drop_enchant(entity, state)); Do this in death i guess
+		Entity* item_entity = entity_new(ENTITY_ITEM_DROP, item_drop_pos(entity, state));
+	
+		entity_drop_list_push(&item_entity->data.drops, type);
+		item_entity->stats.level = entity->stats.level;
+		item_entity->target = state->player->entity;
+		item_entity->data.name = item_info_table[type].name;
+		dynList_push(entities, item_entity);
+	}
+	
 }
 
 void item_equip_stats(Item* item, GameState* state)

@@ -42,7 +42,7 @@ void skills_fireball_active(Skill* skill, GameState* state, Entity* caster)
 
 	DynList* ents = state->map->entities;
 	const u32 len = ents->len;
-	dynList_push(ents, entity_new(ENTITY_PLACEHOLDER2, state->player->entity->pos));
+	//dynList_push(ents, entity_new(ENTITY_PLACEHOLDER2, state->player->entity->pos));
 
 	Entity* target = entity_get_entity_AAB(state, mouse_pos);
 

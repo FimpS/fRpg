@@ -39,8 +39,8 @@ static inline i32 mini32(const i32 x, const i32 y) { return x < y ? x : y; }
 static inline i32 maxi32(const i32 x, const i32 y) { return x > y ? x : y; }
 static inline i32 minu32(const u32 x, const u32 y) { return x < y ? x : y; }
 static inline i32 maxu32(const u32 x, const u32 y) { return x > y ? x : y; }
-static inline i32 minf32(const f32 x, const f32 y) { return x < y ? x : y; }
-static inline i32 maxf32(const f32 x, const f32 y) { return x > y ? x : y; }
+static inline f32 minf32(const f32 x, const f32 y) { return x < y ? x : y; }
+static inline f32 maxf32(const f32 x, const f32 y) { return x > y ? x : y; }
 
 #define P_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #define P_ERROR(s, ...) { printf("ERROR: "); printf(s, ##__VA_ARGS__); }
