@@ -20,6 +20,8 @@ Entity* entity_new_editor(EntityType type, Vector2 pos);
 void entity_destroy(Entity* e);
 
 const u8* entity_get_name(EntityType type);
+void entity_set_state(Entity* self, EntityStateType type);
+void entity_deathrattle(Entity* self, GameState* state);
 
 void entities_tick(DynList* entities, GameState* state);
 void entity_render(Entity* self, GameState* state);
@@ -45,6 +47,9 @@ void entity_heal(Entity* target, const u32 amount, GameState* state);
 bool entity_hitbox_vector_collision(Entity* entity, Vector2 pos);
 bool entity_hitbox_rectangle_collision(Entity* entity, Rectangle rec);
 bool entity_hitbox_collision(Entity* source, Entity* target);
+bool entity_sprite_vector_collision(Entity* entity, const Vector2 pos);
+bool entity_sprite_rectangle_collision(Entity* entity, const Rectangle pos);
+bool entity_sprite_entity_collision(Entity* entity, Entity* entity_other);
 
 Entity* entity_get_entity_AAB(GameState* state, const Vector2 pos);
 Entity* entity_get_entity_AABB(GameState* state, const Rectangle pos);

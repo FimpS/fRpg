@@ -41,7 +41,7 @@ bool path_line_of_sight(Entity* self, Vector2 end, GameState* state)
 
 	i32 error = pos_diff.x - pos_diff.y;
 
-	if( map->content[vector2_to_vector_index(end_pos.x, end_pos.y, dim.x)].solid )
+	if( map->content[veci(end_pos.x, end_pos.y, dim.x)].solid )
 	{
 		return false;
 	}
@@ -53,7 +53,7 @@ bool path_line_of_sight(Entity* self, Vector2 end, GameState* state)
 			return false;
 		}
 
-		if (map->content[vector2_to_vector_index(start_pos.x, start_pos.y, dim.x)].solid)
+		if (map->content[veci(start_pos.x, start_pos.y, dim.x)].solid)
 		{
 			return false;
 		}

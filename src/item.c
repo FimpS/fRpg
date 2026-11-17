@@ -35,6 +35,7 @@ Item item_empty_init()
 	};
 }
 
+//TODO Instead of mapping the equipment to the specific equipmentslot, let's isntead adda a field and have the ring1,2,3,4 be an exception
 static i32 item_get_equip_index(EntityEquipment* equipment, ItemClass item_class)
 {
 	i32 final_index = -1;
@@ -74,34 +75,35 @@ static i32 item_get_equip_index(EntityEquipment* equipment, ItemClass item_class
 	return final_index;
 }
 
+
 void elemental_power_add(ElementalPower* reciever, const ElementalPower power)
 {
-	reciever->physical += power.physical;
-	reciever->magic += power.magic;
-	reciever->fire += power.fire;
-	reciever->bolt += power.bolt;
-	reciever->holy += power.holy;
-	reciever->dark += power.dark;
+	reciever->physical += 	power.physical;
+	reciever->magic += 		power.magic;
+	reciever->fire += 		power.fire;
+	reciever->bolt += 		power.bolt;
+	reciever->holy += 		power.holy;
+	reciever->dark += 		power.dark;
 }
 
 void elemental_power_sub(ElementalPower* reciever, const ElementalPower power)
 {
-	reciever->physical -= power.physical;
-	reciever->magic -= power.magic;
-	reciever->fire -= power.fire;
-	reciever->bolt -= power.bolt;
-	reciever->holy -= power.holy;
-	reciever->dark -= power.dark;
+	reciever->physical -= 	power.physical;
+	reciever->magic -= 		power.magic;
+	reciever->fire -= 		power.fire;
+	reciever->bolt -= 		power.bolt;
+	reciever->holy -= 		power.holy;
+	reciever->dark -=	 	power.dark;
 }
 
 void elemental_power_log(const ElementalPower power)
 {
-	P_LOG("Physical: %d\n", power.physical);
-	P_LOG("Magic: %d\n", power.magic);
-	P_LOG("Fire: %d\n", power.fire);
-	P_LOG("Bolt: %d\n", power.bolt);
-	P_LOG("Holy: %d\n", power.holy);
-	P_LOG("Dark: %d\n", power.dark);
+	P_LOG("Physical: %d\n", 	power.physical);
+	P_LOG("Magic: %d\n", 		power.magic);
+	P_LOG("Fire: %d\n", 		power.fire);
+	P_LOG("Bolt: %d\n", 		power.bolt);
+	P_LOG("Holy: %d\n", 		power.holy);
+	P_LOG("Dark: %d\n", 		power.dark);
 }
 
 ItemEnchant item_get_drop_enchant(Entity* self, GameState* state)
@@ -149,6 +151,12 @@ void item_drop_push(Entity* entity, GameState* state)
 		dynList_push(entities, item_entity);
 	}
 	
+}
+
+bool item_can_equip(Item* item, Entity* equiper, GameState* state)
+{
+	return  equiper->stats.level >= item->data.min_lvl &&
+			item->data.equipment.equipable;
 }
 
 void item_equip_stats(Item* item, GameState* state)

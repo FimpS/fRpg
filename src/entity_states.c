@@ -16,18 +16,14 @@ void estate_item_drop_tick(Entity* self, GameState* state)
 {
 	if(self->target == NULL) return;
 	Vector2 mouse_pos = map_get_mouse_cords(state->map);
-
 	Player* player = state->player;
 	const u32 pickup_range = 1;
 	const u32 move_range = 4;
 	const f32 range = Vector2Distance(self->mid_pos, self->target->mid_pos);
 	if(entity_hitbox_vector_collision(self, mouse_pos))
 	{
-		P_LOG("mousex: %f mousey: %f\n", mouse_pos.x, mouse_pos.y);
 		self->data.show_name = true;
 	} else self->data.show_name = false;
-
-
 
 
 	if(player->item_collecting)
@@ -36,7 +32,7 @@ void estate_item_drop_tick(Entity* self, GameState* state)
 		{
 			const Vector2 diff = Vector2Subtract(self->target->pos, self->pos);
 			const f32 angle = atan2(diff.y, diff.x);
-			const f32 speed = 1 / (range * range) * 0.5;
+			const f32 speed = minf32(0.5, 1 / (range * range) * 0.5);
 			self->pos = Vector2Add(self->pos, (Vector2) { cos(angle) * speed, sin(angle) * speed });
 		}
 
@@ -48,7 +44,7 @@ void estate_item_drop_tick(Entity* self, GameState* state)
 			  )
 			{
 				//draw closer and not snap
-				self->state.type = ESTYPE_CLEAR;
+				self->state.type = ESTYPE_DEAD;
 			}
 			else
 			{
@@ -110,7 +106,7 @@ void estate_entity_perform_melee(Entity* self, GameState* state)
 //Separate state and animationState, so one entity can use move_attack but not use the same sprite?
 // Maybe not needed? just copy the function pointer, no
 const EntityState entity_state_table[] = {
-	//	Type									t 	st 				tick									anim		af		frames
+//	Type									t 	st 				tick									anim		af		frames
 	{ESTYPE_PLACEHOLDER,					0,	0,				estate_placeholder_tick,				{0, 60, 	2,		{ {0,0,16,16}, {0,16,16,16} } } },
 	{ESTYPE_PLACEHOLDER2,					0,	0,				estate_placeholder_tick,				{0, 60, 	1,		{ {0,0,16,16}, {0,16,16,16} } } },
 	{ESTYPE_PLAYER_TICK,					0,	0,				estate_player_tick,						{0, 0,	 	1,		{ {0,0,16,16}, {0,16,16,16} } } },

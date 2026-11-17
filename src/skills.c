@@ -48,7 +48,7 @@ void skills_fireball_active(Skill* skill, GameState* state, Entity* caster)
 
 	if(target != NULL) 
 	{
-		entity_do_damage(caster, target, skill->data.flat_damage, skill->data.mult_damage,state);
+		entity_do_damage(caster, target, skill->data.flat_damage, skill->data.mult_damage, state);
 	}
 }
 
@@ -101,7 +101,7 @@ const SkillData skill_data_table[] = {
 	//Type 							castable	Mana				BaseCD					activate							//flat
 	{SKILL_TYPE_NONE, 				false, 		100,				0000,					NULL,							0,	NULL,	{0, 100, 0, 0, 0, 0},		{1,1,1,1,1,1}},
 	{SKILL_TYPE_PLACEHOLDER, 		true, 		100,				0010,					skills_fireball_active},
-	{SKILL_TYPE_FIREBALL, 			true, 		10,					0060,					skills_fireball_active,			0,	NULL,	{0, 300, 0, 0, 0, 0},		{0,50,0,0,0,0}},
+	{SKILL_TYPE_FIREBALL, 			true, 		10,					0010,					skills_fireball_active,			0,	NULL,	{0, 300, 0, 0, 0, 0},		{0,50,0,0,0,0}},
 	{SKILL_TYPE_ONE, 				true, 		40,					1600,					skills_skill_one_activate,							300,			skills_skill_one_channel},
 	{SKILL_TYPE_TWO, 				false, 		20,					1000,					NULL},
 	{SKILL_TYPE_THREE, 				false, 		20,					1000,					NULL},

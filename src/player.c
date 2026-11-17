@@ -84,7 +84,7 @@ static bool quest_objective_data_match(QuestObjective objective, QuestObjectiveD
 	return false;
 }
 
-void quest_register_entry(Player* player, QuestObjectiveType type, QuestObjectiveData data) //Do this or some kind of registry that get checked at the end of tick
+void quest_register_entry(Player* player, QuestObjectiveType type, QuestObjectiveData data, GameState* state) //Do this or some kind of registry that get checked at the end of tick
 {
 	QuestManager* qm = player->quest_manager;
 
@@ -99,6 +99,9 @@ void quest_register_entry(Player* player, QuestObjectiveType type, QuestObjectiv
 				objective.target > q->quest_counters[j])
 			{
 				q->quest_counters[j] ++;
+				u8 quest_objective[COMMON_UI_LABEL_MAX_LEN];
+				objective_to_string_function_table[objective.type](player, objective, quest_objective);
+				ui_notification_push(TextFormat("%s (%d/%d)", quest_objective, q->quest_counters[j], q->data.objectives[j].target), state);
 				P_LOG("Incremented counter for quest[%d]: %d, current counter[%d] = %d\n", 
 						i,
 						q->data.type, 

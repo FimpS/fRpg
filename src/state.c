@@ -28,6 +28,9 @@ GameState* state_new()
 		.ui = ui_queues_new(),
 		.ui_elements = ui_elements_new(),
 		.player = player_new(),
+		.settings = (StateSettings) {
+			.hitboxes_on = false,	
+		},
 	};
 
 	newstate->ui_elements->stats = (UIPlayerStats) { 
@@ -45,6 +48,10 @@ void state_tick(GameState* state)
 	MapCamera* cam = map->camera;
 	DynList* entities = map->entities;
 
+	if(IsKeyPressed(KEY_J))
+	{
+		state->settings.hitboxes_on = !state->settings.hitboxes_on;
+	}
 	if(IsMouseButtonPressed(0))
 	{
 		Vector2 t = map_get_mouse_cords(map);

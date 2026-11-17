@@ -408,6 +408,11 @@ Entity* entity_player_init(GameState* state)
 	return player;
 }
 
+void entity_set_state(Entity* self, EntityStateType type)
+{
+	self->state = entity_state_table[type];
+}
+
 /* PRIVATE */
 
 /* PUBLIC */
@@ -419,6 +424,77 @@ bool entity_AAB(Entity* e, Vector2 p)
 		&& p.y >= e->pos.y
 		&& p.y <= e->pos.y + e->data.dim.y;
 }
+
+bool entity_sprite_vector_collision(Entity* entity, const Vector2 pos)
+{
+	return AAB( (Rectangle) { entity->pos.x, entity->pos.y, entity->data.dim.x, entity->data.dim.y }, pos );
+}
+
+bool entity_sprite_rectangle_collision(Entity* entity, const Rectangle rec)
+{
+	return AABB( (Rectangle) { entity->pos.x, entity->pos.y, entity->data.dim.x, entity->data.dim.y }, rec);
+}
+
+bool entity_sprite_entity_collision(Entity* entity, Entity* entity_other)
+{
+	return AABB( (Rectangle) { entity->pos.x, entity->pos.y, entity->data.dim.x, entity->data.dim.y },
+				 (Rectangle) { entity_other->pos.x, entity_other->pos.y, entity_other->data.dim.x, entity_other->data.dim.y } );
+}
+
+bool entity_hitbox_vector_collision(Entity* entity, Vector2 pos)
+{
+	Hitbox* hitbox_entity = &entity->data.hitbox;
+	const u32 len_entity = hitbox_entity->len;
+
+	for(i32 i = 0; i < len_entity; i++)
+	{
+		Rectangle* box_entity = hitbox_get(hitbox_entity, i);
+		Rectangle entity_rec = { entity->pos.x + box_entity->x, entity->pos.y + box_entity->y, box_entity->width, box_entity->height };
+		if(AAB(entity_rec, pos)) return true;
+	}
+	return false;
+}
+
+bool entity_hitbox_rectangle_collision(Entity* entity, Rectangle rec)
+{
+	Hitbox* hitbox_entity = &entity->data.hitbox;
+	const u32 len_entity = hitbox_entity->len;
+
+	for(i32 i = 0; i < len_entity; i++)
+	{
+		Rectangle* box_entity = hitbox_get(hitbox_entity, i);
+		Rectangle entity_rec = { entity->pos.x + box_entity->x, entity->pos.y + box_entity->y, box_entity->width, box_entity->height };
+		if(AABB(entity_rec, rec)) return true;
+	}
+	return false;
+}
+
+bool entity_hitbox_collision(Entity* source, Entity* target)
+{
+	Hitbox* hitbox_source = &source->data.hitbox;
+	Hitbox* hitbox_target = &target->data.hitbox;
+
+	const u32 len_source = hitbox_source->len;
+	const u32 len_target = hitbox_target->len;
+
+	for(i32 i = 0; i < len_source; i++)
+	{
+		Rectangle* box_source = hitbox_get(hitbox_source, i);
+		for(i32 j = 0; j < len_target; j++)
+		{
+			Rectangle* box_target = hitbox_get(hitbox_target, j);
+			Rectangle source_rec = { source->pos.x + box_source->x, source->pos.y + box_source->y, box_source->width, box_source->height };
+			Rectangle target_rec = { target->pos.x + box_target->x, target->pos.y + box_target->y, box_target->width, box_target->height };
+			if(AABB(source_rec, target_rec))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
 
 Entity* entity_get_vector(GameState* state, Vector2 pos)
 {
@@ -460,72 +536,29 @@ void entity_gain_experience(Entity* self, const u32 experience, GameState* state
 
 static void entity_give_gold(Entity* entity, GameState* state)
 {
-	state->player->bound_items.gold += 7; //TODO
+	const u32 base_gold = 100;
+	const u32 random_gold_offset = 10;
+
+	const u32 gold = base_gold + (base_gold * 0.1 * frand(-1.0, 1.0)) + rand() % random_gold_offset;
+
+	state->player->bound_items.gold += gold; //TODO
 }
 
 static void entity_die(Entity* self, GameState* state)
 {
 	quest_register_entry(state->player, QUEST_OBJECTIVE_KILL, (QuestObjectiveData) {
 			.kill.kill_type = self->type,
-			} );
+			}, state);
 	entity_gain_experience(state->player->entity, 7, state);
 	entity_give_gold(self, state);
 	item_drop_push(self, state);
+
+	entity_set_state(self, self->data.death_state);
 }
 
-bool entity_hitbox_vector_collision(Entity* entity, Vector2 pos)
+void entity_deathrattle(Entity* self, GameState* state)
 {
-	Hitbox* hitbox_entity = &entity->data.hitbox;
-	const u32 len_entity = hitbox_entity->len;
-
-	for(i32 i = 0; i < len_entity; i++)
-	{
-		Rectangle* box_entity = hitbox_get(hitbox_entity, i);
-		Rectangle entity_rec = { entity->pos.x + box_entity->x, entity->pos.y + box_entity->y, box_entity->width, box_entity->height };
-		P_LOG("x: %f, y: %f, w: %f, h: %f\n", entity_rec.x, entity_rec.y, entity_rec.width, entity_rec.height);
-		if(AAB(entity_rec, pos)) return true;
-	}
-	P_LOG("\n");
-	return false;
-}
-
-bool entity_hitbox_rectangle_collision(Entity* entity, Rectangle rec)
-{
-	Hitbox* hitbox_entity = &entity->data.hitbox;
-	const u32 len_entity = hitbox_entity->len;
-
-	for(i32 i = 0; i < len_entity; i++)
-	{
-		Rectangle* box_entity = hitbox_get(hitbox_entity, i);
-		Rectangle entity_rec = { entity->pos.x + box_entity->x, entity->pos.y + box_entity->y, box_entity->width, box_entity->height };
-		if(AABB(entity_rec, rec)) return true;
-	}
-	return false;
-}
-
-bool entity_hitbox_collision(Entity* source, Entity* target)
-{
-	Hitbox* hitbox_source = &source->data.hitbox;
-	Hitbox* hitbox_target = &target->data.hitbox;
-
-	const u32 len_source = hitbox_source->len;
-	const u32 len_target = hitbox_target->len;
-
-	for(i32 i = 0; i < len_source; i++)
-	{
-		Rectangle* box_source = hitbox_get(hitbox_source, i);
-		for(i32 j = 0; j < len_target; j++)
-		{
-			Rectangle* box_target = hitbox_get(hitbox_target, j);
-			Rectangle source_rec = { source->pos.x + box_source->x, source->pos.y + box_source->y, box_source->width, box_source->height };
-			Rectangle target_rec = { target->pos.x + box_target->x, target->pos.y + box_target->y, box_target->width, box_target->height };
-			if(AABB(source_rec, target_rec))
-			{
-				return true;
-			}
-		}
-	}
-	return false;
+	if(self->state.timer >= self->state.stop_timer) self->state.type = ESTYPE_CLEAR;
 }
 
 #define HEALTH_DISPLAY_LIMIT 300
@@ -638,6 +671,26 @@ static void entity_name_render(Entity* self, GameState* state)
 	//ui_draw_element(&state->gfx->texs[TEXTURE_GAME_UI], (Rectangle) {0,0,16,16}, (Rectangle) {self->mid_pos.x, self->mid_pos.y, 1, 1}, RED);
 }
 
+static void entity_hitbox_render(Entity* self, GameState* state)
+{
+	MapCamera* cam = state->map->camera;
+	Hitbox* hitbox = &self->data.hitbox;
+
+	const u32 len = hitbox->len;
+	for(i32 i = 0; i < len; i++)
+	{
+		Rectangle frame = *hitbox_get(hitbox, i);
+
+		DrawRectangle(
+				(frame.x + self->pos.x - cam->offset.x) * cam->tile_len,
+				(frame.y + self->pos.y - cam->offset.y) * cam->tile_len,
+				(frame.width  * cam->tile_len),
+				(frame.height * cam->tile_len),
+				(Color) { 155, 0, 155, 75 });
+	}
+
+}
+
 void entity_render(Entity* self, GameState* state)
 {
 	MapCamera* cam = state->map->camera;
@@ -658,6 +711,12 @@ void entity_render(Entity* self, GameState* state)
 			(Vector2) {0}, 
 			0.0, 
 			color);
+
+
+	if(state->settings.hitboxes_on)
+	{
+		entity_hitbox_render(self, state);
+	}
 }
 static void  entity_ui_render(DynList* entities, GameState* state)
 {

@@ -8,6 +8,9 @@
 
 #define COMMON_UI_LABEL_MAX_LEN 64
 
+
+extern void (*const objective_to_string_function_table[])(Player* player, QuestObjective quest_objective, u8* dst);
+
 void ui_wrap_text_render(const u8* text, Vector2 pos, const i32 max_width, const u32 padding, const u32 font_size, GameState* state);
 void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState* state);
 void ui_draw_element(Texture2D* tex, Rectangle src, Rectangle dst, Color tint);
@@ -39,11 +42,15 @@ void ui_queues_destroy(UIQueues* q);
 void ui_text_display_push(TextDisplay text_display, GameState* state);
 void ui_text_display_render(GameState* state);
 
+void ui_notification_push(const u8* text, GameState* state);
+void ui_notification_render(GameState* state);
+
 void ui_text_entity_status_add(const u8* text, const Vector2 pos, const Vector2 dim, Color tint, GameState* state);
 void ui_text_damage_add(const u32 damage, const Vector2 pos, const Vector2 dim, Color tint, GameState* state);
 void ui_text_damage_render(GameState* state);
 
 UIElements* ui_elements_new();
+
 
 
 void ui_inventory_toggle_fire(Inventory* inventory, GameState* state);

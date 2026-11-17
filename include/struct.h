@@ -53,6 +53,7 @@ typedef struct ItemData
 	u8 description[MAX_DESC_LEN];
 	ItemClass class;
 	bool stackable;
+	i32 min_lvl;
 	i32 cost;
 	ItemEquipment equipment;
 } ItemData;
@@ -251,6 +252,7 @@ typedef struct EntityData
 	EntityType type;
 	const u8* name;
 	EntityStateType start_state;
+	EntityStateType death_state;
 	TextureIndex spritesheet_index;
 
 	
@@ -665,14 +667,35 @@ typedef struct Inventory
 	InventoryButton buttons[TOTAL_INVENTORY_BUTTONS]; //Same here
 } Inventory;
 
+#define MAX_DYNAMIC_TEXT_LEN 32
+typedef struct TextEntry 
+{
+	u8 text[MAX_DYNAMIC_TEXT_LEN];
+	i32 timer;
+	i32 stop;
+	Color tint;
+} TextEntry;
+
 #define MAX_TEXTS_IN_UI_QUEUE 16
+#define MAX_TEXT_ENTRIES_IN_QUEUE 16
 DEFINE_STATIC_LIST(TextDisplay, UITextQueue, ui_text_queue, MAX_TEXTS_IN_UI_QUEUE);
+DEFINE_STATIC_LIST(TextEntry, UITextEntries, ui_text_entries, MAX_TEXT_ENTRIES_IN_QUEUE);
 typedef struct UIQueues
 {
-	UITextQueue text_queue;
+	UITextQueue dialogue;
+	UITextEntries notification;
 } UIQueues;
 
 /* UI */
+
+/* SETINGS */
+
+typedef struct StateSettings
+{
+	bool hitboxes_on;
+} StateSettings;
+
+/* SETINGS */
 
 /* State */
 
@@ -687,6 +710,7 @@ typedef struct GameState
 
 	Player* player;
 
+	StateSettings settings;
 } GameState;
 
 /* State */

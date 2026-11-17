@@ -275,22 +275,72 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 
 /*--------------------------------- DRAW TEXT ---------------------------------*/
 
+/*--------------------------------- NOTIFICATION ---------------------------------*/
+
+#define MAX_NOTIFICATION_TIME 250 
+void ui_notification_push(const u8* text, GameState* state)
+{
+	TextEntry entry = {
+		.timer = 0,
+		.stop = MAX_NOTIFICATION_TIME,
+		.tint = WHITE,
+	};
+	strcpy(entry.text, text);
+	if(ui_text_entries_len(&state->ui->notification) >= 4)
+	{
+		ui_text_entries_del(&state->ui->notification, 0); 
+	}
+	ui_text_entries_push(&state->ui->notification, entry);
+}
+
+void ui_notification_render(GameState* state)
+{
+	UITextEntries* queue = &state->ui->notification;
+	const u32 max_len = 4;
+	const Vector2 default_pos = { GetScreenWidth() / 2.0, GetScreenHeight() / 2.0 - 400.0 };
+	const f32 font_size = 18.0;
+	const f32 offset = 2.0;
+	const Color tint = { 220, 200, 60, 200 };
+
+	for(i32 i = 0; i < minu32(ui_text_entries_len(queue), max_len); i++)
+	{
+		TextEntry* text = ui_text_entries_get(queue, i);
+
+		
+		const Vector2 text_pos = ui_center_text(default_pos, text->text, font_size, state);
+		const Vector2 pos = { text_pos.x, text_pos.y + (font_size + offset) * i };
+
+		//const u32 fade = maxf32(0.0, minf32(255 - text->timer * 3, 255));
+		const u32 fade = 255;
+		text->timer ++;
+		//const Color tint = { fade, fade, fade, 255 };
+	
+		ui_draw_text(text->text, pos, font_size, tint, state);
+
+		if(text->timer >= MAX_NOTIFICATION_TIME)
+		{
+			ui_text_entries_pop(queue); 
+		}
+	}
+}
+
+/*--------------------------------- NOTIFICATION ---------------------------------*/
 
 /*--------------------------------- TEXTDISPLAY ---------------------------------*/
 
 void ui_text_display_push(TextDisplay text_display, GameState* state)
 {
-	ui_text_queue_push(&state->ui->text_queue, text_display);
+	ui_text_queue_push(&state->ui->dialogue, text_display);
 }
 
-static f32 ui_text_display_text_speed_function(f32 x)
+static f32 ui_text_display_text_speed_function(const f32 x)
 {
 	return x <= 0 ? 10.0 : 0.1 + 9.9 / ( ( 1 + (x/5)*(x/5) ) );
 }
 
 void ui_text_display_render(GameState* state)
 {
-	UITextQueue* queue = &state->ui->text_queue;
+	UITextQueue* queue = &state->ui->dialogue;
 	const u8 index = 0;
 	const u32 character_limit = 128;
 	u8 frame_text[character_limit];
@@ -592,7 +642,7 @@ static InventoryCell ui_inventory_get_cell(Inventory* inventory, Vector2 pos)
 
 static void ui_inventory_cell_equip_item(InventoryCell* cell, Inventory* inventory, GameState* state)
 {
-	Vector2 mouse_cords = GetMousePosition();
+	const Vector2 mouse_cords = GetMousePosition();
 	if(inventory->mode == INVENTORY_MODE_NONE &&
 			cell->item.type != ITEM_TYPE_NONE &&
 			AAB(cell->hitbox, mouse_cords) &&
@@ -600,7 +650,7 @@ static void ui_inventory_cell_equip_item(InventoryCell* cell, Inventory* invento
 			IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)
 	  )
 	{
-		if(cell->item.data.equipment.equipable)
+		if(item_can_equip(&cell->item, state->player->entity, state))
 		{
 			Item swapped_item = item_equip_to_equipment_slot(&cell->item, state->player->entity->equipment, state);
 			cell->item = swapped_item;
@@ -806,7 +856,8 @@ static void ui_inventory_background_render(Inventory* inventory, GameState* stat
 
 const u8* ui_get_item_stats_description(Item* item, GameState* state)
 {
-	return TextFormat("Attack:\nPhys: %d\nMagic: %d\nFire: %d\nBolt: %d\nHoly: %d\nDark: %d\nDefense:\nPhys: %d\nMagic: %d\nFire: %d\nBolt: %d\nHoly: %d\nDark: %d\n", 
+	return TextFormat("LVL req:%d\nAttack:\nPhys: %d\nMagic: %d\nFire: %d\nBolt: %d\nHoly: %d\nDark: %d\nDefense:\nPhys: %d\nMagic: %d\nFire: %d\nBolt: %d\nHoly: %d\nDark: %d\n", 
+				item->data.min_lvl,
 				item->data.equipment.attack.physical,
 				item->data.equipment.attack.magic,
 				item->data.equipment.attack.fire,
@@ -1014,7 +1065,7 @@ void ui_tick_npc_menu(NPC* npc, GameState* state)
 					state);
 			quest_register_entry(state->player, QUEST_OBJECTIVE_TALK, (QuestObjectiveData) {
 					.talk.talk_to_type = npc->type,
-					} );
+					}, state);
 		}
 		menu->active = false;
 	}
@@ -1130,7 +1181,7 @@ static void ui_player_quest_get_objective_talk_string(Player* player, QuestObjec
 	strcat(dst,	npc_get_name(quest_objective.objective.talk.talk_to_type));
 }
 
-static void (*const objective_to_string_function_table[])(Player* player, QuestObjective quest_objective, u8* dst) = {
+void (*const objective_to_string_function_table[])(Player* player, QuestObjective quest_objective, u8* dst) = {
 	ui_player_quest_get_objective_kill_string,
 	ui_player_quest_get_objective_talk_string,
 };
@@ -1930,7 +1981,8 @@ UIQueues* ui_queues_new()
 {
 	UIQueues* queues = malloc(sizeof(UIQueues));
 	*queues = (UIQueues) {
-		.text_queue = ui_text_queue_init(),
+		.dialogue = ui_text_queue_init(),
+		.notification = ui_text_entries_init(),
 	};
 
 	return queues;
@@ -1969,6 +2021,7 @@ void ui_render(GameState* state)
 	ui_text_damage_render(state);
 	ui_player_stats_render(state);
 	ui_text_display_render(state);
+	ui_notification_render(state);	
 	gfx_render_mouse(state->gfx);
 }
 

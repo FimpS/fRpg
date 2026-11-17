@@ -7,7 +7,7 @@
 #define DEFINE_STATIC_LIST(T, Name, Prefix, CAP)                     \
     typedef struct 													 \
 	{                                                 				 \
-        u64 len;                                                     \
+        u32 len;                                                     \
         T data[CAP];                                                 \
     } Name;                                                          \
 																	 \

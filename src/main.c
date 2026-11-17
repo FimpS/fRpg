@@ -17,10 +17,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+bool run_pre_test()
+{
+#if 0
+	i32 s = 0;
+	const u32 e = 100000;
+	for(i32 i = 0; i < e; i++)
+	{
+		if(global_chance_roll(70)) s++;
+	}
+	P_LOG("%f\n", (f32) s / (f32) e * 100);
+#endif
+	return false;
+}
 
 int main(void) {
 	srand(time(NULL));
 	P_LOG("%ld\n", sizeof(Entity));
+
+	if(run_pre_test()) return 0;
 	SetTraceLogLevel(LOG_ERROR);
 	//HashMap* map = hmap_new(32);
 	SetConfigFlags(FLAG_VSYNC_HINT);
@@ -40,7 +55,7 @@ int main(void) {
 	//dynList_push(state->map->entities, state->player->entity); //This won't work later
 	dynList_push(state->map->npcs, npc_new(NPC_TYPE_TOWN_MERCHANT, (Vector2) { 17.0, 4.0 } ));
 #if 1
-	for(i32 i = 0; i < 3; i++)
+	for(i32 i = 0; i < 5; i++)
 	{
 	Entity* enemy = entity_new(ENTITY_PLACEHOLDER, (Vector2) {4.0, 4.0 + i} );
 	enemy->target = state->player->entity; //TODO well this is really bad that is why it fails

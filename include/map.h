@@ -13,7 +13,9 @@
 
 
 Vector2 map_get_mouse_cords(Map* map);
+/* Converts from pixel-location to map-location */
 Vector2 map_convert_screen_to_map(Vector2 v, Map* map);
+/* Converts from map-location to pixel-location */
 Vector2 map_convert_map_to_screen(Vector2 v, Map* map);
 Map* map_new(V2 dim);
 void map_destroy(Map* map);

@@ -33,4 +33,7 @@ Soon:
     - Entity drop system | done
     - (maybe) remove all the monster data from entity so entity can bereused, and instead make like a Character/Monster struct
     - fix the shop stacks
-    - hitboxes sstay after death???
+    - hitboxes sstay after death??? its only when killed with 'O'
+
+    - text for quest update etc. (1/10) Max 3-4 per screen, like a small-notification
+\n- deathrattle
