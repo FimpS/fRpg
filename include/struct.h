@@ -50,7 +50,7 @@ typedef struct ItemEquipment
 typedef struct ItemData
 {
 	u8 name[MAX_NAME_LEN];
-	u8 description[MAX_DESC_LEN];
+	const u8* description;
 	ItemClass class;
 	bool stackable;
 	i32 min_lvl;
@@ -685,6 +685,15 @@ typedef struct UIQueues
 	UITextQueue dialogue;
 	UITextEntries notification;
 } UIQueues;
+
+typedef struct UITextRow
+{
+	const u8* item1;
+	const u8* item2;
+	const u8* item3;
+} UITextRow;
+#define MAX_TEXT_ROWS 12
+DEFINE_STATIC_LIST(UITextRow, UITextRowList, ui_text_rows, MAX_TEXT_ROWS);
 
 /* UI */
 

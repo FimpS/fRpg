@@ -181,7 +181,7 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 				.level = 0,
 				.skill_point_cost = 15,
 				.neighbors = {
-					0
+					0,
 				},
 			},
 			{
@@ -215,7 +215,6 @@ const SkillTreeNodeDataTable skill_tree_table[] = {
 		}
 	},
 	//Mage
-
 };
 
 /* ----------------------------------- SKILL TREE DATA ----------------------------------- */
@@ -515,7 +514,7 @@ static void skill_tree_node_render(SkillTreeNode* node, GameState* state)
 	} 
 	if(IsKeyReleased(KEY_TAB))
 	{
-		text_box_node= NULL;
+		text_box_node = NULL;
 	}
 	if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) 
 	{

@@ -15,7 +15,6 @@ void ui_wrap_text_render(const u8* text, Vector2 pos, const i32 max_width, const
 void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState* state);
 void ui_draw_element(Texture2D* tex, Rectangle src, Rectangle dst, Color tint);
 void ui_draw_text(const u8* text, Vector2 pos, u32 font_size, Color color, GameState* state);
-void ui_draw_text(const u8* text, Vector2 pos, u32 font_size, Color color, GameState* state);
 
 Vector2 ui_center_text(Vector2 pos, const u8* text, const f32 font_size, GameState* state);
 
@@ -42,7 +41,7 @@ void ui_queues_destroy(UIQueues* q);
 void ui_text_display_push(TextDisplay text_display, GameState* state);
 void ui_text_display_render(GameState* state);
 
-void ui_notification_push(const u8* text, GameState* state);
+void ui_notification_push(const u8* text, const Color tint, GameState* state);
 void ui_notification_render(GameState* state);
 
 void ui_text_entity_status_add(const u8* text, const Vector2 pos, const Vector2 dim, Color tint, GameState* state);

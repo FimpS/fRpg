@@ -1,0 +1,14 @@
+
+
+
+'O': set all entities health = 0
+'U': activate equipment menu
+'I': actiavte player inventory
+'P': Heal yourself 50hp
+'L': Gain xp 30
+'K': activate skilltree
+'J': Show hitboxes
+'H': Play testsound AND hold to collect dropped items
+'M': adjust map-lighting
+'BACKSPACE': in quest_menu cancels quest
+'TAB': show hovered over skill description in skill_tree

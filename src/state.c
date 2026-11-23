@@ -78,7 +78,6 @@ void state_render(GameState* state)
 	ui_render(state);
 
 	Vector2 p = GetMousePosition();//map_get_mouse_cords(map);
-	if(IsKeyDown(KEY_N)) DrawRectangle(p.x, p.y, map->camera->tile_len / 4, map->camera->tile_len / 4, RED);
 	if(IsKeyDown(KEY_M)) state->map->light_settings.ambient_light += 0.01;
 
 

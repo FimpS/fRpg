@@ -229,7 +229,7 @@ static NPCMenu npc_menu_init(NPC* npc)
 	switch(inv_type)
 	{
 		case INVENTORY_TYPE_SHOP: 
-			menu.option_strings[ menu.len ++ ] = "Shop";  //TODO check if this is actually safe
+			menu.option_strings[ menu.len ++ ] = "Shop"; 
 			break;
 		case INVENTORY_TYPE_SMITH:
 			menu.option_strings[ menu.len ++] = "Enchant";

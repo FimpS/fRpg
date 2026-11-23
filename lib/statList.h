@@ -78,7 +78,12 @@
         l->data[index] = value;                                      \
         l->len++;                                                    \
     }                                                                \
-                                                                     \
+																	 \
+	static inline void Prefix##_enqueue(Name *l, T value) 			 \
+	{          	 													 \
+        Prefix##_add(l, 0, value);                                   \
+    }																 \
+																	 \
     static inline void Prefix##_del(Name *l, u32 index) 			 \
 	{          	 													 \
         if (index >= l->len) return;                                 \
@@ -87,6 +92,11 @@
             l->data[i] = l->data[i + 1];                             \
         }                                                            \
         l->len --;                                                   \
+    }                                                                \
+																	 \
+    static inline void Prefix##_dequeue(Name *l) 			 		 \
+	{          	 													 \
+        Prefix##_del(l, 0);                                          \
     }                                                                \
                                                                      \
     static inline void Prefix##_clear(Name *l) 						 \

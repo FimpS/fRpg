@@ -51,7 +51,7 @@ void entity_check_active_grid_range(Entity* self, GameState* state)
 {
 	Map* map = state->map;
 	MapEntityActiveGrid* grid = &state->map->active_grid;
-	if(!(Vector2Length(Vector2Subtract(self->mid_pos, state->player->entity->pos)) < grid->range) )
+	if(!(Vector2Length(Vector2Subtract(self->mid_pos, state->player->entity->mid_pos)) < grid->range) )
 	{
 		if(self->grid_status.active)
 		{
@@ -85,16 +85,18 @@ static void entity_move_collision(Entity* self, GameState* state)
 
 	MapEntityActiveGrid* grid = &state->map->active_grid;
 	Vector2 push = { 0.0, 0.0 };
+	const f32 accel = 0.75;
 
 	for(i32 i = 0; i < grid->entities->len; i++)
 	{
 		Entity* other = dynList_get(grid->entities, i);
 		if(other == self || other->data.elusive) continue;
-		Vector2 distpos = Vector2Subtract(self->mid_pos, other->mid_pos);
-		f32 dist = Vector2Length(distpos);
-		f32 body = other->data.dim.x >= other->data.dim.y ? other->data.dim.x : other->data.dim.y;
+		const Vector2 distpos = Vector2Subtract(self->mid_pos, other->mid_pos);
+		const f32 dist = Vector2Length(distpos);
+		const f32 body = other->data.dim.x >= other->data.dim.y ? other->data.dim.x : other->data.dim.y;
+		const f32 force_dist = body * accel;
 
-		if(dist <= body * 0.75 && dist > 0.01f) push = Vector2Scale(distpos, (body * 0.75 - dist) / dist);
+		if(dist <= force_dist && dist > 0.01f) push = Vector2Scale(distpos, (force_dist - dist) / dist);
 
 	}
 	//P_LOG("%d\n", grid->entities->len);
@@ -265,7 +267,7 @@ bool entity_consume_mana(Entity* self, const u32 cost, GameState* state)
 
 void entity_do_damage(Entity* attacker, Entity* defender, const ElementalPower damage, const ElementalPower multipler, GameState* state)
 {
-	if(defender->stats.health <= 0) return;
+	if(defender->stats.health <= 0 || !defender->data.targetable) return;
 	const ElementalPower def = defender->stats.defense;
 	const ElementalPower atk = attacker->stats.attack;
 	const ElementalPower dmg = damage;
@@ -549,7 +551,7 @@ static void entity_die(Entity* self, GameState* state)
 	quest_register_entry(state->player, QUEST_OBJECTIVE_KILL, (QuestObjectiveData) {
 			.kill.kill_type = self->type,
 			}, state);
-	entity_gain_experience(state->player->entity, 7, state);
+	entity_gain_experience(state->player->entity, 11, state);
 	entity_give_gold(self, state);
 	item_drop_push(self, state);
 
@@ -577,7 +579,6 @@ void entity_pre_tick(Entity* self, GameState* state)
 	{
 		self->state.type = ESTYPE_DEAD;
 	}
-
 	if(self->state.type == ESTYPE_DEAD)
 	{
 		entity_die(self, state);
@@ -593,18 +594,19 @@ void entities_tick(DynList* entities, GameState* state)
 	for(i32 i = 0; i < dynList_len(entities); i++)
 	{
 		Entity* e = dynList_get(entities, i);
+		if(IsKeyPressed(KEY_O))
+		{
+			e->stats.health = 0;
+			//e->state.type = ESTYPE_DEAD;
+			//P_LOG("Killed all entities, in map->entities\n");
+		}
 		if(e->state.type == ESTYPE_CLEAR) 
 		{
 			dynList_pop_swap(entities, i --);
 			entity_destroy(e);
 			continue;
 		}
-		if(IsKeyPressed(KEY_O))
-		{
-			e->state.type = ESTYPE_DEAD;
-			continue;
-			//P_LOG("Killed all entities, in map->entities\n");
-		}
+		
 
 		entity_pre_tick(e, state);
 		if( e->state.tick != NULL ) e->state.tick(e, state);

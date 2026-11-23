@@ -34,7 +34,7 @@ const ItemData item_info_table[] = {
 	},
 	(ItemData) {
 		.name = "Placeholder Sword",
-		.description = "Some kind of god of war sword",
+		.description = "Some kind of god of war This seems not to be really working but i would not say its really myi fault for this really ",
 		.class = ITEM_CLASS_WEAPON,
 		.cost = 10,
 		.equipment = {

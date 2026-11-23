@@ -16,11 +16,11 @@ const QuestReward quest_reward_table[] = {
 const QuestData quest_data_table[] = {
 // 	QuestType							QuestClass					name								len			QuestObjectiveTypes
 	{QUEST_TYPE_PLACEHOLDER,			QUEST_CLASS_RED,			"Placeholder",						2,			{
-																													{QUEST_OBJECTIVE_KILL,				10,				{ .kill = {ENTITY_PLACEHOLDER} 		} },
+																													{QUEST_OBJECTIVE_KILL,				1,				{ .kill = {ENTITY_PLACEHOLDER} 		} },
 																													{QUEST_OBJECTIVE_TALK,				1,				{ .talk = {NPC_TYPE_TOWN_MERCHANT}	} }, 
 																													},
 	},
-	{QUEST_TYPE_KILL_5_IMPS,			QUEST_CLASS_YELLOW, 		"Clear the way!",					2,			{
+	{QUEST_TYPE_KILL_5_IMPS,			QUEST_CLASS_YELLOW, 		"Clear the way!",					1,			{
 																													{QUEST_OBJECTIVE_KILL,				5,				{ .kill = {ENTITY_PLACEHOLDER} 		} },
 																													{QUEST_OBJECTIVE_KILL,				10,				{ .kill = {ENTITY_PLACEHOLDER} 		} },
 	}, 																												},

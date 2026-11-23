@@ -69,6 +69,8 @@ void quest_check_completion(Player* player) //Check after and if any of the ques
 		}
 		if(objective_counter == q->data.objectives_len)
 		{
+
+			//ui_notification_push(state); add state
 			q->status = QUEST_STATUS_COMPLETE;
 		}
 	}
@@ -101,7 +103,9 @@ void quest_register_entry(Player* player, QuestObjectiveType type, QuestObjectiv
 				q->quest_counters[j] ++;
 				u8 quest_objective[COMMON_UI_LABEL_MAX_LEN];
 				objective_to_string_function_table[objective.type](player, objective, quest_objective);
-				ui_notification_push(TextFormat("%s (%d/%d)", quest_objective, q->quest_counters[j], q->data.objectives[j].target), state);
+				ui_notification_push(TextFormat("%s [%d/%d]", quest_objective, q->quest_counters[j], q->data.objectives[j].target), 
+						(Color) { 220, 200, 60, 200 },
+						state);
 				P_LOG("Incremented counter for quest[%d]: %d, current counter[%d] = %d\n", 
 						i,
 						q->data.type, 

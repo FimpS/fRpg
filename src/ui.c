@@ -42,7 +42,7 @@ void ui_draw_text(const u8* text, Vector2 pos,
 		GameState* state)
 {
 	Gfx* gfx = state->gfx;
-	DrawTextEx(gfx->ui_font, text, 
+	DrawTextEx(gfx->font, text, 
 			(Vector2) {pos.x, pos.y}, 
 			font_size, 0.0, color);
 
@@ -54,92 +54,111 @@ void ui_draw_outline_text(const u8* text, Vector2 pos,
 		GameState* state)
 {
 	Gfx* gfx = state->gfx;
-	DrawTextEx(gfx->ui_font, text, 
+	DrawTextEx(gfx->font, text, 
 			(Vector2) { pos.x + 1, pos.y }, 
 			font_size, 0.0, outline_color);
-	DrawTextEx(gfx->ui_font, text, 
+	DrawTextEx(gfx->font, text, 
 			(Vector2) { pos.x, pos.y + 1 }, 
 			font_size, 0.0, outline_color);
-	DrawTextEx(gfx->ui_font, text, 
+	DrawTextEx(gfx->font, text, 
 			(Vector2) {pos.x - 1, pos.y}, 
 			font_size, 0.0, outline_color);
-	DrawTextEx(gfx->ui_font, text, 
+	DrawTextEx(gfx->font, text, 
 			(Vector2) {pos.x, pos.y - 1}, 
 			font_size, 0.0, outline_color);
-	DrawTextEx(gfx->ui_font, text, 
+	DrawTextEx(gfx->font, text, 
 			(Vector2) {pos.x, pos.y}, 
 			font_size, 0.0, color);
 
 }
-
-void ui_wrap_text_render(const u8* text, 
-		Vector2 pos, 
-		const i32 max_width, 
-		const u32 padding,
-		const u32 font_size,
-		GameState* state
-		)
+void ui_wrap_text_render(const u8* text,
+        Vector2 pos,
+        const i32 max_width,
+        const u32 padding,
+        const u32 font_size,
+        GameState* state)
 {
-	Gfx* gfx = state->gfx;
-	const u32 text_len = strlen(text);
-	const u32 max_str_len = 128;
-	i32 index = 0;
-	u8 current_string[max_str_len];
+    Gfx* gfx = state->gfx;
 
-	i32 y_offset = 0;
-	const i32 extra_offset = 2;
-	for(i32 i = 0; i < text_len; i++)
-	{
-		u8 current_char = text[i];
-		current_string[index ++] = text[i];
+    const u32 text_len = strlen(text);
+    const u32 max_str_len = 128;
 
-		if(current_char == ' ')
-		{
+    u8 current_string[max_str_len];
+    u8 word[max_str_len];
 
-			current_string[index] = '\0';
-			Vector2 line_width = MeasureTextEx(gfx->ui_font, current_string, font_size, 0.0);
-			if( line_width.x >= max_width )
-			{
-				ui_draw_outline_text(current_string, 
-						(Vector2) { pos.x + padding, 
-						pos.y + padding + y_offset },
-						font_size,
-						BLACK,
-						WHITE,
-						state);
-				y_offset += font_size + extra_offset;
-				index = 0;
-			}
-		}
-		if(current_char == '\n') 
-		{
-			u32 newline_index = i;
-			current_string[index] = '\0';
+    i32 index = 0;
+    i32 word_index = 0;
+    i32 y_offset = 0;
 
-			ui_draw_outline_text(current_string, 
-					(Vector2) { pos.x + padding, pos.y + padding + y_offset },
-					font_size,
-					BLACK,
-					WHITE,
-					state);
-			while(text[newline_index++] == '\n') 
-			{
-				y_offset += font_size + extra_offset;
-			}
-			index = 0;
+    const i32 extra_offset = 2;
 
-		}
-	}
-	if(index > 0)
-	{
-		current_string[index] = '\0';
-		ui_draw_outline_text(current_string, 
-				(Vector2) { pos.x + padding, pos.y + padding + y_offset },
-				font_size,
-				BLACK,
-				WHITE,
-				state);
-	}
+    for(i32 i = 0; i <= text_len; i++)
+    {
+        if(text[i] != ' ' && text[i] != '\n' && text[i] != '\0')
+        {
+            if(word_index < max_str_len - 1)
+                word[word_index++] = text[i];
+
+            continue;
+        }
+
+        word[word_index] = '\0';
+        current_string[index] = '\0';
+
+        if(word_index > 0)
+        {
+            u8 test_string[max_str_len];
+
+            strcpy(test_string, current_string);
+
+            if(index > 0)
+                strcat(test_string, " ");
+
+            strcat(test_string, word);
+
+            Vector2 width = MeasureTextEx(
+                    gfx->font, test_string, font_size, 0.0);
+
+            if(width.x >= max_width && index > 0)
+            {
+                ui_draw_text(current_string,
+                        (Vector2) {
+                        pos.x + padding,
+                        pos.y + padding + y_offset
+                        },
+                        font_size, WHITE, state);
+
+                y_offset += font_size + extra_offset;
+                index = 0;
+            }
+
+            if(index > 0)
+                current_string[index++] = ' ';
+
+            strcpy(&current_string[index], word);
+            index += word_index;
+        }
+
+        word_index = 0;
+
+        if(text[i] == '\n' || text[i] == '\0')
+        {
+            current_string[index] = '\0';
+
+            if(index > 0)
+            {
+                ui_draw_text(current_string,
+                        (Vector2) {
+                        pos.x + padding,
+                        pos.y + padding + y_offset
+                        },
+                        font_size, WHITE, state);
+            }
+
+            index = 0;
+            y_offset += font_size + extra_offset;
+        }
+    }
 }
 
 //void ui_draw_error_text(const 
@@ -172,6 +191,77 @@ void ui_text_box_render_old_fast(const u8* title, const u8* text, Vector2 pos, G
 	ui_wrap_text_render(title, pos, max_width, padding, size, state);
 	pos.y += padding * 4;
 	ui_wrap_text_render(text, pos, max_width, padding, size, state);
+}
+static i32 ui_wrap_text_measure(
+        const u8* text,
+        const i32 max_width,
+        const i32 font_size,
+        GameState* state)
+{
+    Gfx* gfx = state->gfx;
+
+    const u32 text_len = strlen(text);
+    const u32 max_str_len = 128;
+
+    u8 current_string[max_str_len];
+    u8 word[max_str_len];
+
+    i32 index = 0;
+    i32 word_index = 0;
+    i32 lines = 1;
+
+    for(i32 i = 0; i <= text_len; i++)
+    {
+        if(text[i] != ' ' && text[i] != '\n' && text[i] != '\0')
+        {
+            if(word_index < max_str_len - 1)
+                word[word_index++] = text[i];
+
+            continue;
+        }
+
+        word[word_index] = '\0';
+        current_string[index] = '\0';
+
+        if(word_index > 0)
+        {
+            u8 test_string[max_str_len];
+
+            strcpy(test_string, current_string);
+
+            if(index > 0)
+                strcat(test_string, " ");
+
+            strcat(test_string, word);
+
+            Vector2 width = MeasureTextEx(
+                    gfx->font, test_string, font_size, 0.0);
+
+            if(width.x >= max_width && index > 0)
+            {
+                lines++;
+                index = 0;
+                current_string[0] = '\0';
+            }
+
+            if(index > 0)
+                current_string[index++] = ' ';
+
+            strcpy(&current_string[index], word);
+            index += word_index;
+        }
+
+        word_index = 0;
+
+        if(text[i] == '\n')
+        {
+            lines++;
+            index = 0;
+            current_string[0] = '\0';
+        }
+    }
+
+    return lines;
 }
 
 void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState* state)
@@ -273,24 +363,134 @@ void ui_text_box_render(const u8* title, const u8* text, Vector2 pos, GameState*
 	ui_wrap_text_render(text, pos, max_width, padding, size, state);
 }
 
+static void ui_itoa(i32 integer, u8* dst)
+{
+	sprintf(dst, "%d", integer);
+}
+
+
+static void ui_render_description_box_info(UITextRowList* rows, Vector2* pos, GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	const u32 len = rows->len;
+	const f32 row_font = 18.0;
+	const f32 spacing = 1.0;
+
+	const f32 col_len = 80.0;
+	u8 buffer[COMMON_UI_LABEL_MAX_LEN];
+	for(i32 i = 0; i < len; i++)
+	{
+		UITextRow* row = ui_text_rows_get(rows, i);
+		Vector2 row_pos = *pos;
+		Vector2 size = { 0 };
+
+		if(row->item1[0] == '$')
+		{
+			row->item1 ++;
+			DrawTextEx(gfx->font, row->item1, row_pos, row_font, spacing, WHITE);
+		}
+		else
+		{
+			i32 num = (i32)*(i32*)row->item2;
+			ui_itoa(num, buffer);
+			DrawTextEx(gfx->font, buffer, row_pos, row_font, spacing, WHITE);
+		}
+
+		if(row->item2[0] == '$')
+		{
+			row->item2 ++;
+			size = MeasureTextEx(gfx->font, row->item1, row_font, spacing);
+			row_pos.x += col_len ;
+			DrawTextEx(gfx->font, row->item2, row_pos, row_font, spacing, WHITE);
+		}
+		else
+		{
+			size = MeasureTextEx(gfx->font, row->item1, row_font, spacing);
+			row_pos.x += col_len ;
+			i32 num = (i32)*(i32*)row->item2;
+			ui_itoa(num, buffer);
+			DrawTextEx(gfx->font, buffer, row_pos, row_font, spacing, WHITE);
+		}
+
+		if(row->item3[0] == '$')
+		{
+			row->item3 ++;
+			size = MeasureTextEx(gfx->font, row->item2, row_font, spacing);
+			row_pos.x += col_len ;
+			DrawTextEx(gfx->font, row->item3, row_pos, row_font, spacing, WHITE);
+		}
+		else
+		{
+			size = MeasureTextEx(gfx->font, buffer, row_font, spacing);
+			row_pos.x += col_len;
+			i32 num = (i32)*(i32*)row->item3;
+			ui_itoa(num, buffer);
+			DrawTextEx(gfx->font, buffer, row_pos, row_font, spacing, WHITE);
+		}
+
+		pos->y += row_font;
+	}
+}
+
+void ui_render_description_box(const u8* title, 
+		UITextRowList* row_list, 
+		const u8* description, 
+		Vector2 pos, 
+		const u32 padding,
+		const u32 max_width,
+		GameState* state)
+{
+	Gfx* gfx = state->gfx;
+	pos = pos.x <= GetScreenWidth() / 2.0 ? pos : (Vector2) { pos.x - 300.0 - padding*2, pos.y };
+	Vector2 text_pos = Vector2AddValue(pos, padding);
+	const f32 title_font = 20.0;
+	const u32 description_font = 18.0;
+	const f32 spacing = 1.0;
+	Rectangle frame = { pos.x, pos.y, 300.0 + padding * 2, padding * 2 };
+
+	const Vector2 title_size = MeasureTextEx(gfx->font, title, title_font, spacing);
+	frame.height += title_size.y;
+	frame.height += row_list->len * 18.0;
+	frame.height += ui_wrap_text_measure(description, frame.width, description_font, state) * description_font;
+
+	const u32 outline = 4;
+
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], 
+			(Rectangle) { 0, 0, 16, 16 }, 
+			(Rectangle) { frame.x - outline, frame.y - outline, frame.width + outline * 2, frame.height + outline * 2},
+			(Color) { 65, 65, 65, 215 });
+	ui_draw_element(&gfx->texs[TEXTURE_GAME_UI], 
+			(Rectangle) { 0, 0, 16, 16 }, 
+			frame,
+			(Color) { 10, 10, 10, 145 });
+
+
+	DrawTextEx(gfx->ui_font, title, text_pos, title_font, spacing, WHITE);
+	text_pos.y += title_size.y;
+	ui_render_description_box_info(row_list, &text_pos, state);	
+
+	ui_wrap_text_render(description, text_pos, frame.width-padding*2, 0, description_font, state);
+
+}
+
 /*--------------------------------- DRAW TEXT ---------------------------------*/
 
 /*--------------------------------- NOTIFICATION ---------------------------------*/
 
 #define MAX_NOTIFICATION_TIME 250 
-void ui_notification_push(const u8* text, GameState* state)
+void ui_notification_push(const u8* text, const Color tint, GameState* state)
 {
 	TextEntry entry = {
 		.timer = 0,
 		.stop = MAX_NOTIFICATION_TIME,
-		.tint = WHITE,
+		.tint = tint,
 	};
 	strcpy(entry.text, text);
 	if(ui_text_entries_len(&state->ui->notification) >= 4)
 	{
-		ui_text_entries_del(&state->ui->notification, 0); 
+		ui_text_entries_pop(&state->ui->notification); 
 	}
-	ui_text_entries_push(&state->ui->notification, entry);
+	ui_text_entries_enqueue(&state->ui->notification, entry);
 }
 
 void ui_notification_render(GameState* state)
@@ -300,21 +500,24 @@ void ui_notification_render(GameState* state)
 	const Vector2 default_pos = { GetScreenWidth() / 2.0, GetScreenHeight() / 2.0 - 400.0 };
 	const f32 font_size = 18.0;
 	const f32 offset = 2.0;
-	const Color tint = { 220, 200, 60, 200 };
 
-	for(i32 i = 0; i < minu32(ui_text_entries_len(queue), max_len); i++)
+	for(i32 i = 0; i < ui_text_entries_len(queue); i++)
 	{
 		TextEntry* text = ui_text_entries_get(queue, i);
 
-		
+
 		const Vector2 text_pos = ui_center_text(default_pos, text->text, font_size, state);
 		const Vector2 pos = { text_pos.x, text_pos.y + (font_size + offset) * i };
 
 		//const u32 fade = maxf32(0.0, minf32(255 - text->timer * 3, 255));
-		const u32 fade = 255;
 		text->timer ++;
-		//const Color tint = { fade, fade, fade, 255 };
-	
+
+		const u32 fade = maxu32(0, 255 - (i + 1) * 60);
+		const Color tint = { text->tint.r, 
+			text->tint.g, 
+			text->tint.b, 
+			fade };
+
 		ui_draw_text(text->text, pos, font_size, tint, state);
 
 		if(text->timer >= MAX_NOTIFICATION_TIME)
@@ -582,13 +785,13 @@ Inventory* ui_inventory_new(InventoryType type)
 				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
 				.enchant = { 1 },
 				} );
-ui_inventory_add_item(inv_new, (Item) {
+		ui_inventory_add_item(inv_new, (Item) {
 				.type = ITEM_TYPE_PLACEHOLDER,
 				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
 				.enchant = { 1 },
 				} );
 
-ui_inventory_add_item(inv_new, (Item) {
+		ui_inventory_add_item(inv_new, (Item) {
 				.type = ITEM_TYPE_PLACEHOLDER,
 				.data = item_info_table[ITEM_TYPE_PLACEHOLDER],
 				.enchant = { 1 },
@@ -604,10 +807,10 @@ ui_inventory_add_item(inv_new, (Item) {
 
 
 		inv_new->cells[37].item = (Item) {
-				.type = ITEM_TYPE_KEK_BOOTS,
-				.data = item_info_table[ITEM_TYPE_KEK_BOOTS],
-				.enchant = { rand() % 4 },
-			};
+			.type = ITEM_TYPE_KEK_BOOTS,
+			.data = item_info_table[ITEM_TYPE_KEK_BOOTS],
+			.enchant = { rand() % 4 },
+		};
 		for(i32 i = 4; i < 20; i+=2)
 		{
 			inv_new->cells[i].item = (Item) {
@@ -834,7 +1037,7 @@ bool ui_inventory_add_item(Inventory* inventory, Item item)
 		if(cell->item.type == ITEM_TYPE_NONE)
 		{
 			cell->item = item;
-			
+
 			return true;
 		}
 	}
@@ -856,22 +1059,63 @@ static void ui_inventory_background_render(Inventory* inventory, GameState* stat
 
 const u8* ui_get_item_stats_description(Item* item, GameState* state)
 {
-	return TextFormat("LVL req:%d\nAttack:\nPhys: %d\nMagic: %d\nFire: %d\nBolt: %d\nHoly: %d\nDark: %d\nDefense:\nPhys: %d\nMagic: %d\nFire: %d\nBolt: %d\nHoly: %d\nDark: %d\n", 
-				item->data.min_lvl,
-				item->data.equipment.attack.physical,
-				item->data.equipment.attack.magic,
-				item->data.equipment.attack.fire,
-				item->data.equipment.attack.bolt,
-				item->data.equipment.attack.holy,
-				item->data.equipment.attack.dark,
-
-				item->data.equipment.defense.physical,
-				item->data.equipment.defense.magic,
-				item->data.equipment.defense.fire,
-				item->data.equipment.defense.bolt,
-				item->data.equipment.defense.holy,
-				item->data.equipment.defense.dark
+#if 0
+	return TextFormat("LVL req:%d\n%+24s\t%-16s\n%-12s%-12d%-12d\n%s%d\t%d\n%s%d\t%d\n%s%d\t%d\n%s%d\t%d\n%s%d\t%d", 
+			item->data.min_lvl,
+			"Attack", "Defense",
+			"Physical",
+			item->data.equipment.attack.physical,
+			item->data.equipment.defense.physical,
+			"Magic",
+			item->data.equipment.attack.magic,
+			item->data.equipment.defense.magic,
+			"Fire",
+			item->data.equipment.attack.fire,
+			item->data.equipment.defense.fire,
+			"Bolt",
+			item->data.equipment.attack.bolt,
+			item->data.equipment.defense.bolt,
+			"Holy",
+			item->data.equipment.attack.holy,
+			item->data.equipment.defense.holy,
+			"Dark",
+			item->data.equipment.attack.dark,
+			item->data.equipment.defense.dark
 				);
+#endif
+#if 0
+	return TextFormat("LVL req: %d\n%-12s%-12s%12s\n%-13s%d %d\n%-14s%d %d\n%-12s%12d%12d\n%-12s%12d%12d\n%-12s%12d%12d\n%-12s%12d%12d",
+			item->data.min_lvl,
+			"","Attack", "Defense",
+			"Physical",
+			item->data.equipment.attack.physical,
+			item->data.equipment.defense.physical,
+			"Magic",
+			item->data.equipment.attack.magic,
+			item->data.equipment.defense.magic,
+			"Fire",
+			item->data.equipment.attack.fire,
+			item->data.equipment.defense.fire,
+			"Bolt",
+			item->data.equipment.attack.bolt,
+			item->data.equipment.defense.bolt,
+			"Holy",
+			item->data.equipment.attack.holy,
+			item->data.equipment.defense.holy,
+			"Dark",
+			item->data.equipment.attack.dark,
+			item->data.equipment.defense.dark
+				);
+#endif
+	return TextFormat("%-12s%-12s%-12s\n%-012s%d %d\n%-012s%d %d",
+			"","Attack", "Defense",
+			"Physical",
+			item->data.equipment.attack.physical,
+			item->data.equipment.defense.physical,
+			"Magic",
+			item->data.equipment.attack.magic,
+			item->data.equipment.defense.magic
+			);
 
 }
 
@@ -882,9 +1126,26 @@ static void ui_item_cell_text_render(Inventory* inventory, GameState* state, con
 		InventoryCell cell = inventory->cells[id];
 		if(cell.item.type == ITEM_TYPE_NONE) return;
 		const Vector2 rpos = gfx_to_monitor_vector( (Vector2) { -200.0, 10.0 } );
-		const u8* text = ui_get_item_stats_description(&cell.item, state);
-		ui_text_box_render(cell.item.data.name, text, 
-				(Vector2) { cell.hitbox.x , cell.hitbox.y }, 
+		//const u8* text = ui_get_item_stats_description(&cell.item, state);
+		ItemEquipment* equip = &cell.item.data.equipment;
+		UITextRowList rows = {
+			.len = 7,
+			.data = { 
+				{"$", "$Attack", "$Defense"},
+				{"$Physical", (u8*)&equip->attack.physical, (u8*)&equip->defense.physical},
+				{"$Magic", (u8*)&equip->attack.magic, (u8*)&equip->defense.magic},
+				{"$Fire", (u8*)&equip->attack.fire, (u8*)&equip->defense.fire},
+				{"$Bolt", (u8*)&equip->attack.bolt, (u8*)&equip->defense.bolt},
+				{"$Holy", (u8*)&equip->attack.holy, (u8*)&equip->defense.holy},
+				{"$Dark", (u8*)&equip->attack.dark, (u8*)&equip->defense.dark},
+			}
+		};
+		ui_render_description_box(cell.item.data.name, 
+				&rows, 
+				cell.item.data.description,
+				(Vector2) { cell.hitbox.x, cell.hitbox.y },
+				12,
+				400,
 				state);
 	}
 }
@@ -1013,8 +1274,25 @@ void ui_equipment_menu_render(GameState* state)
 		{
 			if(item->type != ITEM_TYPE_NONE)
 			{
-				ui_text_box_render(item->data.name, ui_get_item_stats_description(item, state), 
-						(Vector2) { background_dst.x , background_dst.y }, 
+				ItemEquipment* equip = &item->data.equipment;
+				UITextRowList rows = {
+					.len = 7,
+					.data = { 
+						{"$", "$Attack", "$Defense"},
+						{"$Physical", (u8*)&equip->attack.physical, (u8*)&equip->defense.physical},
+						{"$Magic", (u8*)&equip->attack.magic, (u8*)&equip->defense.magic},
+						{"$Fire", (u8*)&equip->attack.fire, (u8*)&equip->defense.fire},
+						{"$Bolt", (u8*)&equip->attack.bolt, (u8*)&equip->defense.bolt},
+						{"$Holy", (u8*)&equip->attack.holy, (u8*)&equip->defense.holy},
+						{"$Dark", (u8*)&equip->attack.dark, (u8*)&equip->defense.dark},
+					}
+				};
+				ui_render_description_box(item->data.name, 
+						&rows, 
+						item->data.description,
+						(Vector2) { background_dst.x, background_dst.y },
+						12,
+						400,
 						state);
 			}
 			if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
@@ -1242,13 +1520,27 @@ void ui_player_quest_log_render(Player* player, GameState* state)
 	}
 }
 
+// PROBLEM: tick grabs it from the full npc-questlist, but the pick is from the available quests
+// temp solution to remake the list in tick, remaking the available quest list should be onödigt
 void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 {
 	NPCMenu* menu = &npc->menu;
+	NPCQuestData* quests = &npc->quests;
 	QuestManager* qm = state->player->quest_manager;
+	u32 available_quests_len = 0;
+
+	QuestData available_quests[MAX_QUESTS_ALLOWED];
+	for(i32 i = 0; i < quests->len; i++)
+	{
+		if(!(quests->completed[i] || !npc_is_quest_available(npc, &quests->data[i], state))) 
+		{
+			available_quests[available_quests_len ++] = quests->data[i];
+		}
+	}
+
 	if(IsKeyPressed(KEY_BACKSPACE) && menu->quest_choice != -1)
 	{
-		QuestData quest_data = npc->quests.data[menu->quest_choice];
+		QuestData quest_data = available_quests[menu->quest_choice];
 		Quest* player_quest = quest_manager_get_quest(qm, quest_data.type);
 		if(player_quest != NULL && player_quest->status == QUEST_STATUS_ACCEPTED)
 		{
@@ -1257,7 +1549,7 @@ void ui_tick_npc_quest_menu(NPC* npc, GameState* state)
 	}
 	else if( (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE) ) && menu->quest_choice != -1)
 	{
-		QuestData quest_data = npc->quests.data[menu->quest_choice];
+		QuestData quest_data = available_quests[menu->quest_choice];
 		Quest* player_quest = quest_manager_get_quest(qm, quest_data.type);
 		if(player_quest != NULL)
 		{
@@ -1340,6 +1632,7 @@ void ui_render_npc_quest_menu(NPC* npc, GameState* state)
 			available_quests[available_quests_len ++] = quests->data[i];
 		}
 	}
+	P_LOG("%d\n", available_quests_len);
 
 	for(i32 i = 0; i < available_quests_len ; i++)
 	{
@@ -1476,7 +1769,7 @@ static void ui_smith_cell_tick(InventoryCell* cell, Inventory* smith_inventory, 
 	{
 		ui_inventory_add_item(state->player->inventory, cell->item);
 		cell->item = ui_inventory_get_empty_cell();
-	} 
+	}
 
 }
 
@@ -1529,9 +1822,9 @@ static void skill_tree_draw_background(GameState* state)
 	Gfx* gfx = state->gfx;
 	SkillTree* tree = state->player->skill_tree;
 
-	const Rectangle src = { 0, 0, 16, 16 };
+	const Rectangle src = 		{ 0, 0, 16, 16 };
 	const Rectangle src_inner = { 32, 80, 32, 48 };
-	const Rectangle dst = { 35, 124, 286, 100 };
+	const Rectangle dst = 		{ 35, 124, 286, 100 };
 	const Rectangle dst_inner = { 40, 160, 400, 740 };
 	const Rectangle dst_outer = { 35, 154, 410, 752 };
 	Color class_color = class_to_color_table[state->player->skill_tree->active_skill_tree];
@@ -1660,7 +1953,7 @@ void ui_draw_progress_bar_outline(GameState* state, const u8* label, const Recta
 
 #define HEALTH_DECAY_LIMIT 32
 
-void ui_player_healthmana_render(GameState* state)
+static void ui_player_healthmana_render(GameState* state)
 {
 	Gfx* gfx = state->gfx;
 	Entity* player = state->player->entity;
@@ -1671,7 +1964,7 @@ void ui_player_healthmana_render(GameState* state)
 	const Rectangle src = { 0, 0, 16, 16 };
 	const Rectangle back_mp_dst = { start_x, start_y, max_width, 16 };
 	const Rectangle back_hp_dst = { start_x, start_y - back_mp_dst.height, max_width, 16 };
-	
+
 
 	i32 *health_display = &state->ui_elements->stats.health_display;
 	i32 *mana_display = &state->ui_elements->stats.mana_display;
@@ -1684,7 +1977,7 @@ void ui_player_healthmana_render(GameState* state)
 	{
 		state->ui_elements->stats.health_display = mini32(*health_display + speed, player->stats.health);
 	}
-	
+
 	if(state->ui_elements->stats.mana_decay_timer ++ >= HEALTH_DECAY_LIMIT && player->stats.mana < *mana_display)
 	{
 		state->ui_elements->stats.mana_display = maxi32(*mana_display - speed, player->stats.mana);
@@ -1732,7 +2025,7 @@ void ui_player_healthmana_render(GameState* state)
 
 /*--------------------------------- EXPERIENCE/LEVEL ---------------------------------*/
 
-void ui_experience_render(GameState* state)
+static void ui_experience_render(GameState* state)
 {
 	Gfx* gfx = state->gfx;
 	Entity* player = state->player->entity;
